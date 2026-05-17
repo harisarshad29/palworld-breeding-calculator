@@ -315,8 +315,9 @@ async fn main() {
         index_template,
         combinations_cache: Arc::new(Mutex::new(HashMap::new())),
     };
-    prewarm_combo_cache(&state);
     let base_url_hint = state.base_url.clone();
+    let prewarm_state = state.clone();
+    tokio::task::spawn_blocking(move || prewarm_combo_cache(&prewarm_state));
 
     let assets_cache = SetResponseHeaderLayer::if_not_present(
         header::CACHE_CONTROL,
