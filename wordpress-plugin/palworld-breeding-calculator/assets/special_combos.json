@@ -1,0 +1,64 @@
+{
+  "combos": [
+    {
+      "parent_a": "Lamball",
+      "parent_b": "Cattiva",
+      "child": "Foxparks"
+    },
+    {
+      "parent_a": "Foxparks",
+      "parent_b": "Rooby",
+      "child": "Daedream"
+    },
+    {
+      "parent_a": "Blazamut",
+      "parent_b": "Suzaku",
+      "child": "Jormuntide"
+    },
+    {
+      "parent_a": "Anubis",
+      "parent_b": "Jetragon",
+      "child": "Frostallion"
+    },
+    {
+      "parent_a": "Necromus",
+      "parent_b": "Paladius",
+      "child": "Jetragon"
+    },
+    {
+      "parent_a": "Grizzbolt",
+      "parent_b": "Lyleen",
+      "child": "Jetragon"
+    },
+    {
+      "parent_a": "Relaxaurus",
+      "parent_b": "Mammorest",
+      "child": "Jetragon"
+    },
+    {
+      "parent_a": "Blazamut",
+      "parent_b": "Suzaku Aqua",
+      "child": "Jormuntide Ignis"
+    },
+    {
+      "parent_a": "Frostallion",
+      "parent_b": "Frostallion Noct",
+      "child": "Frostallion"
+    },
+    {
+      "parent_a": "Penking",
+      "parent_b": "Bushi",
+      "child": "Anubis"
+    },
+    {
+      "parent_a": "Incineram",
+      "parent_b": "Maraith",
+      "child": "Incineram Noct"
+    },
+    {
+      "parent_a": "Suzaku",
+      "parent_b": "Grizzbolt",
+      "child": "Jetragon"
+    }
+  ]
+}

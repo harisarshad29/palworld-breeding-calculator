@@ -1,0 +1,85 @@
+.pbc-wrap {
+  max-width: 920px;
+  margin: 1.5rem auto;
+  padding: 1.25rem;
+  background: #131a23;
+  color: #e5ecf4;
+  border: 1px solid #2d3a4d;
+  border-radius: 12px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.pbc-lead {
+  color: #9fb2c8;
+  margin-top: 0;
+}
+
+.pbc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pbc-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.pbc-grid select {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #33465a;
+  background: #0b0f14;
+  color: #e5ecf4;
+}
+
+.pbc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pbc-btn {
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #53e8ff;
+  color: #0b0f14;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pbc-btn-ghost {
+  background: transparent;
+  color: #53e8ff;
+  border: 1px solid #53e8ff;
+}
+
+.pbc-panel {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #0b0f14;
+  border: 1px solid #2d3a4d;
+  border-radius: 8px;
+}
+
+.pbc-combo-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.pbc-combo-list li {
+  margin-bottom: 0.35rem;
+}
+
+.pbc-muted {
+  color: #9fb2c8;
+}
+
+.pbc-error {
+  color: #ff8c8c;
+}
