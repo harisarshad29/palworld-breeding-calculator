@@ -1,0 +1,796 @@
+{
+  "pals": [
+    {
+      "name": "Bellanoir",
+      "power": 1
+    },
+    {
+      "name": "Bellanoir Libero",
+      "power": 1
+    },
+    {
+      "name": "Blazamut Ryu",
+      "power": 9
+    },
+    {
+      "name": "Suzaku Aqua",
+      "power": 30
+    },
+    {
+      "name": "Suzaku",
+      "power": 50
+    },
+    {
+      "name": "Shadowbeak",
+      "power": 60
+    },
+    {
+      "name": "Jetragon",
+      "power": 90
+    },
+    {
+      "name": "Neptilius",
+      "power": 90
+    },
+    {
+      "name": "Frostallion Noct",
+      "power": 100
+    },
+    {
+      "name": "Frostallion",
+      "power": 120
+    },
+    {
+      "name": "Cryolinx",
+      "power": 130
+    },
+    {
+      "name": "Orserk",
+      "power": 140
+    },
+    {
+      "name": "Astegon",
+      "power": 150
+    },
+    {
+      "name": "Cryolinx Terra",
+      "power": 160
+    },
+    {
+      "name": "Bastigor",
+      "power": 170
+    },
+    {
+      "name": "Helzephyr Lux",
+      "power": 180
+    },
+    {
+      "name": "Helzephyr",
+      "power": 190
+    },
+    {
+      "name": "Necromus",
+      "power": 200
+    },
+    {
+      "name": "Grizzbolt",
+      "power": 200
+    },
+    {
+      "name": "Lyleen Noct",
+      "power": 210
+    },
+    {
+      "name": "Silvegis",
+      "power": 215
+    },
+    {
+      "name": "Beakon",
+      "power": 220
+    },
+    {
+      "name": "Paladius",
+      "power": 220
+    },
+    {
+      "name": "Reptyro Cryst",
+      "power": 230
+    },
+    {
+      "name": "Pyrin Noct",
+      "power": 240
+    },
+    {
+      "name": "Faleris Aqua",
+      "power": 245
+    },
+    {
+      "name": "Lyleen",
+      "power": 250
+    },
+    {
+      "name": "Menasting Terra",
+      "power": 250
+    },
+    {
+      "name": "Menasting",
+      "power": 260
+    },
+    {
+      "name": "Knocklem",
+      "power": 265
+    },
+    {
+      "name": "Xenolord",
+      "power": 265
+    },
+    {
+      "name": "Relaxaurus Lux",
+      "power": 270
+    },
+    {
+      "name": "Warsect Terra",
+      "power": 275
+    },
+    {
+      "name": "Relaxaurus",
+      "power": 280
+    },
+    {
+      "name": "Mammorest Cryst",
+      "power": 290
+    },
+    {
+      "name": "Mammorest",
+      "power": 300
+    },
+    {
+      "name": "Jormuntide",
+      "power": 310
+    },
+    {
+      "name": "Jormuntide Ignis",
+      "power": 315
+    },
+    {
+      "name": "Reptyro",
+      "power": 320
+    },
+    {
+      "name": "Elizabee",
+      "power": 330
+    },
+    {
+      "name": "Braloha",
+      "power": 335
+    },
+    {
+      "name": "Warsect",
+      "power": 340
+    },
+    {
+      "name": "Quivern Botan",
+      "power": 340
+    },
+    {
+      "name": "Selyne",
+      "power": 345
+    },
+    {
+      "name": "Quivern",
+      "power": 350
+    },
+    {
+      "name": "Prixter",
+      "power": 355
+    },
+    {
+      "name": "Pyrin",
+      "power": 360
+    },
+    {
+      "name": "Starryon",
+      "power": 365
+    },
+    {
+      "name": "Faleris",
+      "power": 370
+    },
+    {
+      "name": "Ragnahawk",
+      "power": 380
+    },
+    {
+      "name": "Mossanda Lux",
+      "power": 390
+    },
+    {
+      "name": "Azurmane",
+      "power": 400
+    },
+    {
+      "name": "Blazamut",
+      "power": 410
+    },
+    {
+      "name": "Sweepa",
+      "power": 410
+    },
+    {
+      "name": "Nitewing",
+      "power": 420
+    },
+    {
+      "name": "Mossanda",
+      "power": 430
+    },
+    {
+      "name": "Whalaska Ignis",
+      "power": 430
+    },
+    {
+      "name": "Xenogard",
+      "power": 435
+    },
+    {
+      "name": "Kingpaca Cryst",
+      "power": 440
+    },
+    {
+      "name": "Whalaska",
+      "power": 445
+    },
+    {
+      "name": "Sibelyx",
+      "power": 450
+    },
+    {
+      "name": "Palumba",
+      "power": 455
+    },
+    {
+      "name": "Wumpo",
+      "power": 460
+    },
+    {
+      "name": "Xenovader",
+      "power": 465
+    },
+    {
+      "name": "Kingpaca",
+      "power": 470
+    },
+    {
+      "name": "Wumpo Botan",
+      "power": 480
+    },
+    {
+      "name": "Azurobe Cryst",
+      "power": 480
+    },
+    {
+      "name": "Penking Lux",
+      "power": 490
+    },
+    {
+      "name": "Azurobe",
+      "power": 500
+    },
+    {
+      "name": "Gildane",
+      "power": 505
+    },
+    {
+      "name": "Grintale",
+      "power": 510
+    },
+    {
+      "name": "Penking",
+      "power": 520
+    },
+    {
+      "name": "Ghangler",
+      "power": 525
+    },
+    {
+      "name": "Elphidran Aqua",
+      "power": 530
+    },
+    {
+      "name": "Elphidran",
+      "power": 540
+    },
+    {
+      "name": "Sootseer",
+      "power": 545
+    },
+    {
+      "name": "Surfent Terra",
+      "power": 550
+    },
+    {
+      "name": "Surfent",
+      "power": 560
+    },
+    {
+      "name": "Anubis",
+      "power": 570
+    },
+    {
+      "name": "Incineram Noct",
+      "power": 580
+    },
+    {
+      "name": "Incineram",
+      "power": 590
+    },
+    {
+      "name": "Icelyn",
+      "power": 605
+    },
+    {
+      "name": "Vanwyrm Cryst",
+      "power": 620
+    },
+    {
+      "name": "Omascul",
+      "power": 630
+    },
+    {
+      "name": "Bushi",
+      "power": 640
+    },
+    {
+      "name": "Nyafia",
+      "power": 645
+    },
+    {
+      "name": "Bushi Noct",
+      "power": 650
+    },
+    {
+      "name": "Frostplume",
+      "power": 655
+    },
+    {
+      "name": "Vanwyrm",
+      "power": 660
+    },
+    {
+      "name": "Dogen",
+      "power": 665
+    },
+    {
+      "name": "Blazehowl Noct",
+      "power": 670
+    },
+    {
+      "name": "Dazemu",
+      "power": 675
+    },
+    {
+      "name": "Univolt",
+      "power": 680
+    },
+    {
+      "name": "Katress",
+      "power": 700
+    },
+    {
+      "name": "Nitemary",
+      "power": 705
+    },
+    {
+      "name": "Blazehowl",
+      "power": 710
+    },
+    {
+      "name": "Shroomer",
+      "power": 720
+    },
+    {
+      "name": "Splatterina",
+      "power": 725
+    },
+    {
+      "name": "Shroomer Noct",
+      "power": 730
+    },
+    {
+      "name": "Kitsun Noct",
+      "power": 735
+    },
+    {
+      "name": "Rayhound",
+      "power": 740
+    },
+    {
+      "name": "Polapup",
+      "power": 745
+    },
+    {
+      "name": "Tombat",
+      "power": 750
+    },
+    {
+      "name": "Prunelia",
+      "power": 755
+    },
+    {
+      "name": "Foxcicle",
+      "power": 760
+    },
+    {
+      "name": "Petallia",
+      "power": 780
+    },
+    {
+      "name": "Arsox",
+      "power": 790
+    },
+    {
+      "name": "Chillet Ignis",
+      "power": 790
+    },
+    {
+      "name": "Croajiro",
+      "power": 795
+    },
+    {
+      "name": "Chillet",
+      "power": 800
+    },
+    {
+      "name": "Loupmoon Cryst",
+      "power": 805
+    },
+    {
+      "name": "Dinossom Lux",
+      "power": 810
+    },
+    {
+      "name": "Celesdir",
+      "power": 815
+    },
+    {
+      "name": "Dinossom",
+      "power": 820
+    },
+    {
+      "name": "Tarantriss",
+      "power": 825
+    },
+    {
+      "name": "Kitsun",
+      "power": 830
+    },
+    {
+      "name": "Fenglope Lux",
+      "power": 835
+    },
+    {
+      "name": "Broncherry Aqua",
+      "power": 840
+    },
+    {
+      "name": "Digtoise",
+      "power": 850
+    },
+    {
+      "name": "Caprity Noct",
+      "power": 855
+    },
+    {
+      "name": "Broncherry",
+      "power": 860
+    },
+    {
+      "name": "Celaray",
+      "power": 870
+    },
+    {
+      "name": "Reindrix",
+      "power": 880
+    },
+    {
+      "name": "Melpaca",
+      "power": 890
+    },
+    {
+      "name": "Dumud",
+      "power": 895
+    },
+    {
+      "name": "Eikthyrdeer Terra",
+      "power": 900
+    },
+    {
+      "name": "Lullu",
+      "power": 905
+    },
+    {
+      "name": "Mozzarina",
+      "power": 910
+    },
+    {
+      "name": "Eikthyrdeer",
+      "power": 920
+    },
+    {
+      "name": "Caprity",
+      "power": 930
+    },
+    {
+      "name": "Lovander",
+      "power": 940
+    },
+    {
+      "name": "Yakumo",
+      "power": 945
+    },
+    {
+      "name": "Loupmoon",
+      "power": 950
+    },
+    {
+      "name": "Fenglope",
+      "power": 980
+    },
+    {
+      "name": "Verdash",
+      "power": 990
+    },
+    {
+      "name": "Robinquill Terra",
+      "power": 1000
+    },
+    {
+      "name": "Felbat",
+      "power": 1010
+    },
+    {
+      "name": "Robinquill",
+      "power": 1020
+    },
+    {
+      "name": "Galeclaw",
+      "power": 1030
+    },
+    {
+      "name": "Gorirat Terra",
+      "power": 1030
+    },
+    {
+      "name": "Gorirat",
+      "power": 1040
+    },
+    {
+      "name": "Vaelet",
+      "power": 1050
+    },
+    {
+      "name": "Direhowl",
+      "power": 1060
+    },
+    {
+      "name": "Turtacle Terra",
+      "power": 1065
+    },
+    {
+      "name": "Cawgnito",
+      "power": 1080
+    },
+    {
+      "name": "Gobfin",
+      "power": 1090
+    },
+    {
+      "name": "Turtacle",
+      "power": 1105
+    },
+    {
+      "name": "Dazzi Noct",
+      "power": 1115
+    },
+    {
+      "name": "Leezpunk",
+      "power": 1120
+    },
+    {
+      "name": "Kikit",
+      "power": 1125
+    },
+    {
+      "name": "Rushoar",
+      "power": 1130
+    },
+    {
+      "name": "Maraith",
+      "power": 1150
+    },
+    {
+      "name": "Rooby",
+      "power": 1155
+    },
+    {
+      "name": "Wixen",
+      "power": 1160
+    },
+    {
+      "name": "Nox",
+      "power": 1180
+    },
+    {
+      "name": "Woolipop",
+      "power": 1190
+    },
+    {
+      "name": "Gloopie",
+      "power": 1195
+    },
+    {
+      "name": "Mimog",
+      "power": 1200
+    },
+    {
+      "name": "Ribbuny Botan",
+      "power": 1205
+    },
+    {
+      "name": "Dazzi",
+      "power": 1210
+    },
+    {
+      "name": "Fuddler",
+      "power": 1220
+    },
+    {
+      "name": "Daedream",
+      "power": 1230
+    },
+    {
+      "name": "Gumoss",
+      "power": 1240
+    },
+    {
+      "name": "Smokie",
+      "power": 1245
+    },
+    {
+      "name": "Tanzee",
+      "power": 1250
+    },
+    {
+      "name": "Kelpsea",
+      "power": 1260
+    },
+    {
+      "name": "Flopie",
+      "power": 1280
+    },
+    {
+      "name": "Killamari",
+      "power": 1290
+    },
+    {
+      "name": "Finsider",
+      "power": 1295
+    },
+    {
+      "name": "Swee",
+      "power": 1300
+    },
+    {
+      "name": "Foxparks Cryst",
+      "power": 1305
+    },
+    {
+      "name": "Pengullet Lux",
+      "power": 1310
+    },
+    {
+      "name": "Ribbuny",
+      "power": 1310
+    },
+    {
+      "name": "Bristla",
+      "power": 1320
+    },
+    {
+      "name": "Fuack",
+      "power": 1330
+    },
+    {
+      "name": "Munchill",
+      "power": 1335
+    },
+    {
+      "name": "Tocotoco",
+      "power": 1340
+    },
+    {
+      "name": "Pengullet",
+      "power": 1350
+    },
+    {
+      "name": "Jolthog Cryst",
+      "power": 1360
+    },
+    {
+      "name": "Jolthog",
+      "power": 1370
+    },
+    {
+      "name": "Depresso",
+      "power": 1380
+    },
+    {
+      "name": "Jelliette",
+      "power": 1385
+    },
+    {
+      "name": "Hoocrates",
+      "power": 1390
+    },
+    {
+      "name": "Jellroy",
+      "power": 1395
+    },
+    {
+      "name": "Foxparks",
+      "power": 1400
+    },
+    {
+      "name": "Flambelle",
+      "power": 1405
+    },
+    {
+      "name": "Sparkit",
+      "power": 1410
+    },
+    {
+      "name": "Hangyu",
+      "power": 1420
+    },
+    {
+      "name": "Hangyu Cryst",
+      "power": 1422
+    },
+    {
+      "name": "Lifmunk",
+      "power": 1430
+    },
+    {
+      "name": "Mau Cryst",
+      "power": 1440
+    },
+    {
+      "name": "Herbil",
+      "power": 1445
+    },
+    {
+      "name": "Cremis",
+      "power": 1455
+    },
+    {
+      "name": "Cattiva",
+      "power": 1460
+    },
+    {
+      "name": "Lamball",
+      "power": 1470
+    },
+    {
+      "name": "Mau",
+      "power": 1480
+    },
+    {
+      "name": "Teafant",
+      "power": 1490
+    },
+    {
+      "name": "Chikipi",
+      "power": 1500
+    }
+  ]
+}
