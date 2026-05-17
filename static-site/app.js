@@ -1,67 +1,129 @@
 import { buildComboMap, calculateChild, combinationsForTarget, findPal } from "./logic.js";
+import { findGuidePage, normalizePath, resolveSeoForPath } from "./seo-routes.js";
+import { resolvePathContent } from "./route-content.js";
 
-const $ = (id) => document.getElementById(id);
-const parentASelect = $("parentA");
-const parentBSelect = $("parentB");
-const targetChildSelect = $("targetChild");
-const calculateBtn = $("calculateBtn");
-const swapBtn = $("swapBtn");
-const pickForSelect = $("pickFor");
-const findCombosBtn = $("findCombosBtn");
-const resultDiv = $("result");
-const combosDiv = $("combos");
-const statsBar = $("statsBar");
-const themeToggleBtn = $("themeToggleBtn");
-const palSearch = $("palSearch");
-const palGrid = $("palGrid");
-const confettiLayer = $("confettiLayer");
-const databasePanelTitle = $("databasePanelTitle");
-const databasePanelBody = $("databasePanelBody");
-const routeBadge = $("routeBadge");
-const routeSubtitle = $("routeSubtitle");
-const heroStrip = $("heroStrip");
+const parentASelect = document.getElementById("parentA");
+const parentBSelect = document.getElementById("parentB");
+const targetChildSelect = document.getElementById("targetChild");
+const calculateBtn = document.getElementById("calculateBtn");
+const swapBtn = document.getElementById("swapBtn");
+const pickForSelect = document.getElementById("pickFor");
+const findCombosBtn = document.getElementById("findCombosBtn");
+const resultDiv = document.getElementById("result");
+const combosDiv = document.getElementById("combos");
+const statsBar = document.getElementById("statsBar");
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+const palSearch = document.getElementById("palSearch");
+const palGrid = document.getElementById("palGrid");
+const kidBg = document.getElementById("kidBg");
+const confettiLayer = document.getElementById("confettiLayer");
+const databasePanelTitle = document.getElementById("databasePanelTitle");
+const databasePanelBody = document.getElementById("databasePanelBody");
 const navButtons = document.querySelectorAll("[data-view]");
+const routeBadge = document.getElementById("routeBadge");
+const routeSubtitle = document.getElementById("routeSubtitle");
+const databaseCard = document.getElementById("databaseCard");
+const arenaCard = document.getElementById("arenaCard");
+const reverseCard = document.getElementById("reverseCard");
+const palBoxCard = document.getElementById("palBoxCard");
+const heroStrip = document.getElementById("heroStrip");
+const siteH1 = document.getElementById("siteH1");
+const visibleBreadcrumb = document.getElementById("visibleBreadcrumb");
+const aboutSiteHeading = document.getElementById("aboutSiteHeading");
+const aboutSiteBody = document.getElementById("aboutSiteBody");
+const pathToView = {
+  "/": "breeding",
+  "/breeding-calculator": "breeding",
+  "/palworld-breeding-calculator": "breeding",
+  "/pals": "pals",
+  "/map": "map",
+  "/maps": "map",
+  "/items": "items",
+  "/technology": "technology",
+  "/capture-rate": "capture",
+  "/palworld-breeding-combinations": "breeding",
+  "/palworld-capture-rate-calculator": "capture"
+};
+const viewMeta = {
+  breeding: {
+    badge: "Breeding View",
+    subtitle: "Use parent pair logic and reverse lookup to discover strong child outcomes.",
+    focusCardId: "arenaCard"
+  },
+  pals: {
+    badge: "Pals View",
+    subtitle: "Browse pal power references and compare top options for breeding routes.",
+    focusCardId: "databaseCard"
+  },
+  map: {
+    badge: "Map View",
+    subtitle: "See location-focused data to find pals faster and speed up breeding setup.",
+    focusCardId: "databaseCard"
+  },
+  items: {
+    badge: "Items View",
+    subtitle: "Check item sources and farming notes to support your breeding progression.",
+    focusCardId: "databaseCard"
+  },
+  technology: {
+    badge: "Technology View",
+    subtitle: "Track key unlock milestones needed for incubation, breeding, and production.",
+    focusCardId: "databaseCard"
+  },
+  capture: {
+    badge: "Capture View",
+    subtitle: "Use capture estimates and easier targets to plan parent farming efficiently.",
+    focusCardId: "reverseCard"
+  }
+};
+const routeIconSeeds = {
+  breeding: ["anubis", "jetragon", "frostallion", "blazamut", "suzaku", "jormuntide", "necromus"],
+  pals: ["lamball", "cattiva", "chikipi", "lifmunk", "tanzee", "foxparks", "rooby"],
+  map: ["eikthyrdeer", "pengullet", "daedream", "pyrin", "anubis", "jetragon", "suzaku"],
+  items: ["lamball", "foxparks", "rooby", "frostallion", "jolthog", "pengullet", "anubis"],
+  technology: ["lifmunk", "tanzee", "eikthyrdeer", "jormuntide", "paladius", "necromus", "jetragon"],
+  capture: ["jetragon", "frostallion", "necromus", "paladius", "jormuntide", "anubis", "suzaku"]
+};
+
+let appData = {
+  pals: [],
+  pal_locations: {},
+  items: [],
+  technologies: [],
+  special_combos_count: 0
+};
+let specialCombosMap = {};
 
 const PAL_GRID_INITIAL = 48;
-const MAP_ROWS_INITIAL = 60;
-const PAL_PLACEHOLDER = "assets/pals/placeholder.svg";
-
-const STATIC_ITEMS = [
-  { item: "Wool", source: "Lamball", notes: "Ranch / drops" },
-  { item: "Leather", source: "Foxparks", notes: "Frequent drop" },
-  { item: "Flame Organ", source: "Rooby", notes: "Fire pal material" },
-  { item: "Ice Organ", source: "Frostallion", notes: "Late-game material" },
-  { item: "Electric Organ", source: "Jolthog", notes: "Electric crafting" },
-];
-
-const STATIC_TECH = [
-  { level: 2, name: "Pal Sphere", cost: "1 Tech Point" },
-  { level: 6, name: "Egg Incubator", cost: "2 Tech Points" },
-  { level: 7, name: "Breeding Farm", cost: "2 Tech Points" },
-  { level: 20, name: "Electric Kitchen", cost: "3 Tech Points" },
-];
-
-const viewMeta = {
-  breeding: { badge: "Breeding Calculator", focus: "arenaCard" },
-  pals: { badge: "Pals Database", focus: "databaseCard" },
-  map: { badge: "Map Reference", focus: "databaseCard" },
-  items: { badge: "Items", focus: "databaseCard" },
-  technology: { badge: "Technology", focus: "databaseCard" },
-  capture: { badge: "Capture Rate", focus: "reverseCard" },
-};
-
-const routeIconSeeds = {
-  breeding: ["anubis", "jetragon", "frostallion", "blazamut", "suzaku"],
-  pals: ["lamball", "cattiva", "chikipi", "foxparks", "rooby"],
-  map: ["eikthyrdeer", "pengullet", "anubis", "jetragon", "suzaku"],
-  items: ["lamball", "foxparks", "rooby", "frostallion", "jolthog"],
-  technology: ["lifmunk", "tanzee", "eikthyrdeer", "jormuntide", "paladius"],
-  capture: ["jetragon", "frostallion", "necromus", "paladius", "anubis"],
-};
-
-let appData = { pals: [], pal_locations: {}, special_combos: {}, special_combos_count: 0 };
-let combinationsRequestId = 0;
+let locationsLoaded = false;
+let locationsLoading = null;
 let lastHeroView = "";
+let combinationsRequestId = 0;
+const MAP_ROWS_INITIAL = 60;
+const serverRouteIntro =
+  document.body.dataset.routeIntro?.trim() ||
+  document.getElementById("routeSubtitle")?.textContent?.trim() ||
+  "";
+
+function getPalAltText(palName) {
+  return `${palName} Palworld breeding combination`;
+}
+
+function palSlug(palName) {
+  return palName
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getPalImageUrl(palName) {
+  return `/assets/pals/${palSlug(palName)}.webp`;
+}
+
+const PAL_PLACEHOLDER = "/assets/pals/placeholder.svg";
+let calculateRequestId = 0;
+let parentCalcTimer = null;
 
 function escapeHtml(text) {
   return String(text)
@@ -71,210 +133,527 @@ function escapeHtml(text) {
     .replace(/>/g, "&gt;");
 }
 
-function palSlug(name) {
-  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
-
-function getPalImageUrl(name) {
-  return `assets/pals/${palSlug(name)}.webp`;
-}
-
-function restoreRouteIntro() {
-  const intro = document.body.dataset.routeIntro?.trim();
-  if (intro && routeSubtitle) routeSubtitle.textContent = intro;
-}
-
-function resolveView() {
-  const hash = (location.hash || "#breeding").replace(/^#/, "");
-  return viewMeta[hash] ? hash : "breeding";
-}
-
-function populateSelect(select) {
-  const frag = document.createDocumentFragment();
-  for (const pal of appData.pals) {
-    const o = document.createElement("option");
-    o.value = pal.name;
-    o.textContent = pal.name;
-    frag.appendChild(o);
+async function apiFetch(url, options) {
+  const path = url.split("?")[0];
+  if (path === "/api/bootstrap") {
+    return {
+      pals: appData.pals,
+      items: appData.items,
+      technologies: appData.technologies,
+      special_combos_count: appData.special_combos_count
+    };
   }
-  select.replaceChildren(frag);
+  if (path === "/api/locations") {
+    return appData.pal_locations;
+  }
+  if (path === "/api/calculate") {
+    const body = JSON.parse(options?.body || "{}");
+    const calc = calculateChild(appData.pals, specialCombosMap, body.parent_a, body.parent_b);
+    if (!calc) {
+      throw new Error("Invalid parent names");
+    }
+    return {
+      child: calc.child,
+      method: calc.method,
+      distance: calc.distance
+    };
+  }
+  const comboMatch = path.match(/^\/api\/combinations\/(.+)$/);
+  if (comboMatch) {
+    const target = decodeURIComponent(comboMatch[1]);
+    return combinationsForTarget(appData.pals, specialCombosMap, target);
+  }
+  const captureMatch = path.match(/^\/api\/capture\/(.+)$/);
+  if (captureMatch) {
+    const targetName = decodeURIComponent(captureMatch[1]);
+    const targetPal = appData.pals.find((pal) => pal.name === targetName);
+    if (!targetPal) {
+      throw new Error("Unknown target pal");
+    }
+    let estimatePercent = Math.round((1600 - targetPal.power) / 16);
+    estimatePercent = Math.max(4, Math.min(95, estimatePercent));
+    const easierTargets = [...appData.pals].sort((a, b) => a.power - b.power).slice(0, 5);
+    return {
+      target: targetPal.name,
+      estimate_percent: estimatePercent,
+      easier_targets: easierTargets
+    };
+  }
+  throw new Error(`Unknown API route: ${url}`);
 }
 
-function setTheme(name) {
-  document.body.dataset.theme = name;
-  localStorage.setItem("palworldTheme", name);
-  themeToggleBtn.textContent = name === "light" ? "Dark Mode" : "Light Mode";
+function applySeoContent(seo) {
+  if (!seo) {
+    return;
+  }
+  if (siteH1) {
+    siteH1.textContent = seo.h1;
+  }
+  routeBadge.textContent = seo.badge;
+  document.body.dataset.routeIntro = seo.h1Intro;
+  restoreRouteIntro();
+  if (aboutSiteHeading) {
+    aboutSiteHeading.textContent = seo.aboutHeading || "About This Page";
+  }
+  if (aboutSiteBody) {
+    aboutSiteBody.innerHTML = seo.aboutHtml
+      ? seo.aboutHtml
+      : `<p>${escapeHtml(seo.pageDesc)}</p>`;
+  }
+  document.title = seo.title;
+  const canonicalPath = seo.canonical || seo.path || normalizePath(location.pathname);
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.appendChild(canonical);
+  }
+  canonical.href = `${location.origin}${canonicalPath}`;
+  let metaDesc = document.querySelector('meta[name="description"]');
+  if (!metaDesc) {
+    metaDesc = document.createElement("meta");
+    metaDesc.name = "description";
+    document.head.appendChild(metaDesc);
+  }
+  metaDesc.content = seo.pageDesc.slice(0, 160);
+  if (visibleBreadcrumb) {
+    if (normalizePath(seo.path) === "/") {
+      visibleBreadcrumb.innerHTML = `<span>Home</span>`;
+    } else {
+      visibleBreadcrumb.innerHTML = `<a href="/">Home</a> / <span>${escapeHtml(seo.badge)}</span>`;
+    }
+  }
 }
 
-function renderStats() {
-  const pairs = (appData.pals.length * (appData.pals.length + 1)) / 2;
+function syncRouteFromPath() {
+  const path = normalizePath(location.pathname);
+  const guide = findGuidePage(path);
+  if (guide) {
+    applySeoContent({
+      path,
+      title: guide.title,
+      h1: guide.heading,
+      badge: guide.heading,
+      h1Intro: guide.heading,
+      pageDesc: guide.heading,
+      aboutHeading: guide.heading,
+      aboutHtml: guide.bodyHtml
+    });
+    return;
+  }
+  const dynamic = resolvePathContent(path, appData, specialCombosMap);
+  if (dynamic) {
+    applySeoContent({ path, ...dynamic });
+    if (dynamic.prefillTarget && targetChildSelect) {
+      targetChildSelect.value = dynamic.prefillTarget;
+    }
+    if (dynamic.prefillParents?.length === 2) {
+      parentASelect.value = dynamic.prefillParents[0];
+      parentBSelect.value = dynamic.prefillParents[1];
+    }
+    return;
+  }
+  const seo = resolveSeoForPath(path);
+  if (seo) {
+    applySeoContent(seo);
+  }
+}
+
+function getParentNames() {
+  const parentA = parentASelect.value?.trim();
+  const parentB = parentBSelect.value?.trim();
+  return { parentA, parentB };
+}
+
+function showResultError(message) {
+  resultDiv.innerHTML = `<div class="result-error">${escapeHtml(message)}</div>`;
+}
+
+function scheduleRenderResult(options = {}) {
+  clearTimeout(parentCalcTimer);
+  parentCalcTimer = setTimeout(() => {
+    renderResult(options);
+  }, 100);
+}
+
+function buildPalChip(palName) {
+  return `
+    <div class="pal-chip">
+      <img class="pal-image" src="${getPalImageUrl(palName)}" alt="${getPalAltText(palName)}" loading="lazy"
+        onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
+      <span>${palName}</span>
+    </div>
+  `;
+}
+
+function buildArenaCard(palName, role) {
+  const roleClass = role === "child" ? " child" : "";
+  return `
+    <div class="arena-card${roleClass}">
+      <img src="${getPalImageUrl(palName)}" alt="${getPalAltText(palName)}" loading="lazy"
+        onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
+      <div class="arena-name">${palName}</div>
+    </div>
+  `;
+}
+
+function populateSelect(selectEl) {
+  const fragment = document.createDocumentFragment();
+  for (const pal of appData.pals) {
+    const option = document.createElement("option");
+    option.value = pal.name;
+    option.textContent = pal.name;
+    fragment.appendChild(option);
+  }
+  selectEl.replaceChildren(fragment);
+}
+
+function setTheme(themeName) {
+  document.body.dataset.theme = themeName;
+  localStorage.setItem("palworldTheme", themeName);
+  themeToggleBtn.textContent = themeName === "light" ? "Dark Mode" : "Light Mode";
+}
+
+function renderStatsBar() {
+  const totalPairs = (appData.pals.length * (appData.pals.length + 1)) / 2;
   statsBar.innerHTML = `
     <span class="stat-pill">Pals: <strong>${appData.pals.length}</strong></span>
     <span class="stat-pill">Special combos: <strong>${appData.special_combos_count}</strong></span>
-    <span class="stat-pill">Pair checks: <strong>${pairs}</strong></span>`;
+    <span class="stat-pill">Parent pair checks: <strong>${totalPairs}</strong></span>
+  `;
 }
 
-function renderHero(view) {
-  if (view === lastHeroView) return;
-  lastHeroView = view;
-  heroStrip.innerHTML = (routeIconSeeds[view] || routeIconSeeds.breeding)
-    .map(
-      (n) =>
-        `<img class="hero-icon" src="assets/pals/${n}.webp" alt="" loading="lazy" onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />`
-    )
-    .join("");
+function celebrateConfetti() {
+  const colors = ["#ff4fd8", "#53e8ff", "#fff15f", "#7dff7a", "#ff8c42"];
+  const pieces = 36;
+  const rect = resultDiv.getBoundingClientRect();
+  const startX = rect.left + rect.width / 2;
+  const startY = rect.top + 28;
+
+  for (let i = 0; i < pieces; i += 1) {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    piece.style.left = `${startX - 160 + Math.random() * 320}px`;
+    piece.style.top = `${startY}px`;
+    piece.style.background = colors[i % colors.length];
+    piece.style.width = `${7 + Math.random() * 7}px`;
+    piece.style.height = `${10 + Math.random() * 9}px`;
+    piece.style.animationDuration = `${700 + Math.random() * 700}ms`;
+    piece.style.animationDelay = `${Math.random() * 120}ms`;
+    confettiLayer.appendChild(piece);
+    setTimeout(() => piece.remove(), 1700);
+  }
 }
 
-function renderDatabasePanel(view) {
+async function ensureLocations() {
+  if (locationsLoaded) {
+    return;
+  }
+  if (locationsLoading) {
+    await locationsLoading;
+    return;
+  }
+  locationsLoading = apiFetch("/api/locations").then((data) => {
+    appData.pal_locations = data;
+    locationsLoaded = true;
+  });
+  await locationsLoading;
+  locationsLoading = null;
+}
+
+function restoreRouteIntro() {
+  if (serverRouteIntro && routeSubtitle) {
+    routeSubtitle.textContent = serverRouteIntro;
+  }
+}
+
+async function renderDatabasePanel(view) {
   const meta = viewMeta[view] || viewMeta.breeding;
   routeBadge.textContent = meta.badge;
   restoreRouteIntro();
-  renderHero(view);
-  navButtons.forEach((b) => b.classList.toggle("is-active", b.dataset.view === view));
+  document.body.dataset.routeView = view;
+  if (view !== lastHeroView) {
+    renderHeroStrip(view);
+    lastHeroView = view;
+  }
+  navButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.view === view);
+  });
 
   if (view === "pals") {
-    const top = [...appData.pals].sort((a, b) => b.power - a.power).slice(0, 3);
+    const highest = [...appData.pals].sort((a, b) => b.power - a.power).slice(0, 3);
     databasePanelTitle.textContent = "Pals";
-    databasePanelBody.innerHTML = `Total: <strong>${appData.pals.length}</strong>. Top power: ${top
-      .map((p) => `<strong>${escapeHtml(p.name)}</strong> (${p.power})`)
+    databasePanelBody.innerHTML = `Total pals in current dataset: <strong>${appData.pals.length}</strong>.<br />Highest breeding-power pals: ${highest
+      .map((pal) => `<strong>${pal.name}</strong> (${pal.power})`)
       .join(", ")}.`;
     return;
   }
 
   if (view === "map") {
     databasePanelTitle.textContent = "Map";
+    databasePanelBody.innerHTML = `<div class="muted">Loading map data…</div>`;
+    await ensureLocations();
     const entries = appData.pals
       .map((pal) => {
-        const loc = appData.pal_locations[pal.name];
+        const location = appData.pal_locations[pal.name];
         return {
           name: pal.name,
-          area: loc?.area || "Palpagos Island",
-          coords: loc?.coords || "—",
+          area: location?.area || "Palpagos Island (overworld)",
+          coords: location?.coords || "—"
         };
       })
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .slice(0, MAP_ROWS_INITIAL);
+      .sort((a, b) => a.name.localeCompare(b.name));
+    const visible = entries.slice(0, MAP_ROWS_INITIAL);
+    const rows = visible
+      .map(
+        (entry) =>
+          `<tr><td>${escapeHtml(entry.name)}</td><td>${escapeHtml(entry.area)}</td><td>${escapeHtml(entry.coords)}</td></tr>`
+      )
+      .join("");
+    const more =
+      entries.length > visible.length
+        ? `<p class="muted">Showing ${visible.length} of ${entries.length} rows. Search in Pal Box for a specific Pal.</p>`
+        : "";
     databasePanelBody.innerHTML = `
-      <table class="database-table"><thead><tr><th>Pal</th><th>Area</th><th>Coords</th></tr></thead>
-      <tbody>${entries
-        .map(
-          (e) =>
-            `<tr><td>${escapeHtml(e.name)}</td><td>${escapeHtml(e.area)}</td><td>${escapeHtml(e.coords)}</td></tr>`
-        )
-        .join("")}</tbody></table>`;
+      <div class="database-caption">Spawn regions and map coordinates.</div>
+      <table class="database-table">
+        <thead><tr><th>Pal</th><th>Area</th><th>Coordinates</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      ${more}
+    `;
     return;
   }
 
   if (view === "items") {
     databasePanelTitle.textContent = "Items";
-    databasePanelBody.innerHTML = `<table class="database-table"><thead><tr><th>Item</th><th>Source</th><th>Notes</th></tr></thead><tbody>${STATIC_ITEMS.map(
-      (i) => `<tr><td>${i.item}</td><td>${i.source}</td><td>${i.notes}</td></tr>`
-    ).join("")}</tbody></table>`;
+    const rows = appData.items
+      .map((item) => `<tr><td>${item.item}</td><td>${item.source}</td><td>${item.notes}</td></tr>`)
+      .join("");
+    databasePanelBody.innerHTML = `
+      <div class="database-caption">Common crafting and breeding-related materials.</div>
+      <table class="database-table">
+        <thead><tr><th>Item</th><th>Source</th><th>Notes</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
     return;
   }
 
   if (view === "technology") {
     databasePanelTitle.textContent = "Technology";
-    databasePanelBody.innerHTML = `<table class="database-table"><thead><tr><th>Level</th><th>Name</th><th>Cost</th></tr></thead><tbody>${STATIC_TECH.map(
-      (t) => `<tr><td>${t.level}</td><td>${t.name}</td><td>${t.cost}</td></tr>`
-    ).join("")}</tbody></table>`;
+    const rows = [...appData.technologies]
+      .sort((a, b) => a.level - b.level)
+      .map((tech) => `<tr><td>${tech.level}</td><td>${tech.name}</td><td>${tech.cost}</td></tr>`)
+      .join("");
+    databasePanelBody.innerHTML = `
+      <div class="database-caption">Starter technology milestones for progression.</div>
+      <table class="database-table">
+        <thead><tr><th>Level</th><th>Technology</th><th>Cost</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
     return;
   }
 
   if (view === "capture") {
-    const target = findPal(appData.pals, targetChildSelect.value) || appData.pals[0];
-    let est = Math.round((1600 - target.power) / 16);
-    est = Math.max(4, Math.min(95, est));
-    const easier = [...appData.pals].sort((a, b) => a.power - b.power).slice(0, 5);
+    const targetName = targetChildSelect.value || appData.pals[0].name;
+    const capture = await apiFetch(`/api/capture/${encodeURIComponent(targetName)}`);
+    const list = capture.easier_targets.map((pal) => `<li>${pal.name} (${pal.power})</li>`).join("");
     databasePanelTitle.textContent = "Capture Rate";
     databasePanelBody.innerHTML = `
-      <p>Estimate for <strong>${escapeHtml(target.name)}</strong>: <strong>${est}%</strong></p>
-      <ul>${easier.map((p) => `<li>${escapeHtml(p.name)} (${p.power})</li>`).join("")}</ul>`;
+      <div class="database-caption">
+        Estimated capture chance for <strong>${capture.target}</strong>: <strong>${capture.estimate_percent}%</strong>
+      </div>
+      <div class="database-caption">Easier capture targets in this roster:</div>
+      <ul class="database-list">${list}</ul>
+    `;
     return;
   }
 
-  databasePanelTitle.textContent = "Breeding";
-  databasePanelBody.innerHTML = `Calculator ready. Special combos: <strong>${appData.special_combos_count}</strong>.`;
+  databasePanelTitle.textContent = "Breeding Calculator";
+  databasePanelBody.innerHTML = `Breeding calculator is active. Current special combinations: <strong>${appData.special_combos_count}</strong>.`;
 }
 
-function arenaCard(name, role) {
-  return `<div class="arena-card${role === "child" ? " child" : ""}">
-    <img src="${getPalImageUrl(name)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
-    <div class="arena-name">${escapeHtml(name)}</div></div>`;
+function renderHeroStrip(view) {
+  const icons = (routeIconSeeds[view] || routeIconSeeds.breeding).slice(0, 5);
+  heroStrip.innerHTML = icons
+    .map(
+      (name) => `
+      <img class="hero-icon" src="/assets/pals/${name}.webp" alt="${name}" loading="lazy"
+        onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
+    `
+    )
+    .join("");
 }
 
-function renderResult(celebrate = false) {
-  const a = parentASelect.value;
-  const b = parentBSelect.value;
-  if (!a || !b) {
-    resultDiv.innerHTML = `<div class="result-error">Choose both parents.</div>`;
-    return;
+function resolveViewFromPath(pathname) {
+  const normalized = normalizePath(pathname);
+  if (pathToView[normalized]) {
+    return pathToView[normalized];
   }
-  if (a === b) {
-    resultDiv.innerHTML = `<div class="result-error">Parents must be different.</div>`;
-    return;
+  if (normalized.startsWith("/pal/")) {
+    return "pals";
   }
-  const calc = calculateChild(appData.pals, appData.special_combos, a, b);
-  if (!calc) {
-    resultDiv.innerHTML = `<div class="result-error">Invalid parents.</div>`;
-    return;
+  if (
+    normalized.startsWith("/combo/") ||
+    normalized.startsWith("/combos/") ||
+    normalized.startsWith("/how-to-breed/")
+  ) {
+    return "breeding";
   }
-  const dist =
-    calc.distance != null ? `<div class="muted">Power distance: ${calc.distance}</div>` : "";
-  resultDiv.innerHTML = `
-    <div class="arena">
-      ${arenaCard(a, "parent")}<span class="flow-symbol">+</span>
-      ${arenaCard(b, "parent")}<span class="flow-symbol">=</span>
-      ${arenaCard(calc.child.name, "child")}
-    </div>
-    <div class="muted">${escapeHtml(calc.method)}</div>${dist}`;
-  if (celebrate) celebrateConfetti();
+  if (normalized.startsWith("/guides/") || findGuidePage(normalized)) {
+    return "breeding";
+  }
+  return "breeding";
 }
 
-function renderCombinations() {
-  const requestId = ++combinationsRequestId;
-  const targetName = targetChildSelect.value;
-  combosDiv.innerHTML = `<span class="muted">Searching…</span>`;
-  findCombosBtn.disabled = true;
-  setTimeout(() => {
-    if (requestId !== combinationsRequestId) return;
-    const pairs = combinationsForTarget(appData.pals, appData.special_combos, targetName);
-    if (!pairs.length) {
-      combosDiv.innerHTML = `<span class="muted">No combinations found.</span>`;
-      findCombosBtn.disabled = false;
+function focusViewCard(view) {
+  const meta = viewMeta[view] || viewMeta.breeding;
+  const target = document.getElementById(meta.focusCardId);
+  if (!target) {
+    return;
+  }
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function renderResult(options = {}) {
+  const { celebrate = false } = options;
+  const { parentA, parentB } = getParentNames();
+
+  if (!parentA || !parentB) {
+    showResultError("Choose both Parent A and Parent B.");
+    return;
+  }
+
+  if (parentA === parentB) {
+    showResultError("Parent A and Parent B must be different Pals.");
+    return;
+  }
+
+  const requestId = ++calculateRequestId;
+  calculateBtn.disabled = true;
+  resultDiv.innerHTML = `<div class="muted">Calculating ${escapeHtml(parentA)} + ${escapeHtml(parentB)}…</div>`;
+
+  try {
+    const calc = await apiFetch("/api/calculate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ parent_a: parentA, parent_b: parentB })
+    });
+
+    if (requestId !== calculateRequestId) {
       return;
     }
+
+    const details =
+      typeof calc.distance === "number"
+        ? `<div class="muted">Closest power distance: ${calc.distance}</div>`
+        : "";
+
+    resultDiv.innerHTML = `
+      <div class="arena">
+        ${buildArenaCard(parentA, "parent")}
+        <span class="flow-symbol">+</span>
+        ${buildArenaCard(parentB, "parent")}
+        <span class="flow-symbol">=</span>
+        ${buildArenaCard(calc.child.name, "child")}
+      </div>
+      <div class="muted">${escapeHtml(calc.method)}</div>
+      ${details}
+    `;
+
+    if (celebrate) {
+      celebrateConfetti();
+    }
+  } catch (error) {
+    if (requestId !== calculateRequestId) {
+      return;
+    }
+    console.error(error);
+    showResultError(
+      error.message?.includes("Invalid parent")
+        ? "Could not find those Pals. Refresh the page or pick names from the list."
+        : `Calculation failed: ${error.message}`
+    );
+  } finally {
+    if (requestId === calculateRequestId) {
+      calculateBtn.disabled = false;
+    }
+  }
+}
+
+async function renderCombinations() {
+  const requestId = ++combinationsRequestId;
+  const targetName = targetChildSelect.value;
+  if (!targetName) {
+    combosDiv.innerHTML = `<span class="muted">Select a target Pal first.</span>`;
+    return;
+  }
+  combosDiv.innerHTML = `<span class="muted">Finding combinations for ${escapeHtml(targetName)}…</span>`;
+  findCombosBtn.disabled = true;
+  try {
+    const pairs = await apiFetch(`/api/combinations/${encodeURIComponent(targetName)}`);
+    if (requestId !== combinationsRequestId) {
+      return;
+    }
+    if (!pairs.length) {
+      combosDiv.innerHTML = `<span class="muted">No combinations found for ${escapeHtml(targetName)}.</span>`;
+      return;
+    }
+
+    const items = pairs
+      .slice(0, 80)
+      .map(
+        (pair) => `
+        <li class="combo-item">
+          <div class="combo-pair"><strong>${escapeHtml(pair.a)}</strong><span class="flow-symbol">+</span><strong>${escapeHtml(pair.b)}</strong></div>
+          <span class="muted">(${escapeHtml(pair.method)})</span>
+        </li>
+      `
+      )
+      .join("");
+
+    const more =
+      pairs.length > 80 ? `<p class="muted">Showing 80 of ${pairs.length} combinations.</p>` : "";
+
     combosDiv.innerHTML = `
-      <p>Found <strong>${pairs.length}</strong> for <strong>${escapeHtml(targetName)}</strong></p>
-      <ul class="combo-list">${pairs
-        .slice(0, 80)
-        .map(
-          (p) =>
-            `<li class="combo-item"><strong>${escapeHtml(p.a)}</strong> + <strong>${escapeHtml(
-              p.b
-            )}</strong> <span class="muted">(${escapeHtml(p.method)})</span></li>`
-        )
-        .join("")}</ul>`;
-    findCombosBtn.disabled = false;
-  }, 30);
+    <div class="target-row"><span>Found <strong>${pairs.length}</strong> combinations for <strong>${escapeHtml(targetName)}</strong></span></div>
+    <ul class="combo-list">${items}</ul>
+    ${more}
+  `;
+  } catch (error) {
+    if (requestId === combinationsRequestId) {
+      combosDiv.innerHTML = `<span class="muted">Could not load combinations: ${escapeHtml(error.message)}</span>`;
+    }
+  } finally {
+    if (requestId === combinationsRequestId) {
+      findCombosBtn.disabled = false;
+    }
+  }
 }
 
 function renderPalGrid(showAll = false) {
-  const q = palSearch.value.trim().toLowerCase();
-  const filtered = appData.pals.filter((p) => p.name.toLowerCase().includes(q));
-  const visible = filtered.slice(0, showAll || q ? filtered.length : PAL_GRID_INITIAL);
+  const query = String(palSearch.value || "").trim().toLowerCase();
+  const filtered = appData.pals.filter((pal) => pal.name.toLowerCase().includes(query));
+  const limit = showAll || query ? filtered.length : PAL_GRID_INITIAL;
+  const visible = filtered.slice(0, limit);
+
   document.querySelector(".load-more-pals")?.remove();
   palGrid.innerHTML = visible
     .map(
       (pal) => `
-    <button type="button" class="pal-grid-card" data-pal-name="${escapeHtml(pal.name)}">
-      <img src="${getPalImageUrl(pal.name)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
-      <div class="pal-grid-name">${escapeHtml(pal.name)}</div>
-      <div class="pal-power">Power ${pal.power}</div>
-    </button>`
+      <button class="pal-grid-card" type="button" data-pal-name="${escapeHtml(pal.name)}">
+        <img src="${getPalImageUrl(pal.name)}" alt="${getPalAltText(pal.name)}" loading="lazy" decoding="async"
+          onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
+        <div class="pal-grid-name">${escapeHtml(pal.name)}</div>
+        <div class="pal-power">Power ${pal.power}</div>
+      </button>
+    `
     )
     .join("");
-  if (!showAll && !q && filtered.length > visible.length) {
+
+  if (!showAll && !query && filtered.length > visible.length) {
     palGrid.insertAdjacentHTML(
       "afterend",
       `<button type="button" class="ghost-btn load-more-pals">Show all ${filtered.length} Pals</button>`
@@ -283,111 +662,207 @@ function renderPalGrid(showAll = false) {
   }
 }
 
-function quickPick(name) {
-  const t = pickForSelect.value;
-  if (t === "parentA") parentASelect.value = name;
-  else if (t === "parentB") parentBSelect.value = name;
-  else targetChildSelect.value = name;
-  renderResult();
-}
-
-function celebrateConfetti() {
-  const colors = ["#ff4fd8", "#53e8ff", "#fff15f", "#7dff7a"];
-  for (let i = 0; i < 24; i += 1) {
-    const p = document.createElement("span");
-    p.className = "confetti-piece";
-    p.style.left = `${40 + Math.random() * 60}%`;
-    p.style.top = "30%";
-    p.style.background = colors[i % colors.length];
-    p.style.animationDuration = `${700 + Math.random() * 500}ms`;
-    confettiLayer.appendChild(p);
-    setTimeout(() => p.remove(), 1500);
+function quickPickPal(palName) {
+  const target = pickForSelect.value;
+  if (target === "parentA") {
+    parentASelect.value = palName;
+    scheduleRenderResult();
+    return;
   }
+  if (target === "parentB") {
+    parentBSelect.value = palName;
+    scheduleRenderResult();
+    return;
+  }
+  targetChildSelect.value = palName;
+  combosDiv.innerHTML = `<span class="muted">Target set to <strong>${escapeHtml(palName)}</strong>. Click <strong>Find Combinations</strong>.</span>`;
 }
 
-function applyQuery() {
-  const params = new URLSearchParams(location.search);
-  const names = new Set(appData.pals.map((p) => p.name));
-  const pick = (raw) => {
-    if (!raw) return null;
-    if (names.has(raw)) return raw;
-    const lower = raw.toLowerCase();
-    for (const n of names) if (n.toLowerCase() === lower) return n;
+function renderKidBackground() {
+  kidBg.innerHTML = "";
+}
+
+function resolvePalName(raw, palNames) {
+  if (!raw) {
     return null;
-  };
-  const a = pick(params.get("parentA"));
-  const b = pick(params.get("parentB"));
-  const t = pick(params.get("target"));
-  if (a) parentASelect.value = a;
-  if (b) parentBSelect.value = b;
-  if (t) targetChildSelect.value = t;
-  return Boolean(t);
+  }
+  if (palNames.has(raw)) {
+    return raw;
+  }
+  const query = raw.toLowerCase();
+  for (const name of palNames) {
+    if (name.toLowerCase() === query) {
+      return name;
+    }
+  }
+  return null;
 }
 
-async function loadData() {
+function applyQueryFromUrl() {
+  const params = new URLSearchParams(globalThis.location.search);
+  const parentA = params.get("parentA") || params.get("parent_a");
+  const parentB = params.get("parentB") || params.get("parent_b");
+  const target = params.get("target") || params.get("child");
+  const palNames = new Set(appData.pals.map((p) => p.name));
+
+  const matchedA = resolvePalName(parentA, palNames);
+  const matchedB = resolvePalName(parentB, palNames);
+  const matchedTarget = resolvePalName(target, palNames);
+  if (matchedA) {
+    parentASelect.value = matchedA;
+  }
+  if (matchedB) {
+    parentBSelect.value = matchedB;
+  }
+  if (matchedTarget) {
+    targetChildSelect.value = matchedTarget;
+  }
+  return { hasTarget: Boolean(matchedTarget) };
+}
+
+async function loadLocalData() {
   const [palsRes, combosRes, locRes] = await Promise.all([
-    fetch("data/pals.json"),
-    fetch("data/special_combos.json"),
-    fetch("data/pal_locations.json"),
+    fetch("/data/pals.json"),
+    fetch("/data/special_combos.json"),
+    fetch("/data/pal_locations.json")
   ]);
   const palsJson = await palsRes.json();
   const combosJson = await combosRes.json();
   const locJson = await locRes.json();
-  return {
-    pals: (palsJson.pals || []).sort((a, b) => a.name.localeCompare(b.name)),
+  const pals = (palsJson.pals || []).sort((a, b) => a.name.localeCompare(b.name));
+  specialCombosMap = buildComboMap(combosJson.combos);
+  appData = {
+    pals,
     pal_locations: locJson.locations || {},
-    special_combos: buildComboMap(combosJson.combos),
-    special_combos_count: combosJson.combos?.length || 0,
+    items: [
+      { item: "Wool", source: "Lamball", notes: "Ranch / drops" },
+      { item: "Leather", source: "Foxparks", notes: "Frequent drop" },
+      { item: "Flame Organ", source: "Rooby", notes: "Fire pal material" },
+      { item: "Ice Organ", source: "Frostallion", notes: "Late-game material" },
+      { item: "Electric Organ", source: "Jolthog", notes: "Electric crafting" },
+      { item: "Ancient Civilization Parts", source: "Alpha bosses", notes: "Boss rewards" },
+      { item: "Pal Fluids", source: "Pengullet", notes: "Water crafting" },
+      { item: "High Quality Pal Oil", source: "Mammorest class", notes: "Advanced recipes" }
+    ],
+    technologies: [
+      { level: 2, name: "Pal Sphere", cost: "1 Tech Point" },
+      { level: 6, name: "Egg Incubator", cost: "2 Tech Points" },
+      { level: 7, name: "Breeding Farm", cost: "2 Tech Points" },
+      { level: 14, name: "Weapon Workbench", cost: "2 Tech Points" },
+      { level: 20, name: "Electric Kitchen", cost: "3 Tech Points" },
+      { level: 26, name: "Production Assembly Line", cost: "3 Tech Points" },
+      { level: 35, name: "Legendary Sphere", cost: "4 Tech Points" },
+      { level: 42, name: "Advanced Production Line", cost: "4 Tech Points" }
+    ],
+    special_combos_count: combosJson.combos?.length || 0
   };
 }
 
 async function bootstrap() {
-  appData = await loadData();
+  await loadLocalData();
+  syncRouteFromPath();
   populateSelect(parentASelect);
   populateSelect(parentBSelect);
   populateSelect(targetChildSelect);
-  parentASelect.value = findPal(appData.pals, "Anubis")?.name || appData.pals[0]?.name;
-  parentBSelect.value = findPal(appData.pals, "Jetragon")?.name || appData.pals[1]?.name;
-  targetChildSelect.value = findPal(appData.pals, "Frostallion")?.name || appData.pals[0]?.name;
-  setTheme(localStorage.getItem("palworldTheme") === "light" ? "light" : "dark");
-  renderStats();
-  const hasTarget = applyQuery();
-  const view = resolveView();
-  renderDatabasePanel(view);
+
+  const { hasTarget } = applyQueryFromUrl();
+  if (!parentASelect.value) {
+    parentASelect.value = "Anubis";
+  }
+  if (!parentBSelect.value) {
+    parentBSelect.value = "Jetragon";
+  }
+  if (!targetChildSelect.value) {
+    targetChildSelect.value = "Frostallion";
+  }
+
+  const savedTheme = localStorage.getItem("palworldTheme");
+  setTheme(savedTheme === "light" ? "light" : "dark");
+
+  renderStatsBar();
+  renderKidBackground();
   renderPalGrid();
-  renderResult();
-  if (hasTarget) renderCombinations();
-  else combosDiv.innerHTML = `<span class="muted">Click <strong>Find Combinations</strong> for reverse lookup.</span>`;
+  const initialView = resolveViewFromPath(globalThis.location.pathname);
+  const panelPromise = renderDatabasePanel(initialView);
+  if (initialView === "map") {
+    await panelPromise;
+  } else {
+    void panelPromise;
+  }
+
+  const runDeferred = () => {
+    void renderResult();
+    if (hasTarget) {
+      void renderCombinations();
+    } else {
+      combosDiv.innerHTML =
+        '<span class="muted">Select a target Pal and click <strong>Find Combinations</strong>.</span>';
+    }
+  };
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(runDeferred, { timeout: 600 });
+  } else {
+    setTimeout(runDeferred, 50);
+  }
+  setTimeout(() => focusViewCard(initialView), 120);
 }
 
-calculateBtn.addEventListener("click", () => renderResult(true));
-swapBtn.addEventListener("click", () => {
-  const t = parentASelect.value;
+calculateBtn.addEventListener("click", async () => renderResult({ celebrate: true }));
+swapBtn.addEventListener("click", async () => {
+  const currentA = parentASelect.value;
   parentASelect.value = parentBSelect.value;
-  parentBSelect.value = t;
-  renderResult(true);
+  parentBSelect.value = currentA;
+  await renderResult({ celebrate: true });
 });
-findCombosBtn.addEventListener("click", renderCombinations);
-themeToggleBtn.addEventListener("click", () =>
-  setTheme(document.body.dataset.theme === "light" ? "dark" : "light")
-);
-navButtons.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    location.hash = btn.dataset.view;
-    renderDatabasePanel(btn.dataset.view);
-    document.getElementById(viewMeta[btn.dataset.view]?.focus || "arenaCard")?.scrollIntoView({
-      behavior: "smooth",
-    });
+findCombosBtn.addEventListener("click", () => renderCombinations());
+themeToggleBtn.addEventListener("click", () => {
+  const nextTheme = document.body.dataset.theme === "light" ? "dark" : "light";
+  setTheme(nextTheme);
+});
+navButtons.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    const view = button.dataset.view;
+    if (button instanceof HTMLAnchorElement) {
+      event.preventDefault();
+      const href = button.getAttribute("href");
+      if (href) {
+        globalThis.history.pushState({}, "", href);
+      }
+    }
+    syncRouteFromPath();
+    renderDatabasePanel(view);
+    focusViewCard(view);
   });
 });
-window.addEventListener("hashchange", () => renderDatabasePanel(resolveView()));
-palSearch.addEventListener("input", () => renderPalGrid());
-palGrid.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-pal-name]");
-  if (btn) quickPick(btn.dataset.palName);
+globalThis.addEventListener("popstate", () => {
+  syncRouteFromPath();
+  const view = resolveViewFromPath(globalThis.location.pathname);
+  renderDatabasePanel(view);
+  focusViewCard(view);
+});
+function onParentSelectUpdate() {
+  scheduleRenderResult();
+}
+
+parentASelect.addEventListener("change", onParentSelectUpdate);
+parentBSelect.addEventListener("change", onParentSelectUpdate);
+parentASelect.addEventListener("input", onParentSelectUpdate);
+parentBSelect.addEventListener("input", onParentSelectUpdate);
+palSearch.addEventListener("input", renderPalGrid);
+palGrid.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-pal-name]");
+  if (!button) {
+    return;
+  }
+  quickPickPal(button.dataset.palName);
 });
 
-bootstrap().catch(() => {
-  resultDiv.innerHTML = `<p class="result-error">Failed to load data. Use a web server or deploy to Netlify.</p>`;
-});
+try {
+  await bootstrap();
+} catch (error) {
+  console.error(error);
+  databasePanelTitle.textContent = "Load Error";
+  databasePanelBody.innerHTML =
+    "Could not load game data. Redeploy the full <code>static-site</code> folder (including <code>data/</code> and <code>assets/</code>) to Netlify.";
+}
+

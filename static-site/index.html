@@ -3,39 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Palworld Breeding Calculator – Free Combos & Reverse Lookup</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Palworld Breeding Calculator – Free Tool, Combos & Reverse Lookup</title>
     <meta
       name="description"
-      content="Free Palworld breeding calculator with parent pair testing, reverse lookup for any Pal, special combos, and 198 Pals. Works instantly in your browser."
+      content="Free Palworld breeding calculator with parent pair testing, reverse lookup for any Pal, combo pages, and guides for Anubis, Jetragon, and legendaries."
     />
-    <link rel="canonical" href="https://palworld-breeding-calculator.us/" />
-    <meta property="og:title" content="Palworld Breeding Calculator" />
-    <meta
-      property="og:description"
-      content="Calculate breeding outcomes and find every parent pair for your target Pal."
-    />
-    <meta property="og:type" content="website" />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body
-    data-route-intro="Our Palworld Breeding Calculator is a complete toolkit for parent pair testing, reverse target lookups, and Pal database browsing. It helps you build structured breeding plans instead of random egg cycles, with routes for rare targets like Anubis, Jetragon, and Frostallion in one responsive interface."
-  >
+  <body data-route-intro="">
     <div id="kidBg" class="kid-bg"></div>
     <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
-    <nav class="top-nav">
+    <div class="top-nav">
       <div class="nav-inner">
-        <div class="brand">Palworld Breeding Calculator</div>
+        <div class="brand">Palworld Database</div>
         <div class="nav-links">
-          <a href="#breeding" class="nav-link-btn" data-view="breeding">Calculator</a>
-          <a href="#pals" class="nav-link-btn" data-view="pals">Pals</a>
-          <a href="#map" class="nav-link-btn" data-view="map">Map</a>
-          <a href="#items" class="nav-link-btn" data-view="items">Items</a>
-          <a href="#technology" class="nav-link-btn" data-view="technology">Technology</a>
-          <a href="#capture" class="nav-link-btn" data-view="capture">Capture</a>
+          <a href="/pals" class="nav-link-btn" data-view="pals">Pals</a>
+          <a href="/map" class="nav-link-btn" data-view="map">Map</a>
+          <a href="/items" class="nav-link-btn" data-view="items">Items</a>
+          <a href="/palworld-breeding-calculator" class="nav-link-btn" data-view="breeding">Breeding Calculator</a>
+          <a href="/technology" class="nav-link-btn" data-view="technology">Technology</a>
         </div>
       </div>
-    </nav>
+    </div>
     <main class="container">
       <header>
         <div id="heroStrip" class="hero-strip"></div>
@@ -45,39 +35,48 @@
             <button id="themeToggleBtn" class="theme-btn" type="button">Toggle Theme</button>
           </div>
         </div>
-        <div id="routeBadge" class="route-badge">Breeding Calculator</div>
+        <div id="routeBadge" class="route-badge">Home</div>
+        <nav id="visibleBreadcrumb" class="visible-breadcrumb" aria-label="Breadcrumb"></nav>
         <p id="routeSubtitle" class="subtitle"></p>
+        <div class="tool-links">
+          <a href="/palworld-breeding-calculator" class="tool-link-btn" data-view="breeding">Breeding Calculator</a>
+          <a href="/pals" class="tool-link-btn" data-view="pals">Pals</a>
+          <a href="/map" class="tool-link-btn" data-view="map">Map</a>
+          <a href="/items" class="tool-link-btn" data-view="items">Items</a>
+          <a href="/capture-rate" class="tool-link-btn" data-view="capture">Capture Rate</a>
+        </div>
         <div id="statsBar" class="stats-bar"></div>
       </header>
 
       <section class="card route-seo-blurb" id="aboutSite">
-        <h2>About This Tool</h2>
-        <p>
-          Palworld Breeding Calculator is a free online database and breeding planner for players who want faster
-          routes to rare Pals and fewer wasted eggs. Select any two parents to predict the child, including special
-          combination outcomes and breeding-power fallbacks. The reverse calculator lists every parent pair that can
-          produce your target Pal so you can compare methods side by side.
-        </p>
+        <h2 id="aboutSiteHeading">About This Tool</h2>
+        <div id="aboutSiteBody"></div>
       </section>
 
       <section id="databaseCard" class="card">
-        <h2 id="databasePanelTitle">Database</h2>
+        <h2 id="databasePanelTitle">Database Panel</h2>
         <div id="databasePanelBody" class="database-panel"></div>
       </section>
 
       <section id="arenaCard" class="card">
         <h2>Breeding Arena</h2>
         <div class="grid">
-          <label>Parent A <select id="parentA"></select></label>
-          <label>Parent B <select id="parentB"></select></label>
+          <label>
+            Parent A
+            <select id="parentA"></select>
+          </label>
+          <label>
+            Parent B
+            <select id="parentB"></select>
+          </label>
         </div>
         <div class="actions">
-          <button id="calculateBtn" type="button">Calculate Child</button>
+          <button id="calculateBtn">Calculate Child</button>
           <button id="swapBtn" class="ghost-btn" type="button">Swap Parents</button>
-          <select id="pickFor" class="pick-for">
-            <option value="parentA">Quick Pick → Parent A</option>
-            <option value="parentB">Quick Pick → Parent B</option>
-            <option value="targetChild">Quick Pick → Target</option>
+          <select id="pickFor" class="pick-for" aria-label="Choose quick pick target">
+            <option value="parentA">Quick Pick -> Parent A</option>
+            <option value="parentB">Quick Pick -> Parent B</option>
+            <option value="targetChild">Quick Pick -> Target Child</option>
           </select>
         </div>
         <div id="result" class="result"></div>
@@ -87,31 +86,81 @@
         <h2>Reverse Calculator</h2>
         <p>Find parent combinations that can produce your target Pal.</p>
         <div class="grid">
-          <label>Target Child <select id="targetChild"></select></label>
+          <label>
+            Target Child
+            <select id="targetChild"></select>
+          </label>
         </div>
-        <button id="findCombosBtn" type="button">Find Combinations</button>
+        <button id="findCombosBtn">Find Combinations</button>
         <div id="combos" class="combos"></div>
       </section>
 
       <section id="palBoxCard" class="card">
         <h2>Pal Box</h2>
-        <label>Search Pal <input id="palSearch" placeholder="e.g. Jetragon" autocomplete="off" /></label>
+        <div class="grid">
+          <label>
+            Search Pal
+            <input id="palSearch" placeholder="Type to filter (e.g. Jetragon)" autocomplete="off" />
+          </label>
+        </div>
         <div id="palGrid" class="pal-grid"></div>
       </section>
 
       <section class="card seo-content">
         <h2>How Palworld Breeding Works</h2>
         <p>
-          Breeding uses special parent pairs and breeding-power averages. Test parents above, then use reverse lookup
-          for legendary targets like Anubis, Jetragon, and Frostallion.
+          Breeding in Palworld uses a combination system where specific parent pairs can produce special
+          children, while regular pairs follow breeding-power rules. This calculator helps you test both
+          approaches quickly and compare outcomes.
         </p>
-        <h3>FAQ</h3>
-        <p><strong>How do I breed Anubis?</strong> Set Frostallion or use reverse lookup with target Anubis.</p>
-        <p><strong>Does this work offline?</strong> After first load, data is cached by your browser.</p>
-        <p><strong>Share a combo?</strong> Use <code>?parentA=Anubis&amp;parentB=Jetragon&amp;target=Frostallion</code> in the URL.</p>
+        <h3>What You Can Do</h3>
+        <ul>
+          <li>Calculate child results from two selected parents.</li>
+          <li>Find all parent combinations for a chosen target Pal.</li>
+          <li>Check map locations, item sources, and technology milestones.</li>
+          <li>Estimate capture-rate difficulty by Pal power ranking.</li>
+        </ul>
+        <h3>People Also Ask</h3>
+        <p><strong>How do I breed Anubis?</strong> Use the reverse calculator and <a href="/fastest-anubis-breed">fastest Anubis breed guide</a> to compare parent pairs.</p>
+        <p><strong>How do I find best breeding combos?</strong> Start with the Reverse Calculator, select your target Pal, and compare all listed parent pairs and method types.</p>
+        <p><strong>Can legendary pals breed?</strong> Yes. Legendary Pals breed in a Breeding Farm but often need long parent chains and special combinations.</p>
+        <p><strong>Does gender matter?</strong> Gender does not change the predicted child in standard breeding math; parent pair and breeding power matter more.</p>
+        <p><strong>Why is breeding not working?</strong> See our <a href="/guides/breeding-not-working">breeding troubleshooting guide</a> — check Breeding Farm setup, cake in the feed box, and valid parent pairs.</p>
+        <p><strong>Best early game breeding combo?</strong> See our <a href="/best-early-game-breeding-combo">early game combo guide</a> for easy parent routes.</p>
+        <p><strong>Fastest flying mount breeding?</strong> Use the <a href="/fastest-flying-mount-breeding">Jetragon breeding guide</a> and reverse lookup.</p>
+        <p><strong>Can I use this on mobile?</strong> Yes. The interface is responsive for quick breeding checks on the go.</p>
+        <h3>Ranking Guides &amp; Comparisons</h3>
+        <ul>
+          <li><a href="/how-to-breed/anubis">How to Breed Anubis</a></li>
+          <li><a href="/combos/anubis">Anubis Combinations</a></li>
+          <li><a href="/guides/breeding-not-working">Breeding Not Working</a></li>
+          <li><a href="/fastest-anubis-breed">Fastest Anubis Breed</a></li>
+          <li><a href="/legendary-breeding">Legendary Breeding Guide</a></li>
+          <li><a href="/best-early-game-breeding-combo">Best Early Game Combos</a></li>
+          <li><a href="/egg-incubation-guide">Egg Incubation Guide</a></li>
+          <li><a href="/anubis-vs-lyleen">Anubis vs Lyleen</a></li>
+          <li><a href="/best-mining-pal-breeding">Best Mining Pal Breeding</a></li>
+          <li><a href="/fastest-flying-mount-breeding">Fastest Flying Mount Breeding</a></li>
+          <li><a href="/guides/best-breeding-combos">Best Breeding Combos</a></li>
+          <li><a href="/guides/capture-rate-explained">Capture Rate Explained</a></li>
+          <li><a href="/palworld-breeding-calculator">Palworld Breeding Calculator Online</a></li>
+          <li><a href="/palworld-breeding-combinations">Palworld Breeding Combinations</a></li>
+        </ul>
+        <h3>Pal Pages</h3>
+        <ul>
+          <li><a href="/pal/anubis">Anubis page</a></li>
+          <li><a href="/pal/jetragon">Jetragon page</a></li>
+          <li><a href="/pal/frostallion">Frostallion page</a></li>
+        </ul>
+        <h3>Combo Pages</h3>
+        <ul>
+          <li><a href="/combo/anubis/jetragon">Anubis + Jetragon</a></li>
+          <li><a href="/combo/necromus/paladius">Necromus + Paladius</a></li>
+          <li><a href="/combo/blazamut/suzaku">Blazamut + Suzaku</a></li>
+        </ul>
       </section>
     </main>
 
-    <script type="module" src="app.js"></script>
+    <script type="module" src="/app.js"></script>
   </body>
 </html>
