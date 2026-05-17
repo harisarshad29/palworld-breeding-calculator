@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Palworld Breeding Calculator – Free Combos & Reverse Lookup</title>
+    <meta
+      name="description"
+      content="Free Palworld breeding calculator with parent pair testing, reverse lookup for any Pal, special combos, and 198 Pals. Works instantly in your browser."
+    />
+    <link rel="canonical" href="https://palworld-breeding-calculator.us/" />
+    <meta property="og:title" content="Palworld Breeding Calculator" />
+    <meta
+      property="og:description"
+      content="Calculate breeding outcomes and find every parent pair for your target Pal."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body
+    data-route-intro="Our Palworld Breeding Calculator is a complete toolkit for parent pair testing, reverse target lookups, and Pal database browsing. It helps you build structured breeding plans instead of random egg cycles, with routes for rare targets like Anubis, Jetragon, and Frostallion in one responsive interface."
+  >
+    <div id="kidBg" class="kid-bg"></div>
+    <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+    <nav class="top-nav">
+      <div class="nav-inner">
+        <div class="brand">Palworld Breeding Calculator</div>
+        <div class="nav-links">
+          <a href="#breeding" class="nav-link-btn" data-view="breeding">Calculator</a>
+          <a href="#pals" class="nav-link-btn" data-view="pals">Pals</a>
+          <a href="#map" class="nav-link-btn" data-view="map">Map</a>
+          <a href="#items" class="nav-link-btn" data-view="items">Items</a>
+          <a href="#technology" class="nav-link-btn" data-view="technology">Technology</a>
+          <a href="#capture" class="nav-link-btn" data-view="capture">Capture</a>
+        </div>
+      </div>
+    </nav>
+    <main class="container">
+      <header>
+        <div id="heroStrip" class="hero-strip"></div>
+        <div class="header-row">
+          <h1 id="siteH1">Palworld Breeding Calculator</h1>
+          <div class="header-actions">
+            <button id="themeToggleBtn" class="theme-btn" type="button">Toggle Theme</button>
+          </div>
+        </div>
+        <div id="routeBadge" class="route-badge">Breeding Calculator</div>
+        <p id="routeSubtitle" class="subtitle"></p>
+        <div id="statsBar" class="stats-bar"></div>
+      </header>
+
+      <section class="card route-seo-blurb" id="aboutSite">
+        <h2>About This Tool</h2>
+        <p>
+          Palworld Breeding Calculator is a free online database and breeding planner for players who want faster
+          routes to rare Pals and fewer wasted eggs. Select any two parents to predict the child, including special
+          combination outcomes and breeding-power fallbacks. The reverse calculator lists every parent pair that can
+          produce your target Pal so you can compare methods side by side.
+        </p>
+      </section>
+
+      <section id="databaseCard" class="card">
+        <h2 id="databasePanelTitle">Database</h2>
+        <div id="databasePanelBody" class="database-panel"></div>
+      </section>
+
+      <section id="arenaCard" class="card">
+        <h2>Breeding Arena</h2>
+        <div class="grid">
+          <label>Parent A <select id="parentA"></select></label>
+          <label>Parent B <select id="parentB"></select></label>
+        </div>
+        <div class="actions">
+          <button id="calculateBtn" type="button">Calculate Child</button>
+          <button id="swapBtn" class="ghost-btn" type="button">Swap Parents</button>
+          <select id="pickFor" class="pick-for">
+            <option value="parentA">Quick Pick → Parent A</option>
+            <option value="parentB">Quick Pick → Parent B</option>
+            <option value="targetChild">Quick Pick → Target</option>
+          </select>
+        </div>
+        <div id="result" class="result"></div>
+      </section>
+
+      <section id="reverseCard" class="card">
+        <h2>Reverse Calculator</h2>
+        <p>Find parent combinations that can produce your target Pal.</p>
+        <div class="grid">
+          <label>Target Child <select id="targetChild"></select></label>
+        </div>
+        <button id="findCombosBtn" type="button">Find Combinations</button>
+        <div id="combos" class="combos"></div>
+      </section>
+
+      <section id="palBoxCard" class="card">
+        <h2>Pal Box</h2>
+        <label>Search Pal <input id="palSearch" placeholder="e.g. Jetragon" autocomplete="off" /></label>
+        <div id="palGrid" class="pal-grid"></div>
+      </section>
+
+      <section class="card seo-content">
+        <h2>How Palworld Breeding Works</h2>
+        <p>
+          Breeding uses special parent pairs and breeding-power averages. Test parents above, then use reverse lookup
+          for legendary targets like Anubis, Jetragon, and Frostallion.
+        </p>
+        <h3>FAQ</h3>
+        <p><strong>How do I breed Anubis?</strong> Set Frostallion or use reverse lookup with target Anubis.</p>
+        <p><strong>Does this work offline?</strong> After first load, data is cached by your browser.</p>
+        <p><strong>Share a combo?</strong> Use <code>?parentA=Anubis&amp;parentB=Jetragon&amp;target=Frostallion</code> in the URL.</p>
+      </section>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
