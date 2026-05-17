@@ -15,13 +15,22 @@ define('PBC_VERSION', '1.0.0');
 define('PBC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PBC_PLUGIN_URL', plugin_dir_url(__FILE__));
 
+function pbc_should_load_assets(): bool
+{
+    if (!is_singular()) {
+        return false;
+    }
+    global $post;
+    if (!$post) {
+        return false;
+    }
+    return has_shortcode($post->post_content, 'palworld_calculator');
+}
+
 function pbc_enqueue_assets(): void
 {
-    if (!is_singular() && !is_front_page()) {
-        global $post;
-        if (!$post || !has_shortcode($post->post_content, 'palworld_calculator')) {
-            return;
-        }
+    if (!pbc_should_load_assets()) {
+        return;
     }
 
     wp_enqueue_style(
@@ -46,8 +55,6 @@ add_action('wp_enqueue_scripts', 'pbc_enqueue_assets');
 
 function pbc_shortcode(): string
 {
-    pbc_enqueue_assets();
-
     ob_start();
     ?>
     <div class="pbc-wrap" id="pbc-app">
