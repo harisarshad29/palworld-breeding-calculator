@@ -1,0 +1,18 @@
+FULL STEPS: see DEPLOY-ALL.txt (Render + DNS + Google)
+
+RUST SERVER ONLY
+================
+
+LOCAL:  START-SERVER.bat  ->  http://127.0.0.1:3000/palworld-breeding-calculator
+
+RENDER:
+  Build: cargo build --release
+  Start: ./target/release/palworld-breeding-calculator
+  Env HOST=0.0.0.0
+  Env BASE_URL=https://palworld-breeding-calculator.us
+
+NAMECHEAP (Render, not Netlify):
+  A @ -> 216.24.57.1
+  CNAME www -> palworld-breeding-calculator.onrender.com
+
+RESET:  RESET.bat

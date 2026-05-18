@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: palworld-breeding-calculator
+    runtime: rust
+    plan: free
+    buildCommand: cargo build --release
+    startCommand: ./target/release/palworld-breeding-calculator
+    healthCheckPath: /
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: BASE_URL
+        value: https://palworld-breeding-calculator.us
+      - key: RUST_VERSION
+        value: 1.85.0

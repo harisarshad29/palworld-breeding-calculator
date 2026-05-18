@@ -1,0 +1,81 @@
+PALWORLD - SAB KUCH LIVE (Rust SEO) - POORA CHECKLIST
+=====================================================
+
+ABHI PROBLEM: Domain Netlify par hai (404 routes). Rust SEO tab chalegi jab Render par ho.
+
+PART 1 - GITHUB PUSH (1 baar)
+-----------------------------
+1. Project folder mein:
+   git add -A
+   git commit -m "Rust production SEO and deploy config"
+   git push origin main
+
+PART 2 - RENDER.COM (Rust server)
+---------------------------------
+1. render.com -> Login -> New Web Service
+2. Connect repo: harisarshad29/palworld-breeding-calculator
+3. Runtime: Rust (ya render.yaml auto)
+4. Environment variables (ZAROORI):
+   HOST = 0.0.0.0
+   BASE_URL = https://palworld-breeding-calculator.us
+   (PORT mat set karo - Render khud deta hai)
+5. Deploy -> wait green
+6. Test: https://palworld-breeding-calculator.onrender.com/palworld-breeding-calculator
+   (200 hona chahiye, 404 nahi)
+
+PART 3 - NAMECHEAP DNS (Netlify HATAO, Render LAGAO)
+----------------------------------------------------
+Domain -> Advanced DNS - DELETE old Netlify records:
+
+  DELETE: A @ 75.2.60.5 (Netlify)
+  DELETE: CNAME www -> *.netlify.app
+
+ADD Render records:
+
+  A Record     Host @    Value 216.24.57.1
+  CNAME        Host www  Value palworld-breeding-calculator.onrender.com
+
+Redirect Domain / Parking = OFF
+
+PART 4 - RENDER CUSTOM DOMAIN
+------------------------------
+Render -> Service -> Settings -> Custom Domains
+  Add: palworld-breeding-calculator.us
+  Add: www.palworld-breeding-calculator.us
+Verify DNS -> HTTPS enable
+
+PART 5 - NETLIFY (band karo taake conflict na ho)
+--------------------------------------------------
+Option A: Netlify site delete / unpublish
+Option B: Netlify se custom domain hata do (sirf Render par rakho)
+
+PART 6 - VERIFY (sab theek?)
+-----------------------------
+PowerShell project folder:
+
+  $env:LIVE_SITE_URL="https://palworld-breeding-calculator.us"
+  powershell -File scripts\verify-live-seo.ps1
+
+Sab PASS hona chahiye:
+  - meta ~150 words
+  - JSON-LD
+  - /palworld-breeding-calculator 200
+  - /pal/anubis 200
+  - sitemap.xml 200
+  - canonical .us (127.0.0.1 NAHI)
+
+PART 7 - GOOGLE SEARCH CONSOLE
+-------------------------------
+1. search.google.com/search-console
+2. Property: palworld-breeding-calculator.us
+3. Sitemap submit: https://palworld-breeding-calculator.us/sitemap.xml
+4. URL Inspection -> Request indexing for:
+   /
+   /palworld-breeding-calculator
+   /pal/anubis
+
+LOCAL TEST (deploy se pehle):
+  START-SERVER.bat
+  powershell -File scripts\seo-qa.ps1
+
+DAILY SEO: seo\ranking-sprint-30-days.md

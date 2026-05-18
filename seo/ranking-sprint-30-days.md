@@ -1,5 +1,16 @@
 # 30-Day Ranking Sprint (Execution)
 
+## Before day 1 (required)
+
+Live site must be **Rust on Render**, not Netlify static:
+
+1. `BASE_URL=https://palworld-breeding-calculator.us` on Render
+2. Namecheap DNS: A `@` → `216.24.57.1`, CNAME `www` → `*.onrender.com`
+3. Run `scripts/verify-live-seo.ps1` — all PASS
+4. Submit `https://palworld-breeding-calculator.us/sitemap.xml` in Search Console
+
+See `DEPLOY-ALL.txt` in project root.
+
 ## How Google Tracks Backlinks
 
 Google discovers backlinks when:

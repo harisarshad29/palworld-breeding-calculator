@@ -299,6 +299,29 @@ const GUIDE_PAGES: [GuidePage; 11] = [
     },
 ];
 
+/// Production URL for canonicals, OG tags, and sitemaps.
+/// Prefer `BASE_URL` (custom domain). On Render, set `BASE_URL=https://palworld-breeding-calculator.us`.
+fn resolve_base_url() -> String {
+    for key in ["BASE_URL", "SITE_URL", "PUBLIC_URL"] {
+        if let Ok(url) = std::env::var(key) {
+            let trimmed = url.trim().trim_end_matches('/').to_string();
+            if !trimmed.is_empty() {
+                return trimmed;
+            }
+        }
+    }
+    if let Ok(url) = std::env::var("RENDER_EXTERNAL_URL") {
+        let trimmed = url.trim().trim_end_matches('/').to_string();
+        if !trimmed.is_empty() {
+            eprintln!(
+                "Note: using RENDER_EXTERNAL_URL for SEO URLs. Set BASE_URL to your custom domain when ready."
+            );
+            return trimmed;
+        }
+    }
+    "http://127.0.0.1:3000".to_string()
+}
+
 #[tokio::main]
 async fn main() {
     let index_template = std::fs::read_to_string("index.html")
@@ -310,8 +333,7 @@ async fn main() {
         items: build_items(),
         technologies: build_technologies(),
         special_combos: data::load_special_combos(),
-        base_url: std::env::var("BASE_URL")
-            .unwrap_or_else(|_| "http://127.0.0.1:3000".to_string()),
+        base_url: resolve_base_url(),
         index_template,
         combinations_cache: Arc::new(Mutex::new(HashMap::new())),
     };

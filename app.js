@@ -85,12 +85,13 @@ let appData = {
   special_combos_count: 0
 };
 
-const PAL_GRID_INITIAL = 48;
+/** Show every Pal in Pal Box (full dataset is 198) */
+const PAL_GRID_INITIAL = 9999;
 let locationsLoaded = false;
 let locationsLoading = null;
 let lastHeroView = "";
 let combinationsRequestId = 0;
-const MAP_ROWS_INITIAL = 60;
+const MAP_ROWS_INITIAL = 9999;
 const serverRouteIntro =
   document.body.dataset.routeIntro?.trim() ||
   document.getElementById("routeSubtitle")?.textContent?.trim() ||
@@ -118,10 +119,10 @@ let parentCalcTimer = null;
 
 function escapeHtml(text) {
   return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
 
 async function apiFetch(url, options) {
@@ -286,8 +287,8 @@ async function renderDatabasePanel(view) {
       .join("");
     const more =
       entries.length > visible.length
-        ? `<p class="muted">Showing ${visible.length} of ${entries.length} rows. Search in Pal Box for a specific Pal.</p>`
-        : "";
+        ? `<p class="muted">Showing ${visible.length} of ${entries.length} Pals. Use Pal Box search for one name.</p>`
+        : `<p class="muted">All <strong>${entries.length}</strong> Pals listed.</p>`;
     databasePanelBody.innerHTML = `
       <div class="database-caption">Spawn regions and map coordinates.</div>
       <table class="database-table">
@@ -518,6 +519,7 @@ function renderPalGrid(showAll = false) {
   const visible = filtered.slice(0, limit);
 
   document.querySelector(".load-more-pals")?.remove();
+  document.querySelector(".pal-grid-count")?.remove();
   palGrid.innerHTML = visible
     .map(
       (pal) => `
@@ -534,9 +536,14 @@ function renderPalGrid(showAll = false) {
   if (!showAll && !query && filtered.length > visible.length) {
     palGrid.insertAdjacentHTML(
       "afterend",
-      `<button type="button" class="ghost-btn load-more-pals">Show all ${filtered.length} Pals</button>`
+      `<button type="button" class="ghost-btn load-more-pals">Show all ${filtered.length} Pals (${visible.length} visible)</button>`
     );
     document.querySelector(".load-more-pals")?.addEventListener("click", () => renderPalGrid(true));
+  } else if (!query && filtered.length > 0) {
+    palGrid.insertAdjacentHTML(
+      "afterend",
+      `<p class="muted pal-grid-count">${filtered.length} Pals in database</p>`
+    );
   }
 }
 
@@ -557,7 +564,27 @@ function quickPickPal(palName) {
 }
 
 function renderKidBackground() {
-  kidBg.innerHTML = "";
+  if (!kidBg) return;
+  const pals = ["Lamball","Cattiva","Chikipi","Foxparks","Pengullet","Anubis","Jetragon","Frostallion","Blazamut","Suzaku","Necromus","Paladius","Relaxaurus","Penking","Elizabee","Grizzbolt","Lyleen","Mossanda","Azurobe","Incineram","Beakon","Sibelyx","Astegon","Shadowbeak","Bellanoir","Kitsun","Rooby","Daedream"];
+  const slots = [
+    {l:1,t:4,s:76,r:-12},{l:3,t:28,s:58,r:6},{l:2,t:52,s:64,r:-8},{l:4,t:76,s:54,r:10},{l:1,t:90,s:62,r:-15},
+    {l:88,t:3,s:72,r:14},{l:91,t:26,s:56,r:-9},{l:89,t:48,s:68,r:11},{l:92,t:70,s:60,r:-7},{l:87,t:88,s:66,r:16},
+    {l:14,t:2,s:50,r:8},{l:78,t:2,s:48,r:-11},{l:8,t:42,s:44,r:-5},{l:84,t:38,s:46,r:7},{l:6,t:64,s:42,r:12},
+    {l:86,t:58,s:44,r:-13},{l:18,t:86,s:40,r:6},{l:76,t:84,s:42,r:-8},{l:22,t:14,s:38,r:-4},{l:72,t:16,s:38,r:5},
+    {l:10,t:18,s:36,r:9},{l:82,t:20,s:36,r:-6}
+  ];
+  const frag = document.createDocumentFragment();
+  slots.forEach((sl, i) => {
+    const img = document.createElement("img");
+    img.className = "bg-pal-sticker";
+    img.src = getPalImageUrl(pals[i % pals.length]);
+    img.alt = "";
+    img.loading = "lazy";
+    img.style.cssText = `left:${sl.l}%;top:${sl.t}%;width:${sl.s}px;height:${sl.s}px;transform:rotate(${sl.r}deg);animation-delay:${(i%8)*0.22}s;animation-duration:${7+(i%6)}s;`;
+    img.onerror = () => { img.onerror = null; img.src = PAL_PLACEHOLDER; };
+    frag.appendChild(img);
+  });
+  kidBg.replaceChildren(frag);
 }
 
 function resolvePalName(raw, palNames) {
@@ -599,6 +626,7 @@ function applyQueryFromUrl() {
 }
 
 async function bootstrap() {
+  renderKidBackground();
   appData = await apiFetch("/api/bootstrap");
   populateSelect(parentASelect);
   populateSelect(parentBSelect);
@@ -619,8 +647,7 @@ async function bootstrap() {
   setTheme(savedTheme === "light" ? "light" : "dark");
 
   renderStatsBar();
-  renderKidBackground();
-  renderPalGrid();
+  renderPalGrid(true);
   const initialView = resolveViewFromPath(globalThis.location.pathname);
   const panelPromise = renderDatabasePanel(initialView);
   if (initialView === "map") {
@@ -698,7 +725,15 @@ try {
   await bootstrap();
 } catch (error) {
   console.error(error);
-  databasePanelTitle.textContent = "Rust API Required";
-  databasePanelBody.innerHTML = "Start server with <code>cargo run</code>, then refresh.";
+  renderKidBackground();
+  if (databasePanelTitle && databasePanelBody) {
+    databasePanelTitle.textContent = "Rust API Required";
+    databasePanelBody.innerHTML =
+      "Start the server with <code>cargo run</code> or <strong>START-SERVER.bat</strong>, then refresh this page.";
+  }
+  if (resultDiv) {
+    resultDiv.innerHTML =
+      '<span class="muted">Server not running. Double-click <strong>START-SERVER.bat</strong> in the project folder.</span>';
+  }
 }
 
