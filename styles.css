@@ -786,6 +786,74 @@ body[data-route-view="chain"] #chainCard {
   font-size: 0.63rem;
 }
 
+.site-footer {
+  margin-top: 2.5rem;
+  padding: 2rem 1rem 1.25rem;
+  border-top: 1px solid var(--border, #2d3a4d);
+  background: #05080c;
+  color: #c5d4e8;
+  font-size: 0.88rem;
+}
+
+.site-footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.25rem 1.5rem;
+}
+
+.site-footer-title {
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  color: #e8f0fa;
+}
+
+.site-footer-muted {
+  margin: 0;
+  color: #8fa3bc;
+  line-height: 1.45;
+  font-size: 0.82rem;
+}
+
+.site-footer-heading {
+  margin: 0 0 0.45rem;
+  font-weight: 700;
+  color: #b8d4f0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.site-footer-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-footer-col li {
+  margin: 0.28rem 0;
+}
+
+.site-footer a {
+  color: #8ec8ff;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+.site-footer-copy {
+  max-width: 1100px;
+  margin: 1.25rem auto 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid #1e2a3a;
+  text-align: center;
+  color: #6d8299;
+  font-size: 0.78rem;
+}
+
 @media (max-width: 640px) {
   .container {
     margin-top: 1rem;

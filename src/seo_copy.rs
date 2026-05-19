@@ -43,3 +43,47 @@ pub const KEYWORD_CAPTURE_DESC: &str = "Capture rate planning deserves its own r
 pub const CHAIN_H1: &str = "The chain breeding finder shows the shortest Palworld egg route from a Pal you own to any target. Pick owned and goal Pals, then read each step with parent pairs, methods, and combo links. Uses the same live data as the main calculator so special pairs and power averages stay accurate.";
 
 pub const CHAIN_DESC: &str = "Palworld chain breeding is how players turn common captures into legendaries without guessing every intermediate egg. This chain breeder searches backward from your target Pal, picks easier parent pairs at each step, and stops when the only Pals left to obtain are ones you already own. Each step links to our combo pages and reverse calculator so you can verify methods before spending cake in the Breeding Farm. Use it when planning Jetragon, Anubis, Frostallion, or any rare target from a starter like Lamball or Cattiva. Chains are limited to ten eggs for performance but cover most practical routes. Combine this tool with Pal profile pages, how-to-breed guides, and capture estimates for a full project plan. Mobile-friendly and free with no login, it helps beginners and veterans reduce wasted incubation time. Bookmark this page when restructuring your roster or preparing a co-op breeding session and share chain URLs with teammates.";
+
+/// Sitewide footer: internal links for crawl paths and user navigation (injected on all page types).
+pub const SITE_FOOTER_HTML: &str = r#"<footer class="site-footer" role="contentinfo">
+  <div class="site-footer-inner">
+    <div class="site-footer-col">
+      <p class="site-footer-title">Palworld Breeding Calculator</p>
+      <p class="site-footer-muted">Free combo tool, reverse lookup, chain paths, and Pal database.</p>
+    </div>
+    <nav class="site-footer-col" aria-label="Tools">
+      <p class="site-footer-heading">Tools</p>
+      <ul>
+        <li><a href="/palworld-breeding-calculator">Breeding Calculator</a></li>
+        <li><a href="/palworld-breeding-combinations">Breeding Combinations</a></li>
+        <li><a href="/palworld-chain-breeding">Chain Breeding</a></li>
+        <li><a href="/palworld-capture-rate-calculator">Capture Rate</a></li>
+        <li><a href="/pals">Pals Database</a></li>
+        <li><a href="/map">Map Locations</a></li>
+      </ul>
+    </nav>
+    <nav class="site-footer-col" aria-label="Guides">
+      <p class="site-footer-heading">Guides</p>
+      <ul>
+        <li><a href="/how-to-breed/anubis">How to Breed Anubis</a></li>
+        <li><a href="/fastest-anubis-breed">Fastest Anubis Breed</a></li>
+        <li><a href="/legendary-breeding">Legendary Breeding</a></li>
+        <li><a href="/guides/best-breeding-combos">Best Breeding Combos</a></li>
+        <li><a href="/guides/breeding-not-working">Breeding Not Working</a></li>
+        <li><a href="/egg-incubation-guide">Egg Incubation</a></li>
+      </ul>
+    </nav>
+    <nav class="site-footer-col" aria-label="Popular Pals">
+      <p class="site-footer-heading">Popular Pals</p>
+      <ul>
+        <li><a href="/pal/anubis">Anubis</a></li>
+        <li><a href="/pal/jetragon">Jetragon</a></li>
+        <li><a href="/pal/frostallion">Frostallion</a></li>
+        <li><a href="/pal/lyleen">Lyleen</a></li>
+        <li><a href="/pal-pages">All Pal Pages</a></li>
+        <li><a href="/combo-pages">Combo Pages</a></li>
+      </ul>
+    </nav>
+  </div>
+  <p class="site-footer-copy">Palworld Breeding Calculator — unofficial fan tool. Not affiliated with Pocketpair.</p>
+</footer>"#;

@@ -50,3 +50,64 @@ Includes:
 - capture/map/item references
 
 If you want, I can also add specific combos/pages requested by this community.
+
+---
+
+## 4) Reddit Helpful Reply (r/Palworld, r/PalworldBreeding)
+
+I use this free breeding calculator when planning parent pairs — it has reverse lookup and per-Pal combo pages:
+{{your_url}}/palworld-breeding-calculator
+
+For Anubis specifically: {{your_url}}/how-to-breed/anubis
+
+Hope it saves you some cake.
+
+---
+
+## 5) Resource Page Pitch (Wiki / Fan site)
+
+Subject: Suggest addition to Palworld tools/resources list
+
+Hi {{name}},
+
+Your {{page_name}} is a go-to for Palworld players. Would you consider adding our breeding database?
+
+{{your_url}}
+
+Highlights:
+- Reverse calculator (all parents for a target Pal)
+- Chain breeding path finder
+- Individual pages: /pal/anubis, /combo/..., guides
+
+Happy to provide a short blurb you can paste. Thanks,
+{{your_name}}
+
+---
+
+## 6) Comparison Article Pitch
+
+Subject: "Best Palworld breeding calculators" — data for your roundup
+
+Hi {{name}},
+
+If you're writing a comparison of Palworld breeding tools, our site offers:
+- Server-rendered SEO pages (good for readers + citations)
+- {{your_url}}/palworld-breeding-calculator
+- Programmatic combo URLs you can link as examples
+
+We can share screenshots or feature list. No payment — just looking for an honest mention if it fits your article.
+
+{{your_name}}
+
+---
+
+## 7) Follow-up (after 5 days, no reply)
+
+Hi {{name}},
+
+Quick follow-up on the Palworld breeding calculator I shared: {{your_url}}
+
+If it's not a fit, no worries. If you want a specific Pal page for your audience (e.g. Jetragon routes), I can prioritize that.
+
+Thanks,
+{{your_name}}

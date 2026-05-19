@@ -1,3 +1,7 @@
 date,domain,url,page_linked,anchor_text,link_type,status,dr,traffic,contact_name,contact_email,notes
-2026-04-29,example-gaming-blog.com,https://example-gaming-blog.com/palworld-guide,/palworld-breeding-calculator,palworld breeding calculator,guest_post,pending,0,0,,,Initial outreach planned
-2026-04-29,example-reddit-thread.com,https://reddit.com/r/palworld/...,/guides/best-breeding-combos,best breeding combos,community,pending,0,0,,,Will share guide link after publish
+2026-05-19,example-gaming-blog.com,https://example-gaming-blog.com/palworld-guide,/palworld-breeding-calculator,palworld breeding calculator,guest_post,pending,0,0,,,Template row — replace with real outreach
+2026-05-19,reddit.com/r/Palworld,https://reddit.com/r/Palworld/,/how-to-breed/anubis,how to breed anubis,community,planned,0,0,,,Helpful comment — not spam
+2026-05-19,youtube.com,https://youtube.com/@channel,/palworld-breeding-calculator,breeding calculator,creator,planned,0,0,,,Video description link request
+2026-05-19,discord.gg,https://discord.gg/example,/guides/best-breeding-combos,best breeding combos,community,planned,0,0,,,Share in tools channel after reading rules
+2026-05-19,fandom.com,https://palworld.fandom.com/,/palworld-breeding-calculator,Palworld breeding tool,resource_page,planned,0,0,,,Suggest on community links page if allowed
+2026-05-19,,,,/pal/jetragon,jetragon breeding,internal,indexed,n/a,n/a,,,Ensure GSC indexed — not a backlink
