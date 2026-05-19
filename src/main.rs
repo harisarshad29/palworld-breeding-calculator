@@ -268,63 +268,63 @@ const GUIDE_PAGES: [GuidePage; 11] = [
         title: "Best Palworld Breeding Combos - Practical Combo Guide",
         description: "Explore strong Palworld breeding combo strategy and how to evaluate parent pairs for better child outcomes.",
         heading: "Best Breeding Combos Strategy",
-        body_html: "<p>The best combo is not only about rarity; it is about getting desired children with minimum farming time. Combine special pairs first, then use breeding-power proximity for fallback pairs.</p><p>Use this calculator to compare multiple parent combinations quickly and keep track of methods marked as special combinations for guaranteed outcomes.</p>",
+        body_html: "<p>The best Palworld breeding combo is not always the rarest pair—it is the route that gets your target child with the least farming, cake, and failed eggs. This guide explains how to rank combos using our <a href=\"/palworld-breeding-calculator\">breeding calculator</a> and combo pages.</p><h2>1. Check special combinations first</h2><p>Some parent pairs override breeding power and always produce a fixed child. These are listed as <strong>Special combination</strong> in results. Always verify these before long power-average experiments.</p><h2>2. Compare power-average fallbacks</h2><p>When no special pair exists, the child is chosen by breeding power average. Pick parent pairs with smaller distance values and easier captures.</p><h2>3. Use reverse lookup for target-first planning</h2><p>Select your goal Pal (Anubis, Jetragon, Lyleen) in the reverse calculator and compare every valid route. Open <a href=\"/combos/anubis\">Anubis combo hub</a> or the <a href=\"/pal/jetragon\">Jetragon Pal page</a> for quick links.</p><h2>4. Stack capture + map + tech</h2><p>Pair combo planning with <a href=\"/map\">map locations</a>, <a href=\"/palworld-capture-rate-calculator\">capture estimates</a>, and <a href=\"/technology\">technology milestones</a> so incubators and cake keep up with your chain.</p><h2>5. Chain breeding for legendaries</h2><p>Endgame targets often need multiple eggs. Use the <a href=\"/palworld-chain-breeding\">chain breeding tool</a> to see shortest paths from Pals you already own.</p><p><strong>Pro tip:</strong> Bookmark combo URLs you reuse and share them with co-op teammates instead of re-testing pairs every session.</p>",
     },
     GuidePage {
         path: "/guides/capture-rate-explained",
         title: "Palworld Capture Rate Explained - Better Catch Planning",
         description: "Understand capture-rate difficulty estimates in Palworld and plan better targets before breeding runs.",
         heading: "Capture Rate Planning for Breeding",
-        body_html: "<p>Capture planning affects breeding speed. Easier-to-catch parent targets reduce setup time and help you iterate combinations faster.</p><p>In this tool, capture-rate estimates use breeding power as a practical difficulty proxy. Use these estimates to decide which parents to farm first.</p>",
+        body_html: "<p>Capture rate planning is half of successful Palworld breeding. If you cannot catch parents reliably, every combo spreadsheet fails. This guide explains how our <a href=\"/palworld-capture-rate-calculator\">capture rate calculator</a> estimates difficulty and how to act on it.</p><h2>How estimates work</h2><p>We use breeding power as a practical difficulty proxy: higher power usually means rarer spawns and tougher catches. Estimates are planning guidance—always confirm in-game after patches.</p><h2>Step-by-step capture workflow</h2><ol><li>Pick your target child in the reverse calculator.</li><li>List all parent pairs and sort by easiest parent power.</li><li>Upgrade spheres and team levels before alpha or legendary routes.</li><li>Use <a href=\"/map\">map coordinates</a> to plan one efficient farming trip.</li><li>After each capture, re-run reverse lookup—new parents unlock better pairs.</li></ol><h2>When to delay a legendary</h2><p>If capture estimates stay low and substitutes exist, breed stepping-stone children first. The <a href=\"/legendary-breeding\">legendary breeding guide</a> covers multi-step chains for Jetragon, Frostallion, and Necromus.</p><p>Combine this page with <a href=\"/guides/breeding-not-working\">breeding troubleshooting</a> if eggs stall after captures succeed.</p>",
     },
     GuidePage {
         path: "/fastest-anubis-breed",
         title: "Fastest Anubis Breed Route in Palworld - Parent Combos",
         description: "Find the fastest Anubis breeding routes in Palworld with parent pair tables, power logic, and calculator links.",
         heading: "Fastest Anubis Breed Routes",
-        body_html: "<p>Anubis is a top-tier work and combat Pal. Use the reverse calculator below to list every parent pair that can produce Anubis, then farm the easiest parents first.</p><p>Prioritize special combination pairs when available, then compare power-average routes for fewer failed eggs.</p>",
+        body_html: "<p>Anubis is one of the best Palworld breeding investments for handiwork and combat. This page focuses on speed: the fewest captures and eggs to hatch Anubis on your save.</p><h2>Step 1: Reverse lookup</h2><p>Open the <a href=\"/palworld-breeding-calculator\">breeding calculator</a>, set Anubis as target child, and export every parent pair. Open <a href=\"/combos/anubis\">Anubis combo hub</a> for bookmarkable URLs.</p><h2>Step 2: Sort by capture difficulty</h2><p>Using <a href=\"/palworld-capture-rate-calculator\">capture estimates</a>, farm the easiest parents first—even if the chain has one extra egg.</p><h2>Step 3: Special pairs win</h2><p>If any pair shows <strong>Special combination</strong>, test it before power-average alternatives. Open specific <a href=\"/combo-pages\">combo pages</a> to document results.</p><h2>Step 4: Chain tool check</h2><p>Run <a href=\"/palworld-chain-breeding?goal=Anubis\">chain breeding to Anubis</a> from Lamball or your most common Pal to see if a shorter multi-step path exists.</p><p>Full walkthrough: <a href=\"/guides/how-to-breed-anubis\">how to breed Anubis guide</a>. Compare roles in <a href=\"/anubis-vs-lyleen\">Anubis vs Lyleen</a>.</p>",
     },
     GuidePage {
         path: "/legendary-breeding",
         title: "Legendary Pal Breeding Guide - Palworld Routes",
         description: "Legendary Pal breeding routes for Jetragon, Frostallion, Necromus, Paladius, and other rare targets in Palworld.",
         heading: "Legendary Pal Breeding Guide",
-        body_html: "<p>Legendary Pals require long breeding chains. Start from easier high-power parents and move toward low breeding-power targets.</p><p>Use dedicated Pal pages and combo pages in this database to compare direct outcomes before committing resources.</p>",
+        body_html: "<p>Legendary Pal breeding in Palworld is a chain project: you rarely breed Jetragon or Frostallion from two random captures in one egg. This guide outlines a repeatable legendary workflow using our calculator, chain tool, and Pal pages.</p><h2>Phase 1: Infrastructure</h2><p>Unlock Breeding Farm, Egg Incubator, and steady cake production. See the <a href=\"/egg-incubation-guide\">egg incubation guide</a> and <a href=\"/technology\">technology list</a>.</p><h2>Phase 2: Stepping-stone parents</h2><p>Farm mid-tier parents first (Anubis-tier, Penking-tier) before ultra-rare legendaries. Use <a href=\"/palworld-capture-rate-calculator\">capture planning</a> to avoid wasted trips.</p><h2>Phase 3: Chain or reverse planning</h2><p>For each legendary target, open its <a href=\"/pal/jetragon\">Pal page</a>, <a href=\"/how-to-breed/jetragon\">how-to-breed hub</a>, and run the <a href=\"/palworld-chain-breeding\">chain breeder</a> from a Pal you already own.</p><h2>Popular legendary targets</h2><ul><li><a href=\"/pal/jetragon\">Jetragon</a> — flying mount endgame</li><li><a href=\"/pal/frostallion\">Frostallion</a> — ice legendary</li><li><a href=\"/pal/necromus\">Necromus</a> / <a href=\"/pal/paladius\">Paladius</a> — duo bosses</li><li><a href=\"/pal/lyleen\">Lyleen</a> — late support breeder</li></ul><p>Verify every step on combo pages before spending cake. Legendary projects often take multiple real-world days—track pairs in notes or bookmarks.</p>",
     },
     GuidePage {
         path: "/best-early-game-breeding-combo",
         title: "Best Early Game Breeding Combos in Palworld",
         description: "Early game Palworld breeding combos using easy-to-catch parents and practical child outcomes for base progression.",
         heading: "Best Early Game Breeding Combos",
-        body_html: "<p>Early breeding should focus on easy captures like Lamball, Cattiva, Foxparks, and Pengullet while you unlock incubators and breeding farms.</p><p>Test pairs in the calculator and avoid rare targets until your sphere and level support the capture route.</p>",
+        body_html: "<p>Early game Palworld breeding should optimize for fast eggs and useful workers—not legendaries. This guide lists practical early combos and habits before you chase Anubis or Jetragon.</p><h2>Best starter parents</h2><p>Lamball, Cattiva, Chikipi, Foxparks, and Pengullet are common, easy to catch, and useful in power-average chains. Browse their <a href=\"/pal/lamball\">Pal pages</a> and test pairs in the <a href=\"/palworld-breeding-calculator\">calculator</a>.</p><h2>Early combos to try</h2><ul><li>Lamball + Cattiva — often routes toward Foxparks-tier children (verify in calculator).</li><li>Foxparks + Rooby — check special combination flags in results.</li><li>Any easy pair with low breeding power distance for quick hatch cycles.</li></ul><h2>What to avoid early</h2><p>Do not start legendary chains until you have Hyper Spheres, strong levels, and multiple incubators. Use <a href=\"/best-early-game-breeding-combo\">this page</a> with <a href=\"/guides/capture-rate-explained\">capture planning</a> when tempted to rush.</p><p>Unlock technology for Breeding Farm + incubator before batch breeding. Cake supply matters more than perfect pair theory in the first ten hours.</p>",
     },
     GuidePage {
         path: "/egg-incubation-guide",
         title: "Palworld Egg Incubation Guide - Hatch Time & Breeding Setup",
         description: "Palworld egg incubation basics: breeding farm unlock, incubator setup, and how incubation fits your combo plan.",
         heading: "Egg Incubation Guide",
-        body_html: "<p>Unlock the Breeding Farm and Egg Incubator through technology points, then place eggs immediately to avoid workflow delays.</p><p>Pair incubation planning with parent farming routes from the map and capture tools in this database.</p>",
+        body_html: "<p>Egg incubation is the bottleneck between choosing a valid parent pair and hatching your target Pal. This Palworld egg guide covers unlock order, timing habits, and how incubation fits combo planning.</p><h2>Unlock order</h2><ol><li>Pal Spheres and basic base tech.</li><li>Egg Incubator (technology tree).</li><li>Breeding Farm — required before eggs appear from assigned parents.</li></ol><p>See exact levels on our <a href=\"/technology\">technology milestones</a> page.</p><h2>Workflow tips</h2><ul><li>Keep cake in the Breeding Farm feed box at all times.</li><li>Collect eggs immediately so parents can cycle again.</li><li>Run multiple incubators in parallel for legendary chains.</li><li>Match incubator warmth to egg type when the game requires it.</li></ul><h2>Link incubation to combos</h2><p>Before incubating, confirm the pair in the <a href=\"/palworld-breeding-calculator\">breeding calculator</a> or on a <a href=\"/combo-pages\">combo page</a>. If hatches do not match predictions, read <a href=\"/guides/breeding-not-working\">breeding not working</a>.</p><p>For long projects, use <a href=\"/palworld-chain-breeding\">chain breeding</a> so you know every intermediate egg in advance.</p>",
     },
     GuidePage {
         path: "/best-mining-pal-breeding",
         title: "Best Mining Pal Breeding - Palworld Work Pal Routes",
         description: "Find mining-focused Pal breeding routes in Palworld for base ore loops and work suitability planning.",
         heading: "Best Mining Pal Breeding",
-        body_html: "<p>Mining Pals are often bred indirectly through power-average chains. Use the calculator to test parents that trend toward Digtoise, Tombat, and other mining profiles.</p><p>Compare work-focused Pal pages and capture easier parents before long legendary chains.</p>",
+        body_html: "<p>Mining Pals power ore bases in Palworld. Breeding them is often indirect—you breed toward breeding power tiers that trend into Digtoise, Tombat, or other work specialists. This guide connects mining goals to calculator workflows.</p><h2>Define your mining target</h2><p>Pick a end worker (Digtoise is a common goal). Open its <a href=\"/pal/digtoise\">Pal page</a> and run reverse lookup in the <a href=\"/palworld-breeding-calculator\">calculator</a>.</p><h2>Prefer easier parent routes</h2><p>Mining projects fail when players chase perfect IVs before basic capture routes work. Use <a href=\"/palworld-capture-rate-calculator\">capture estimates</a> and farm mid-tier parents first.</p><h2>Work suitability vs breeding math</h2><p>Breeding power predicts the child species—not passive skills. You may need multiple hatches to roll Mining Level upgrades. Pair breeding with item farming from our <a href=\"/items\">items database</a>.</p><p>For base-wide planning, compare <a href=\"/anubis-vs-lyleen\">Anubis vs Lyleen</a> if you split combat and support roles.</p>",
     },
     GuidePage {
         path: "/fastest-flying-mount-breeding",
         title: "Fastest Flying Mount Breeding - Jetragon & Legendary Routes",
         description: "Flying mount breeding routes in Palworld including Jetragon paths, parent combos, and capture planning.",
         heading: "Fastest Flying Mount Breeding",
-        body_html: "<p>Jetragon and other flying legends are common endgame targets. Use reverse lookup to list valid parent pairs, then farm easier high-power parents first.</p><p>Check combo pages for direct special outcomes before running long power-average experiments.</p>",
+        body_html: "<p>Flying mount breeding in Palworld usually means Jetragon or other late-game legendaries. Speed comes from planning captures and chains—not lucky single eggs. Use this guide with our <a href=\"/pal/jetragon\">Jetragon page</a> and <a href=\"/how-to-breed/jetragon\">how-to-breed hub</a>.</p><h2>Fastest route principles</h2><ol><li>Reverse-list every parent pair for Jetragon.</li><li>Identify special combinations vs power-average paths.</li><li>Farm the easiest high-power parents on your map first.</li><li>Run the <a href=\"/palworld-chain-breeding\">chain breeder</a> from Pals you already own.</li></ol><h2>Capture before breed</h2><p>Jetragon capture itself is endgame content. Many players breed stepping-stone Pals first. Read <a href=\"/legendary-breeding\">legendary breeding</a> and <a href=\"/guides/capture-rate-explained\">capture rate planning</a> before committing cake.</p><p>Compare alternative flying-adjacent Pals on <a href=\"/pal-pages\">all Pal pages</a> if Jetragon is months away for your save.</p>",
     },
     GuidePage {
         path: "/anubis-vs-lyleen",
         title: "Anubis vs Lyleen in Palworld - Breeding & Role Comparison",
         description: "Compare Anubis vs Lyleen breeding power, roles, and combo planning in Palworld with calculator links.",
         heading: "Anubis vs Lyleen",
-        body_html: "<p><strong>Anubis</strong> is an earlier-to-mid powerhouse with strong handiwork and combat utility. <strong>Lyleen</strong> is a late-game support-oriented Pal with a lower breeding power value (rarer tier).</p><p>Anubis is usually faster to breed for most players; Lyleen is a longer chain but valuable for advanced base setups. Use the calculator to compare parent routes for each target.</p>",
+        body_html: "<p><strong>Anubis</strong> and <strong>Lyleen</strong> are two of the most searched Palworld breeding targets. They serve different roster roles and breeding timelines. This comparison helps you choose which to chase first.</p><h2>Anubis overview</h2><p>Anubis offers strong handiwork and combat utility with mid-game accessibility. Breeding power is higher (easier tier) than ultra-late Pals. Start with <a href=\"/how-to-breed/anubis\">how to breed Anubis</a> and <a href=\"/fastest-anubis-breed\">fastest Anubis routes</a>.</p><h2>Lyleen overview</h2><p>Lyleen is a late support breeder with lower breeding power (rarer). Chains take longer but pay off for advanced bases. See <a href=\"/pal/lyleen\">Lyleen Pal page</a> and reverse lookup results.</p><h2>Which to breed first?</h2><p>Most players should complete Anubis routes before Lyleen unless you specifically need Lyleen passives for endgame production. Use the calculator side-by-side: set each as target child and compare parent difficulty.</p><h2>Shared tips</h2><ul><li>Both benefit from cake stock and multiple incubators.</li><li>Special combinations beat random power-average tests.</li><li>Link to <a href=\"/guides/best-breeding-combos\">best combos guide</a> for ranking methods.</li></ul>",
     },
     GuidePage {
         path: "/guides/breeding-not-working",
@@ -526,7 +526,7 @@ fn prepare_index_template(mut template: String, state: &AppState) -> String {
         "<!--COMBO_PAGES_LINKS-->",
         &seo_combo_links_html(state, Some(80)),
     );
-    template
+    template.replace("<!--SITE_FOOTER-->", seo_copy::SITE_FOOTER_HTML)
 }
 
 fn seo_pal_links_html(pals: &[Pal], max: Option<usize>) -> String {
@@ -970,9 +970,11 @@ fn build_pal_pages_directory_html(state: &AppState) -> String {
     .muted {{ color:#9fb2c8; }}
     .seo-directory-grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:0.4rem 0.75rem; margin:1rem 0; }}
     .seo-directory-grid a {{ color:#8ec8ff; text-decoration:none; font-size:0.9rem; }}
+    {SEO_BACKGROUND_STYLES}
   </style>
 </head>
 <body>
+  {kid_bg}
   <main class="wrap">
     <p class="muted"><a href="/">Home</a> / Pal Pages</p>
     <h1>All Pal Breeding Pages</h1>
@@ -984,7 +986,9 @@ fn build_pal_pages_directory_html(state: &AppState) -> String {
 </html>"#,
         base = state.base_url,
         count = count,
-        links = links
+        links = links,
+        kid_bg = seo_kid_background_html(),
+        SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
     )
 }
 
@@ -1014,9 +1018,11 @@ fn build_combo_pages_directory_html(state: &AppState) -> String {
     .seo-directory-grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.4rem 0.75rem; margin:1rem 0; list-style:none; padding:0; }}
     .seo-directory-grid li {{ list-style:none; }}
     .seo-directory-grid a {{ color:#8ec8ff; text-decoration:none; font-size:0.9rem; }}
+    {SEO_BACKGROUND_STYLES}
   </style>
 </head>
 <body>
+  {kid_bg}
   <main class="wrap">
     <p class="muted"><a href="/">Home</a> / Combo Pages</p>
     <h1>Featured Breeding Combo Pages</h1>
@@ -1028,7 +1034,9 @@ fn build_combo_pages_directory_html(state: &AppState) -> String {
 </html>"#,
         base = state.base_url,
         count = count,
-        links = links
+        links = links,
+        kid_bg = seo_kid_background_html(),
+        SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
     )
 }
 
@@ -1464,6 +1472,55 @@ fn html_escape(s: &str) -> String {
         .replace('"', "&quot;")
 }
 
+const SEO_BACKGROUND_STYLES: &str = r#"
+      body { position: relative; min-height: 100vh; overflow-x: hidden; }
+      .wrap { position: relative; z-index: 2; }
+      .kid-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse 80% 50% at 20% 30%, rgba(83, 232, 255, 0.12), transparent 55%),
+          radial-gradient(ellipse 70% 45% at 80% 70%, rgba(255, 79, 216, 0.1), transparent 50%),
+          radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255, 241, 95, 0.06), transparent 60%);
+      }
+      .bg-pal-sticker {
+        position: absolute;
+        border-radius: 10px;
+        opacity: 0.28;
+        filter: saturate(1.4) brightness(1.1);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        box-shadow: 0 0 12px rgba(83, 232, 255, 0.35);
+        animation-name: stickerFloat;
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+        mix-blend-mode: screen;
+        object-fit: cover;
+      }
+      @keyframes stickerFloat {
+        0%, 100% { translate: 0 0; }
+        50% { translate: 0 -8px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bg-pal-sticker { animation: none !important; }
+      }
+"#;
+
+const SEO_FOOTER_STYLES: &str = r#"
+      .site-footer { margin-top: 2.5rem; padding: 2rem 1rem 1.25rem; border-top: 1px solid #2d3a4d; background: #0a0e14; color: #c5d4e8; font-size: 0.88rem; }
+      .site-footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.25rem 1.5rem; }
+      .site-footer-title { font-weight: 700; margin: 0 0 0.35rem; color: #e8f0fa; }
+      .site-footer-muted { margin: 0; color: #8fa3bc; line-height: 1.45; font-size: 0.82rem; }
+      .site-footer-heading { margin: 0 0 0.45rem; font-weight: 700; color: #b8d4f0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+      .site-footer-col ul { list-style: none; margin: 0; padding: 0; }
+      .site-footer-col li { margin: 0.28rem 0; }
+      .site-footer a { color: #8ec8ff; text-decoration: none; }
+      .site-footer a:hover { text-decoration: underline; }
+      .site-footer-copy { max-width: 1100px; margin: 1.25rem auto 0; padding-top: 0.85rem; border-top: 1px solid #1e2a3a; text-align: center; color: #6d8299; font-size: 0.78rem; }
+"#;
+
 const SEO_PAL_IMG_STYLES: &str = r#"
       .pal-table-link { display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; color: #8ec8ff; }
       .pal-table-link span { line-height: 1.2; }
@@ -1475,6 +1532,51 @@ const SEO_PAL_IMG_STYLES: &str = r#"
       .pal-table-pair { display: inline-flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
       .pal-table-pair .plus { color: #9fb2c8; font-weight: 700; }
 "#;
+
+fn seo_kid_background_html() -> String {
+    const PALS: &[&str] = &[
+        "Lamball", "Cattiva", "Chikipi", "Foxparks", "Pengullet", "Anubis", "Jetragon", "Frostallion",
+        "Blazamut", "Suzaku", "Necromus", "Paladius", "Relaxaurus", "Penking", "Elizabee", "Grizzbolt",
+        "Lyleen", "Mossanda", "Azurobe", "Incineram", "Beakon", "Sibelyx", "Astegon", "Shadowbeak",
+        "Bellanoir", "Kitsun", "Rooby", "Daedream",
+    ];
+    const SLOTS: &[(u8, u8, u8, i8)] = &[
+        (1, 4, 76, -12),
+        (3, 28, 58, 6),
+        (2, 52, 64, -8),
+        (4, 76, 54, 10),
+        (1, 90, 62, -15),
+        (88, 3, 72, 14),
+        (91, 26, 56, -9),
+        (89, 48, 68, 11),
+        (92, 70, 60, -7),
+        (87, 88, 66, 16),
+        (14, 2, 50, 8),
+        (78, 2, 48, -11),
+        (8, 42, 44, -5),
+        (84, 38, 46, 7),
+        (6, 64, 42, 12),
+        (86, 58, 44, -13),
+        (18, 86, 40, 6),
+        (76, 84, 42, -8),
+        (22, 14, 38, -4),
+        (72, 16, 38, 5),
+        (10, 18, 36, 9),
+        (82, 20, 36, -6),
+    ];
+    let mut imgs = String::new();
+    for (i, &(l, t, s, r)) in SLOTS.iter().enumerate() {
+        let name = PALS[i % PALS.len()];
+        let slug = pal_slug(name);
+        let cdn = query_escape(name);
+        let delay = (i % 8) as f32 * 0.22;
+        let dur = 7 + (i % 6);
+        imgs.push_str(&format!(
+            r#"<img class="bg-pal-sticker" src="/assets/pals/{slug}.webp" alt="" loading="lazy" decoding="async" style="left:{l}%;top:{t}%;width:{s}px;height:{s}px;transform:rotate({r}deg);animation-delay:{delay}s;animation-duration:{dur}s;" onerror="if(!this.dataset.f){{this.dataset.f='cdn';this.src='https://ggservers.com/images/palworld/{cdn}.webp';}}else{{this.onerror=null;this.src='/assets/pals/placeholder.svg';}}" />"#
+        ));
+    }
+    format!(r#"<div class="kid-bg" aria-hidden="true">{imgs}</div>"#)
+}
 
 fn pal_img_tag(name: &str, class: &str) -> String {
     let slug = pal_slug(name);
@@ -1575,6 +1677,7 @@ fn build_how_to_breed_html(
       table {{ width: 100%; border-collapse: collapse; }}
       th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; vertical-align: middle; }}
       th {{ background: #182230; }}
+      {SEO_BACKGROUND_STYLES}
       {SEO_PAL_IMG_STYLES}
     </style>
     <script type="application/ld+json">
@@ -1585,6 +1688,7 @@ fn build_how_to_breed_html(
     </script>
   </head>
   <body>
+    {kid_bg}
     <main class="wrap">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/palworld-breeding-calculator">Calculator</a> / <a href="/pal/{slug}">{pal_name}</a> / How to Breed</nav>
       <div class="card">
@@ -1619,6 +1723,8 @@ fn build_how_to_breed_html(
         calc_link = calc_link,
         tier_note = pal_tier_note(target.power),
         SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
+        SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
+        kid_bg = seo_kid_background_html(),
     )
 }
 
@@ -1666,6 +1772,7 @@ fn build_combos_hub_html(
       table {{ width: 100%; border-collapse: collapse; }}
       th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; vertical-align: middle; }}
       th {{ background: #182230; }}
+      {SEO_BACKGROUND_STYLES}
       {SEO_PAL_IMG_STYLES}
     </style>
     <script type="application/ld+json">
@@ -1673,6 +1780,7 @@ fn build_combos_hub_html(
     </script>
   </head>
   <body>
+    {kid_bg}
     <main class="wrap">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/palworld-breeding-combinations">Combinations</a> / {pal_name}</nav>
       <div class="card">
@@ -1697,6 +1805,8 @@ fn build_combos_hub_html(
         rows = rows,
         calc_link = calc_link,
         SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
+        SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
+        kid_bg = seo_kid_background_html(),
     )
 }
 
@@ -1727,6 +1837,8 @@ fn build_guide_page_html(base_url: &str, page: GuidePage) -> String {
       .card {{ background: #131a23; border: 1px solid #2d3a4d; border-radius: 10px; padding: 1rem; }}
       h1 {{ margin-top: 0; }}
       .links {{ margin-top: 1rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }}
+      {SEO_BACKGROUND_STYLES}
+      {SEO_FOOTER_STYLES}
     </style>
     <script type="application/ld+json">
       {{
@@ -1750,6 +1862,7 @@ fn build_guide_page_html(base_url: &str, page: GuidePage) -> String {
     </script>
   </head>
   <body>
+    {kid_bg}
     <main class="wrap">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/palworld-breeding-calculator">Calculator</a> / {heading}</nav>
       <div class="card">
@@ -1763,6 +1876,7 @@ fn build_guide_page_html(base_url: &str, page: GuidePage) -> String {
         </div>
       </div>
     </main>
+    {site_footer}
   </body>
 </html>"#
         ,
@@ -1770,7 +1884,11 @@ fn build_guide_page_html(base_url: &str, page: GuidePage) -> String {
         description = page.description,
         heading = page.heading,
         body_html = page.body_html,
-        page_url = page_url
+        page_url = page_url,
+        kid_bg = seo_kid_background_html(),
+        SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
+        SEO_FOOTER_STYLES = SEO_FOOTER_STYLES,
+        site_footer = seo_copy::SITE_FOOTER_HTML,
     )
 }
 
@@ -1862,7 +1980,9 @@ fn build_pal_page_html(
       table {{ width: 100%; border-collapse: collapse; }}
       th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; vertical-align: middle; }}
       th {{ background: #182230; }}
+      {SEO_BACKGROUND_STYLES}
       {SEO_PAL_IMG_STYLES}
+      {SEO_FOOTER_STYLES}
     </style>
     <script type="application/ld+json">
       {{
@@ -1886,6 +2006,7 @@ fn build_pal_page_html(
     </script>
   </head>
   <body>
+    {kid_bg}
     <main class="wrap">
       <div class="crumbs"><a href="/">Home</a> / <a href="/pals">Pals</a> / {pal_name}</div>
       <div class="card">
@@ -1912,6 +2033,7 @@ fn build_pal_page_html(
         <p><a href="/">Back to Calculator</a></p>
       </div>
     </main>
+    {site_footer}
   </body>
 </html>"#,
         title = title,
@@ -1931,6 +2053,10 @@ fn build_pal_page_html(
         calc_link = calc_link,
         pal_query = pal_query,
         SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
+        SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
+        SEO_FOOTER_STYLES = SEO_FOOTER_STYLES,
+        site_footer = seo_copy::SITE_FOOTER_HTML,
+        kid_bg = seo_kid_background_html(),
     )
 }
 
@@ -2030,7 +2156,9 @@ fn build_combo_page_html(
       table {{ width: 100%; border-collapse: collapse; }}
       th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; vertical-align: middle; }}
       th {{ background: #182230; }}
+      {SEO_BACKGROUND_STYLES}
       {SEO_PAL_IMG_STYLES}
+      {SEO_FOOTER_STYLES}
     </style>
     <script type="application/ld+json">
       {{
@@ -2063,6 +2191,7 @@ fn build_combo_page_html(
     </script>
   </head>
   <body>
+    {kid_bg}
     <main class="wrap">
       <div class="crumbs"><a href="/">Home</a> / <a href="{calc_path}">Breeding Calculator</a> / {parent_a_name} + {parent_b_name}</div>
       <div class="card">
@@ -2087,6 +2216,7 @@ fn build_combo_page_html(
         <p><a href="/pal/{parent_a_slug}">Open {parent_a_name} page</a> • <a href="/pal/{parent_b_slug}">Open {parent_b_name} page</a> • <a href="/pal/{child_slug}">Open {child_name} page</a> • <a href="{calc_path}">Breeding calculator</a></p>
       </div>
     </main>
+    {site_footer}
   </body>
 </html>"#,
         title = title,
@@ -2103,6 +2233,10 @@ fn build_combo_page_html(
         alt_rows = alt_rows,
         combo_hero = combo_hero,
         SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
+        SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
+        SEO_FOOTER_STYLES = SEO_FOOTER_STYLES,
+        site_footer = seo_copy::SITE_FOOTER_HTML,
+        kid_bg = seo_kid_background_html(),
         related_combo_links = related_combo_links,
         related_guides = related_guides,
         calc_path = PRIMARY_CALCULATOR_PATH
