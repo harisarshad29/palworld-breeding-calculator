@@ -76,10 +76,14 @@ if ($homePage) {
         $subWords = ($sub -split '\s+').Count
         if ($subWords -ge 50 -and $subWords -le 60) { Pass "home H1 characteristics: $subWords words" } else { Fail "home H1 characteristics: $subWords words (want 50-60)" }
     }
+    if ($h -match 'name="description"\s+content="([^"]+)"') {
+        $metaWords = ($matches[1] -split '\s+').Count
+        if ($metaWords -ge 145 -and $metaWords -le 160) { Pass "home meta description: $metaWords words" } else { Fail "home meta description: $metaWords words (want ~150)" }
+    } else { Fail "home missing meta description tag" }
     if ($h -match 'id="aboutSite"') {
         $about = [regex]::Match($h, 'id="aboutSite"[\s\S]*?<p>([\s\S]*?)</p>').Groups[1].Value
         $aboutWords = ($about -split '\s+').Count
-        if ($aboutWords -ge 145 -and $aboutWords -le 155) { Pass "home description: $aboutWords words" } else { Fail "home description: $aboutWords words (want ~150)" }
+        if ($aboutWords -ge 145 -and $aboutWords -le 155) { Pass "home about body: $aboutWords words" } else { Fail "home about body: $aboutWords words (want ~150)" }
     }
     if ($h -match "How do I breed Anubis\?") { Pass "home FAQ visible" } else { Fail "home FAQ missing" }
     if ($h -match '"name": "How do I breed Anubis\?"') { Pass "FAQ schema matches visible FAQ" } else { Fail "FAQ schema out of sync" }
@@ -129,6 +133,25 @@ if ($boot) {
 # 8) API health
 $api = Get-Page "/api/bootstrap"
 if ($api -and $api.StatusCode -eq 200) { Pass "API bootstrap OK" } elseif ($api) { Fail "API bootstrap status $($api.StatusCode)" }
+
+# 8b) Chain breeding page + API
+$chainPage = Get-Page "/palworld-chain-breeding"
+if ($chainPage) {
+    if ($chainPage.Content -match 'id="chainCard"') { Pass "chain page has chain UI" } else { Fail "chain page missing chainCard section" }
+    if ($chainPage.Content -match "Palworld Chain Breeding Path Finder") { Pass "chain page has unique H1" } else { Fail "chain page missing unique H1" }
+}
+try {
+    $chainApi = Invoke-RestMethod -Uri "$Base/api/chain?owned=Lamball&goal=Foxparks" -TimeoutSec 45
+    if ($chainApi.found -eq $true -and $chainApi.step_count -ge 1) {
+        Pass "chain API returns route (steps=$($chainApi.step_count))"
+    } elseif ($chainApi.found -eq $false) {
+        Fail "chain API found=false for Lamball->Foxparks"
+    } else {
+        Fail "chain API returned empty steps for Lamball->Foxparks"
+    }
+} catch {
+    Fail "chain API failed: $($_.Exception.Message)"
+}
 
 # 9) All SEO copy constants within word limits
 $countScript = Join-Path $PSScriptRoot "count-seo-words.mjs"

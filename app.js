@@ -21,6 +21,11 @@ const routeSubtitle = document.getElementById("routeSubtitle");
 const databaseCard = document.getElementById("databaseCard");
 const arenaCard = document.getElementById("arenaCard");
 const reverseCard = document.getElementById("reverseCard");
+const chainCard = document.getElementById("chainCard");
+const chainOwnedSelect = document.getElementById("chainOwned");
+const chainGoalSelect = document.getElementById("chainGoal");
+const findChainBtn = document.getElementById("findChainBtn");
+const chainResultDiv = document.getElementById("chainResult");
 const palBoxCard = document.getElementById("palBoxCard");
 const heroStrip = document.getElementById("heroStrip");
 const pathToView = {
@@ -34,7 +39,8 @@ const pathToView = {
   "/technology": "technology",
   "/capture-rate": "capture",
   "/palworld-breeding-combinations": "breeding",
-  "/palworld-capture-rate-calculator": "capture"
+  "/palworld-capture-rate-calculator": "capture",
+  "/palworld-chain-breeding": "chain"
 };
 const viewMeta = {
   breeding: {
@@ -66,6 +72,11 @@ const viewMeta = {
     badge: "Capture View",
     subtitle: "Use capture estimates and easier targets to plan parent farming efficiently.",
     focusCardId: "reverseCard"
+  },
+  chain: {
+    badge: "Chain Breeder",
+    subtitle: "Plan multi-step egg routes from a Pal you own to any legendary or rare target.",
+    focusCardId: "chainCard"
   }
 };
 const routeIconSeeds = {
@@ -74,7 +85,8 @@ const routeIconSeeds = {
   map: ["eikthyrdeer", "pengullet", "daedream", "pyrin", "anubis", "jetragon", "suzaku"],
   items: ["lamball", "foxparks", "rooby", "frostallion", "jolthog", "pengullet", "anubis"],
   technology: ["lifmunk", "tanzee", "eikthyrdeer", "jormuntide", "paladius", "necromus", "jetragon"],
-  capture: ["jetragon", "frostallion", "necromus", "paladius", "jormuntide", "anubis", "suzaku"]
+  capture: ["jetragon", "frostallion", "necromus", "paladius", "jormuntide", "anubis", "suzaku"],
+  chain: ["lamball", "cattiva", "anubis", "jetragon", "frostallion", "necromus", "paladius"]
 };
 
 let appData = {
@@ -82,15 +94,26 @@ let appData = {
   pal_locations: {},
   items: [],
   technologies: [],
-  special_combos_count: 0
+  special_combos_count: 0,
+  special_combos: {}
 };
 
-/** Show every Pal in Pal Box (full dataset is 198) */
-const PAL_GRID_INITIAL = 9999;
+/** Pal Box: show this many until user searches or clicks "show all" */
+const PAL_GRID_INITIAL = 72;
+const COMBO_LIST_WITH_IMAGES = 24;
+const COMBO_LIST_MAX = 80;
+
+/** Show every Pal in Pal Box when searching */
+const PAL_GRID_SEARCH_ALL = 9999;
+let palByNameLower = new Map();
+let palBySlugMap = new Map();
+let palsByPower = [];
+const combinationsCache = new Map();
 let locationsLoaded = false;
 let locationsLoading = null;
 let lastHeroView = "";
 let combinationsRequestId = 0;
+let chainRequestId = 0;
 const MAP_ROWS_INITIAL = 9999;
 const serverRouteIntro =
   document.body.dataset.routeIntro?.trim() ||
@@ -110,10 +133,233 @@ function palSlug(palName) {
 }
 
 function getPalImageUrl(palName) {
-  return `/assets/pals/${palSlug(palName)}.webp`;
+  return `/assets/pals/${palSlug(resolvePalDisplayName(palName))}.webp`;
+}
+
+function buildPalIndexes() {
+  palByNameLower = new Map();
+  palBySlugMap = new Map();
+  for (const pal of appData.pals) {
+    palByNameLower.set(pal.name.toLowerCase(), pal);
+    palBySlugMap.set(palSlug(pal.name), pal);
+  }
+  palsByPower = [...appData.pals].sort((a, b) => a.power - b.power);
+}
+
+function resolvePalDisplayName(palName) {
+  if (!palName) {
+    return palName;
+  }
+  const exact = palByNameLower.get(palName) || palByNameLower.get(palName.toLowerCase());
+  if (exact) {
+    return exact.name;
+  }
+  const bySlug = palBySlugMap.get(palSlug(palName));
+  return bySlug?.name ?? palName;
+}
+
+function comboKey(a, b) {
+  return a <= b ? `${a}|${b}` : `${b}|${a}`;
+}
+
+function nearestPalByPower(targetPower) {
+  if (!palsByPower.length) {
+    return null;
+  }
+  let lo = 0;
+  let hi = palsByPower.length;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (palsByPower[mid].power < targetPower) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+  const right = Math.min(lo, palsByPower.length - 1);
+  const left = Math.max(right - 1, 0);
+  const r = palsByPower[right];
+  const l = palsByPower[left];
+  if (Math.abs(l.power - targetPower) <= Math.abs(r.power - targetPower)) {
+    return l;
+  }
+  return r;
+}
+
+/** Instant breeding result in the browser (no API wait). */
+function calculateChildLocal(parentA, parentB) {
+  const first = palByNameLower.get(parentA) || palByNameLower.get(parentA?.toLowerCase());
+  const second = palByNameLower.get(parentB) || palByNameLower.get(parentB?.toLowerCase());
+  if (!first || !second) {
+    return null;
+  }
+  const key = comboKey(first.name, second.name);
+  const specialChild = appData.special_combos?.[key];
+  if (specialChild) {
+    const child = palByNameLower.get(specialChild) || palByNameLower.get(specialChild.toLowerCase());
+    if (child) {
+      return { child, method: "Special combination", distance: null };
+    }
+  }
+  const targetPower = Math.floor((first.power + second.power) / 2);
+  const child = nearestPalByPower(targetPower);
+  if (!child) {
+    return null;
+  }
+  return {
+    child,
+    method: `Power average (${targetPower})`,
+    distance: Math.abs(child.power - targetPower)
+  };
+}
+
+function getPalCdnUrl(palName) {
+  const name = resolvePalDisplayName(palName);
+  return `https://ggservers.com/images/palworld/${encodeURIComponent(name)}.webp`;
 }
 
 const PAL_PLACEHOLDER = "/assets/pals/placeholder.svg";
+
+/** Local webp → CDN → placeholder (works even if assets/pals is empty). */
+globalThis.__palImgFallback = (img) => {
+  if (!img?.dataset) {
+    return;
+  }
+  if (img.dataset.fallback !== "cdn" && img.dataset.cdn) {
+    img.dataset.fallback = "cdn";
+    img.src = img.dataset.cdn;
+    return;
+  }
+  if (img.dataset.fallback !== "ph" && img.dataset.placeholder) {
+    img.dataset.fallback = "ph";
+    img.onerror = null;
+    img.src = img.dataset.placeholder;
+  }
+};
+
+function buildPalImage(palName, className = "pal-image") {
+  const local = getPalImageUrl(palName);
+  const cdn = getPalCdnUrl(palName);
+  return `<img class="${escapeHtml(className)}" src="${local}" alt="${getPalAltText(palName)}" loading="lazy" decoding="async"
+    data-cdn="${cdn}" data-placeholder="${PAL_PLACEHOLDER}"
+    onerror="window.__palImgFallback&&window.__palImgFallback(this)" />`;
+}
+
+/** Hero strip: fast local-only loads, queued + viewport-based (no CDN while scrolling). */
+const HERO_ICON_EAGER = 20;
+const HERO_STRIP_MAX_PARALLEL = 8;
+const heroStripLoadQueue = [];
+let heroStripLoadsActive = 0;
+let heroStripObserver = null;
+
+function drainHeroStripQueue() {
+  while (heroStripLoadsActive < HERO_STRIP_MAX_PARALLEL && heroStripLoadQueue.length) {
+    const img = heroStripLoadQueue.shift();
+    const url = img.dataset.src;
+    if (!url || img.dataset.loaded === "1") {
+      continue;
+    }
+    heroStripLoadsActive += 1;
+    const probe = new Image();
+    probe.decoding = "async";
+    probe.onload = () => {
+      img.src = url;
+      img.classList.add("is-loaded");
+      img.dataset.loaded = "1";
+      heroStripLoadsActive -= 1;
+      drainHeroStripQueue();
+    };
+    probe.onerror = () => {
+      img.src = PAL_PLACEHOLDER;
+      img.classList.add("is-loaded", "is-placeholder");
+      img.dataset.loaded = "1";
+      heroStripLoadsActive -= 1;
+      drainHeroStripQueue();
+    };
+    probe.src = url;
+  }
+}
+
+function queueHeroStripImage(img) {
+  if (!img || img.dataset.loaded === "1" || img.dataset.queued === "1") {
+    return;
+  }
+  img.dataset.queued = "1";
+  heroStripLoadQueue.push(img);
+  drainHeroStripQueue();
+}
+
+function buildHeroIcon(palName) {
+  const local = getPalImageUrl(palName);
+  const alt = getPalAltText(palName);
+  return `<img class="hero-icon" alt="${escapeHtml(alt)}" width="42" height="42" decoding="async"
+    src="${PAL_PLACEHOLDER}" data-src="${local}" />`;
+}
+
+function teardownHeroStripLoader() {
+  if (heroStripObserver) {
+    heroStripObserver.disconnect();
+    heroStripObserver = null;
+  }
+  heroStripLoadQueue.length = 0;
+  heroStripLoadsActive = 0;
+}
+
+function prefetchHeroIconsNearScroll() {
+  if (!heroStrip) {
+    return;
+  }
+  const stripRect = heroStrip.getBoundingClientRect();
+  const pad = 320;
+  for (const img of heroStrip.querySelectorAll(".hero-icon[data-src]")) {
+    if (img.dataset.loaded === "1") {
+      continue;
+    }
+    const r = img.getBoundingClientRect();
+    if (r.right >= stripRect.left - pad && r.left <= stripRect.right + pad) {
+      queueHeroStripImage(img);
+      heroStripObserver?.unobserve(img);
+    }
+  }
+}
+
+let heroStripScrollTimer = null;
+function onHeroStripScroll() {
+  clearTimeout(heroStripScrollTimer);
+  heroStripScrollTimer = setTimeout(prefetchHeroIconsNearScroll, 50);
+}
+
+function setupHeroStripLoader() {
+  if (!heroStrip) {
+    return;
+  }
+  teardownHeroStripLoader();
+  heroStripObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          queueHeroStripImage(entry.target);
+          heroStripObserver.unobserve(entry.target);
+        }
+      }
+    },
+    { root: heroStrip, rootMargin: "400px 0px", threshold: 0.01 }
+  );
+
+  const imgs = heroStrip.querySelectorAll(".hero-icon[data-src]");
+  imgs.forEach((img, index) => {
+    if (index < HERO_ICON_EAGER) {
+      queueHeroStripImage(img);
+    } else {
+      heroStripObserver.observe(img);
+    }
+  });
+
+  if (!heroStrip.dataset.scrollBound) {
+    heroStrip.dataset.scrollBound = "1";
+    heroStrip.addEventListener("scroll", onHeroStripScroll, { passive: true });
+  }
+}
 let calculateRequestId = 0;
 let parentCalcTimer = null;
 
@@ -148,15 +394,35 @@ function scheduleRenderResult(options = {}) {
   clearTimeout(parentCalcTimer);
   parentCalcTimer = setTimeout(() => {
     renderResult(options);
-  }, 100);
+  }, 50);
+}
+
+function paintResult(calc, parentA, parentB, celebrate) {
+  const details =
+    typeof calc.distance === "number"
+      ? `<div class="muted">Closest power distance: ${calc.distance}</div>`
+      : "";
+  resultDiv.innerHTML = `
+      <div class="arena">
+        ${buildArenaCard(parentA, "parent")}
+        <span class="flow-symbol">+</span>
+        ${buildArenaCard(parentB, "parent")}
+        <span class="flow-symbol">=</span>
+        ${buildArenaCard(calc.child.name, "child")}
+      </div>
+      <div class="muted">${escapeHtml(calc.method)}</div>
+      ${details}
+    `;
+  if (celebrate) {
+    celebrateConfetti();
+  }
 }
 
 function buildPalChip(palName) {
   return `
     <div class="pal-chip">
-      <img class="pal-image" src="${getPalImageUrl(palName)}" alt="${getPalAltText(palName)}" loading="lazy"
-        onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
-      <span>${palName}</span>
+      ${buildPalImage(palName, "pal-image")}
+      <span>${escapeHtml(palName)}</span>
     </div>
   `;
 }
@@ -165,9 +431,8 @@ function buildArenaCard(palName, role) {
   const roleClass = role === "child" ? " child" : "";
   return `
     <div class="arena-card${roleClass}">
-      <img src="${getPalImageUrl(palName)}" alt="${getPalAltText(palName)}" loading="lazy"
-        onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
-      <div class="arena-name">${palName}</div>
+      ${buildPalImage(palName, "arena-pal-img")}
+      <div class="arena-name">${escapeHtml(palName)}</div>
     </div>
   `;
 }
@@ -248,7 +513,7 @@ async function renderDatabasePanel(view) {
   restoreRouteIntro();
   document.body.dataset.routeView = view;
   if (view !== lastHeroView) {
-    renderHeroStrip(view);
+    renderHeroStrip(view, true);
     lastHeroView = view;
   }
   navButtons.forEach((button) => {
@@ -331,6 +596,12 @@ async function renderDatabasePanel(view) {
     return;
   }
 
+  if (view === "chain") {
+    databasePanelTitle.textContent = "Chain Breeding";
+    databasePanelBody.innerHTML = `Plan routes from common Pals to legendaries. Example: <a href="/palworld-chain-breeding?owned=Lamball&goal=Jetragon">Lamball → Jetragon</a>.`;
+    return;
+  }
+
   if (view === "capture") {
     const targetName = targetChildSelect.value || appData.pals[0].name;
     const capture = await apiFetch(`/api/capture/${encodeURIComponent(targetName)}`);
@@ -350,16 +621,46 @@ async function renderDatabasePanel(view) {
   databasePanelBody.innerHTML = `Breeding calculator is active. Current special combinations: <strong>${appData.special_combos_count}</strong>.`;
 }
 
-function renderHeroStrip(view) {
-  const icons = (routeIconSeeds[view] || routeIconSeeds.breeding).slice(0, 5);
-  heroStrip.innerHTML = icons
-    .map(
-      (name) => `
-      <img class="hero-icon" src="/assets/pals/${name}.webp" alt="${name}" loading="lazy"
-        onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
-    `
-    )
-    .join("");
+function heroStripPalNames(view) {
+  const seeds = routeIconSeeds[view] || routeIconSeeds.breeding;
+  const seen = new Set();
+  const names = [];
+  for (const seed of seeds) {
+    const name = resolvePalDisplayName(seed);
+    const key = name.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      names.push(name);
+    }
+  }
+  for (const pal of appData.pals) {
+    const key = pal.name.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      names.push(pal.name);
+    }
+  }
+  return names;
+}
+
+function renderHeroStrip(view, force = false) {
+  if (!heroStrip) {
+    return;
+  }
+  if (!force && view === lastHeroView && heroStrip.childElementCount > 5) {
+    return;
+  }
+  const icons = heroStripPalNames(view);
+  teardownHeroStripLoader();
+  heroStrip.replaceChildren();
+  const frag = document.createDocumentFragment();
+  for (const name of icons) {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = buildHeroIcon(name);
+    frag.appendChild(wrap.firstElementChild);
+  }
+  heroStrip.appendChild(frag);
+  setupHeroStripLoader();
 }
 
 function normalizePath(pathname) {
@@ -396,7 +697,7 @@ function focusViewCard(view) {
   target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-async function renderResult(options = {}) {
+function renderResult(options = {}) {
   const { celebrate = false } = options;
   const { parentA, parentB } = getParentNames();
 
@@ -411,53 +712,113 @@ async function renderResult(options = {}) {
   }
 
   const requestId = ++calculateRequestId;
-  calculateBtn.disabled = true;
-  resultDiv.innerHTML = `<div class="muted">Calculating ${escapeHtml(parentA)} + ${escapeHtml(parentB)}…</div>`;
+  const calc = calculateChildLocal(parentA, parentB);
+  if (!calc) {
+    showResultError("Could not find those Pals. Refresh the page or pick names from the list.");
+    return;
+  }
+  if (requestId !== calculateRequestId) {
+    return;
+  }
+  paintResult(calc, parentA, parentB, celebrate);
+}
+
+async function renderChainBreeding() {
+  const requestId = ++chainRequestId;
+  const owned = chainOwnedSelect?.value?.trim();
+  const goal = chainGoalSelect?.value?.trim();
+  if (!chainResultDiv || !owned || !goal) {
+    return;
+  }
+  if (owned.toLowerCase() === goal.toLowerCase()) {
+    chainResultDiv.innerHTML = `<span class="muted">You already own <strong>${escapeHtml(goal)}</strong> — no breeding steps needed.</span>`;
+    return;
+  }
+
+  chainResultDiv.innerHTML = `<span class="muted">Finding chain from ${escapeHtml(owned)} to ${escapeHtml(goal)}…</span>`;
+  if (findChainBtn) {
+    findChainBtn.disabled = true;
+  }
+
+  const params = new URLSearchParams({ owned, goal });
+  const shareUrl = `${globalThis.location.pathname}?${params}`;
+  if (globalThis.location.search !== `?${params}`) {
+    globalThis.history.replaceState({}, "", shareUrl);
+  }
 
   try {
-    const calc = await apiFetch("/api/calculate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ parent_a: parentA, parent_b: parentB })
-    });
-
-    if (requestId !== calculateRequestId) {
+    const data = await apiFetch(`/api/chain?${params}`);
+    if (requestId !== chainRequestId) {
+      return;
+    }
+    const steps = data.steps || [];
+    if (data.found === false || (!steps.length && data.found !== true)) {
+      const msg =
+        data.hint ||
+        data.message ||
+        `No breeding chain found from ${owned} to ${goal} within 15 steps. Try reverse lookup or a closer goal.`;
+      let extra = "";
+      if (data.partial?.missing_partner) {
+        const p = data.partial;
+        const goalSlug = palSlug(goal);
+        extra = `
+          <p class="chain-partial"><strong>Direct combo found:</strong>
+            ${buildPalChip(p.parent_a)}
+            <span class="flow-symbol">+</span>
+            ${buildPalChip(p.parent_b)}
+            <span class="flow-symbol">→</span>
+            <strong>${escapeHtml(goal)}</strong>
+            <span class="muted">(${escapeHtml(p.method || "")})</span>
+          </p>
+          <p class="muted">You still need <strong>${escapeHtml(p.missing_partner)}</strong> before this egg works.</p>
+          <p><a href="/palworld-breeding-calculator?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a>
+            · <a href="/combos/${goalSlug}">All ${escapeHtml(goal)} combos</a></p>`;
+      } else {
+        extra = `<p><a href="/palworld-breeding-calculator?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a></p>`;
+      }
+      chainResultDiv.innerHTML = `<div class="chain-not-found"><p>${escapeHtml(msg)}</p>${extra}</div>`;
+      return;
+    }
+    if (!steps.length) {
+      chainResultDiv.innerHTML = `<span class="muted">No intermediate steps — you can breed <strong>${escapeHtml(goal)}</strong> directly from <strong>${escapeHtml(owned)}</strong> (check reverse lookup).</span>`;
       return;
     }
 
-    const details =
-      typeof calc.distance === "number"
-        ? `<div class="muted">Closest power distance: ${calc.distance}</div>`
-        : "";
+    const items = steps
+      .map((step, index) => {
+        const childSlug = palSlug(step.child);
+        return `
+        <li class="chain-step">
+          <div class="chain-step-head">Step ${index + 1}: Breed ${escapeHtml(step.child)}</div>
+          <div class="chain-step-pair">
+            ${buildPalChip(step.parent_a)}
+            <span class="flow-symbol">+</span>
+            ${buildPalChip(step.parent_b)}
+            <span class="flow-symbol">→</span>
+            <a class="pal-chip pal-chip-link" href="/pal/${childSlug}">${buildPalImage(step.child, "pal-image")}<span>${escapeHtml(step.child)}</span></a>
+          </div>
+          <span class="muted">(${escapeHtml(step.method)})</span>
+        </li>
+      `;
+      })
+      .join("");
 
-    resultDiv.innerHTML = `
-      <div class="arena">
-        ${buildArenaCard(parentA, "parent")}
-        <span class="flow-symbol">+</span>
-        ${buildArenaCard(parentB, "parent")}
-        <span class="flow-symbol">=</span>
-        ${buildArenaCard(calc.child.name, "child")}
-      </div>
-      <div class="muted">${escapeHtml(calc.method)}</div>
-      ${details}
+    chainResultDiv.innerHTML = `
+      <p><strong>${steps.length}</strong> breeding step${steps.length === 1 ? "" : "s"} from <strong>${escapeHtml(owned)}</strong> to <strong>${escapeHtml(goal)}</strong>.</p>
+      <ol class="chain-steps">${items}</ol>
+      <p class="muted"><a href="/palworld-breeding-calculator?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a></p>
     `;
-
-    if (celebrate) {
-      celebrateConfetti();
-    }
   } catch (error) {
-    if (requestId !== calculateRequestId) {
-      return;
+    if (requestId === chainRequestId) {
+      const msg = String(error.message || "Chain lookup failed");
+      const hint = msg.includes("timed out") || msg.includes("15 steps")
+        ? " Try a closer goal Pal or use the reverse calculator for parent pairs."
+        : "";
+      chainResultDiv.innerHTML = `<span class="muted">${escapeHtml(msg)}${escapeHtml(hint)}</span>`;
     }
-    console.error(error);
-    showResultError(
-      error.message?.includes("Invalid parent")
-        ? "Could not find those Pals. Refresh the page or pick names from the list."
-        : `Calculation failed: ${error.message}`
-    );
   } finally {
-    if (requestId === calculateRequestId) {
-      calculateBtn.disabled = false;
+    if (requestId === chainRequestId && findChainBtn) {
+      findChainBtn.disabled = false;
     }
   }
 }
@@ -472,7 +833,11 @@ async function renderCombinations() {
   combosDiv.innerHTML = `<span class="muted">Finding combinations for ${escapeHtml(targetName)}…</span>`;
   findCombosBtn.disabled = true;
   try {
-    const pairs = await apiFetch(`/api/combinations/${encodeURIComponent(targetName)}`);
+    let pairs = combinationsCache.get(targetName);
+    if (!pairs) {
+      pairs = await apiFetch(`/api/combinations/${encodeURIComponent(targetName)}`);
+      combinationsCache.set(targetName, pairs);
+    }
     if (requestId !== combinationsRequestId) {
       return;
     }
@@ -481,20 +846,21 @@ async function renderCombinations() {
       return;
     }
 
-    const items = pairs
-      .slice(0, 80)
-      .map(
-        (pair) => `
-        <li class="combo-item">
-          <div class="combo-pair"><strong>${escapeHtml(pair.a)}</strong><span class="flow-symbol">+</span><strong>${escapeHtml(pair.b)}</strong></div>
-          <span class="muted">(${escapeHtml(pair.method)})</span>
-        </li>
-      `
-      )
+    const visible = pairs.slice(0, COMBO_LIST_MAX);
+    const items = visible
+      .map((pair, index) => {
+        const withImages = index < COMBO_LIST_WITH_IMAGES;
+        const pairBody = withImages
+          ? `<div class="combo-pair">${buildPalChip(pair.a)}<span class="flow-symbol">+</span>${buildPalChip(pair.b)}</div>`
+          : `<div class="combo-pair"><strong>${escapeHtml(pair.a)}</strong><span class="flow-symbol">+</span><strong>${escapeHtml(pair.b)}</strong></div>`;
+        return `<li class="combo-item">${pairBody}<span class="muted">(${escapeHtml(pair.method)})</span></li>`;
+      })
       .join("");
 
     const more =
-      pairs.length > 80 ? `<p class="muted">Showing 80 of ${pairs.length} combinations.</p>` : "";
+      pairs.length > visible.length
+        ? `<p class="muted">Showing ${visible.length} of ${pairs.length} combinations${visible.length > COMBO_LIST_WITH_IMAGES ? " (pics on first " + COMBO_LIST_WITH_IMAGES + ")" : ""}.</p>`
+        : "";
 
     combosDiv.innerHTML = `
     <div class="target-row"><span>Found <strong>${pairs.length}</strong> combinations for <strong>${escapeHtml(targetName)}</strong></span></div>
@@ -524,8 +890,7 @@ function renderPalGrid(showAll = false) {
     .map(
       (pal) => `
       <button class="pal-grid-card" type="button" data-pal-name="${escapeHtml(pal.name)}">
-        <img src="${getPalImageUrl(pal.name)}" alt="${getPalAltText(pal.name)}" loading="lazy" decoding="async"
-          onerror="this.onerror=null;this.src='${PAL_PLACEHOLDER}'" />
+        ${buildPalImage(pal.name, "pal-grid-img")}
         <div class="pal-grid-name">${escapeHtml(pal.name)}</div>
         <div class="pal-power">Power ${pal.power}</div>
       </button>
@@ -608,11 +973,15 @@ function applyQueryFromUrl() {
   const parentA = params.get("parentA") || params.get("parent_a");
   const parentB = params.get("parentB") || params.get("parent_b");
   const target = params.get("target") || params.get("child");
+  const owned = params.get("owned");
+  const goal = params.get("goal");
   const palNames = new Set(appData.pals.map((p) => p.name));
 
   const matchedA = resolvePalName(parentA, palNames);
   const matchedB = resolvePalName(parentB, palNames);
   const matchedTarget = resolvePalName(target, palNames);
+  const matchedOwned = resolvePalName(owned, palNames);
+  const matchedGoal = resolvePalName(goal, palNames);
   if (matchedA) {
     parentASelect.value = matchedA;
   }
@@ -622,17 +991,33 @@ function applyQueryFromUrl() {
   if (matchedTarget) {
     targetChildSelect.value = matchedTarget;
   }
-  return { hasTarget: Boolean(matchedTarget) };
+  if (chainOwnedSelect && matchedOwned) {
+    chainOwnedSelect.value = matchedOwned;
+  }
+  if (chainGoalSelect && matchedGoal) {
+    chainGoalSelect.value = matchedGoal;
+  }
+  return {
+    hasTarget: Boolean(matchedTarget),
+    hasChain: Boolean(matchedOwned && matchedGoal)
+  };
 }
 
 async function bootstrap() {
-  renderKidBackground();
   appData = await apiFetch("/api/bootstrap");
+  buildPalIndexes();
+  lastHeroView = "";
   populateSelect(parentASelect);
   populateSelect(parentBSelect);
   populateSelect(targetChildSelect);
+  if (chainOwnedSelect) {
+    populateSelect(chainOwnedSelect);
+  }
+  if (chainGoalSelect) {
+    populateSelect(chainGoalSelect);
+  }
 
-  const { hasTarget } = applyQueryFromUrl();
+  const { hasTarget, hasChain } = applyQueryFromUrl();
   if (!parentASelect.value) {
     parentASelect.value = "Anubis";
   }
@@ -647,7 +1032,12 @@ async function bootstrap() {
   setTheme(savedTheme === "light" ? "light" : "dark");
 
   renderStatsBar();
-  renderPalGrid(true);
+  renderPalGrid(false);
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(() => renderKidBackground(), { timeout: 2000 });
+  } else {
+    setTimeout(renderKidBackground, 300);
+  }
   const initialView = resolveViewFromPath(globalThis.location.pathname);
   const panelPromise = renderDatabasePanel(initialView);
   if (initialView === "map") {
@@ -664,6 +1054,12 @@ async function bootstrap() {
       combosDiv.innerHTML =
         '<span class="muted">Select a target Pal and click <strong>Find Combinations</strong>.</span>';
     }
+    if (hasChain || initialView === "chain") {
+      void renderChainBreeding();
+    } else if (chainResultDiv) {
+      chainResultDiv.innerHTML =
+        '<span class="muted">Pick the Pal you own and your goal, then click <strong>Find Breeding Chain</strong>.</span>';
+    }
   };
   if (typeof requestIdleCallback === "function") {
     requestIdleCallback(runDeferred, { timeout: 600 });
@@ -673,14 +1069,15 @@ async function bootstrap() {
   setTimeout(() => focusViewCard(initialView), 120);
 }
 
-calculateBtn.addEventListener("click", async () => renderResult({ celebrate: true }));
-swapBtn.addEventListener("click", async () => {
+calculateBtn.addEventListener("click", () => renderResult({ celebrate: true }));
+swapBtn.addEventListener("click", () => {
   const currentA = parentASelect.value;
   parentASelect.value = parentBSelect.value;
   parentBSelect.value = currentA;
-  await renderResult({ celebrate: true });
+  renderResult({ celebrate: true });
 });
 findCombosBtn.addEventListener("click", () => renderCombinations());
+findChainBtn?.addEventListener("click", () => renderChainBreeding());
 themeToggleBtn.addEventListener("click", () => {
   const nextTheme = document.body.dataset.theme === "light" ? "dark" : "light";
   setTheme(nextTheme);

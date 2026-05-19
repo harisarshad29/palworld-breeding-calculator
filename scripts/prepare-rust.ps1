@@ -14,7 +14,12 @@ foreach ($rel in $required) {
 
 $webp = (Get-ChildItem (Join-Path $root "assets\pals\*.webp") -EA SilentlyContinue).Count
 if ($webp -lt 100) {
-  Write-Warning "Only $webp pal images in assets/pals (expected ~195). Run: node scripts/download-pal-icons.js"
+  Write-Host "Downloading pal icons ($webp local)..." -ForegroundColor Yellow
+  node (Join-Path $PSScriptRoot "download-pal-icons.js")
+  if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Icon download had errors; site will use CDN fallback for missing images."
+  }
+  $webp = (Get-ChildItem (Join-Path $root "assets\pals\*.webp") -EA SilentlyContinue).Count
 }
 
 Write-Host "Project OK ($webp pal images)." -ForegroundColor Green

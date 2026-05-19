@@ -1,0 +1,60 @@
+COMMON ERRORS - FIX
+==================
+
+ERROR: "Rust API Required" / calculator not working
+---------------------------------------------------
+CAUSE: Rust server is not running.
+FIX:
+  1. Double-click START-SERVER.bat
+  2. Wait for "Server OK"
+  3. Use ONLY: http://127.0.0.1:3000/palworld-breeding-calculator
+  Do NOT open index.html as a file (file://) — Pal pics need /assets/ from the server.
+
+ERROR: Breeding pics not showing (grey circles only)
+----------------------------------------------------
+CAUSE: Missing assets/pals/*.webp OR page opened without Rust server.
+FIX:
+  1. START-SERVER.bat (not file://)
+  2. If still missing: node scripts/download-pal-icons.js
+  3. Hard refresh Ctrl+Shift+R
+
+ERROR: Page not found (404) on palworld-breeding-calculator.us
+--------------------------------------------------------------
+CAUSE: Domain still points to NETLIFY (old static site).
+FIX: Point domain to RENDER (see DEPLOY-ALL.txt).
+
+WORKING URL RIGHT NOW (use until DNS fixed):
+  https://palworld-breeding-calculator.onrender.com/palworld-breeding-calculator
+
+Namecheap DNS (Render):
+  A     @    216.24.57.1
+  CNAME www  palworld-breeding-calculator.onrender.com
+
+Render env (required):
+  BASE_URL = https://palworld-breeding-calculator.us
+  HOST = 0.0.0.0
+
+ERROR: Chain breeding failed / red error text
+---------------------------------------------
+CAUSE: Old server build, or goal Pal has no route within 15 steps (e.g. some starters).
+FIX:
+  1. START-SERVER.bat again (rebuilds release)
+  2. Try a closer goal (e.g. Lamball -> Foxparks)
+  3. Use Reverse Calculator for direct parent pairs
+
+ERROR: cargo / access denied
+----------------------------
+CAUSE: Old server still running.
+FIX: Task Manager -> end palworld-breeding-calculator.exe
+     Then START-SERVER.bat again.
+
+ERROR: Only 60 Pals / wrong count
+-----------------------------------
+FIX: Hard refresh Ctrl+Shift+R. Stats should show Pals: 198.
+
+VERIFY LOCAL:
+  powershell -File scripts\seo-qa.ps1
+
+VERIFY LIVE (after Render DNS):
+  $env:LIVE_SITE_URL="https://palworld-breeding-calculator.us"
+  powershell -File scripts\verify-live-seo.ps1

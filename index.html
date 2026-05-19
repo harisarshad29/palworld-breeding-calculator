@@ -39,6 +39,7 @@
           <a href="/map" class="tool-link-btn" data-view="map">Map</a>
           <a href="/items" class="tool-link-btn" data-view="items">Items</a>
           <a href="/capture-rate" class="tool-link-btn" data-view="capture">Capture Rate</a>
+          <a href="/palworld-chain-breeding" class="tool-link-btn" data-view="chain">Chain Breeding</a>
         </div>
         <div id="statsBar" class="stats-bar"></div>
       </header>
@@ -85,6 +86,24 @@
         </div>
         <button id="findCombosBtn">Find Combinations</button>
         <div id="combos" class="combos"></div>
+      </section>
+
+      <section id="chainCard" class="card">
+        <h2>Chain Breeding Path</h2>
+        <p>Find the shortest egg route from a Pal you already own to any target Pal (up to 15 steps).</p>
+        <div class="grid">
+          <label>
+            Pal You Own
+            <select id="chainOwned"></select>
+          </label>
+          <label>
+            Goal Pal
+            <select id="chainGoal"></select>
+          </label>
+        </div>
+        <button id="findChainBtn" type="button">Find Breeding Chain</button>
+        <p class="muted chain-hint">Each step uses live combo data. Verify parents in the reverse calculator before spending cake.</p>
+        <div id="chainResult" class="chain-result"></div>
       </section>
 
       <section id="palBoxCard" class="card">
@@ -137,19 +156,20 @@
           <li><a href="/guides/capture-rate-explained">Capture Rate Explained</a></li>
           <li><a href="/palworld-breeding-calculator">Palworld Breeding Calculator Online</a></li>
           <li><a href="/palworld-breeding-combinations">Palworld Breeding Combinations</a></li>
+          <li><a href="/palworld-chain-breeding">Palworld Chain Breeding Path Finder</a></li>
         </ul>
         <h3>Pal Pages</h3>
-        <ul>
-          <li><a href="/pal/anubis">Anubis page</a></li>
-          <li><a href="/pal/jetragon">Jetragon page</a></li>
-          <li><a href="/pal/frostallion">Frostallion page</a></li>
+        <p class="muted">Every Pal has a breeding profile with combos, map data, and calculator links.</p>
+        <ul class="seo-link-grid">
+          <!--PAL_PAGES_LINKS-->
         </ul>
+        <p><a href="/pal-pages">Browse all Pal breeding pages (full list)</a></p>
         <h3>Combo Pages</h3>
-        <ul>
-          <li><a href="/combo/anubis/jetragon">Anubis + Jetragon</a></li>
-          <li><a href="/combo/necromus/paladius">Necromus + Paladius</a></li>
-          <li><a href="/combo/blazamut/suzaku">Blazamut + Suzaku</a></li>
+        <p class="muted">Parent-pair pages show the child Pal, breeding method, and related routes.</p>
+        <ul class="seo-link-grid">
+          <!--COMBO_PAGES_LINKS-->
         </ul>
+        <p><a href="/combo-pages">Browse all featured combo pages (full list)</a></p>
       </section>
     </main>
 

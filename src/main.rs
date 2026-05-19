@@ -1,11 +1,13 @@
+mod chain;
 mod data;
 mod seo_copy;
 
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::collections::{HashMap, HashSet};
+use std::sync::Arc;
+use std::time::Instant;
 
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     response::{Html, IntoResponse},
     routing::{get, post},
@@ -19,13 +21,15 @@ use tower_http::set_header::SetResponseHeaderLayer;
 #[derive(Clone)]
 struct AppState {
     pals: Vec<Pal>,
+    pals_by_name: HashMap<String, usize>,
+    power_order: Vec<usize>,
     pal_locations: HashMap<String, data::PalLocation>,
     items: Vec<ItemData>,
     technologies: Vec<TechnologyData>,
     special_combos: HashMap<String, String>,
+    reverse_combos: Arc<HashMap<String, Vec<PairResult>>>,
     base_url: String,
     index_template: String,
-    combinations_cache: Arc<Mutex<HashMap<String, Vec<PairResult>>>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -54,6 +58,7 @@ struct BootstrapResponse {
     items: Vec<ItemData>,
     technologies: Vec<TechnologyData>,
     special_combos_count: usize,
+    special_combos: HashMap<String, String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -90,6 +95,27 @@ const PRIMARY_CALCULATOR_PATH: &str = "/palworld-breeding-calculator";
 const PRIORITY_BREED_TARGETS: &[&str] = &[
     "Anubis", "Jetragon", "Frostallion", "Necromus", "Paladius", "Lyleen", "Blazamut", "Suzaku",
     "Jormuntide", "Shadowbeak", "Bellanoir", "Relaxaurus", "Penking", "Digtoise", "Astegon",
+    "Chikipi", "Foxparks", "Lamball", "Cattiva", "Grizzbolt", "Orserk", "Helzephyr", "Kingpaca",
+];
+
+/// High-value parent pairs for combo page discovery (beyond special_combos.json).
+const LEGENDARY_COMBO_SEEDS: &[(&str, &str)] = &[
+    ("Anubis", "Jetragon"),
+    ("Necromus", "Paladius"),
+    ("Blazamut", "Suzaku"),
+    ("Grizzbolt", "Lyleen"),
+    ("Relaxaurus", "Mammorest"),
+    ("Penking", "Bushi"),
+    ("Frostallion", "Frostallion Noct"),
+    ("Lamball", "Cattiva"),
+    ("Foxparks", "Rooby"),
+    ("Mossanda", "Grizzbolt"),
+    ("Kitsun", "Astegon"),
+    ("Vanwyrm", "Anubis"),
+    ("Surfent", "Dumud"),
+    ("Incineram", "Maraith"),
+    ("Jolthog", "Pengullet"),
+    ("Suzaku", "Jormuntide"),
 ];
 
 #[derive(Clone, Copy)]
@@ -116,7 +142,7 @@ struct GuidePage {
     body_html: &'static str,
 }
 
-const SEO_PAGES: [SeoPage; 10] = [
+const SEO_PAGES: [SeoPage; 11] = [
     SeoPage {
         path: "/",
         title: "Palworld Breeding Calculator – Free Tool, Combos & Reverse Lookup",
@@ -215,6 +241,16 @@ const SEO_PAGES: [SeoPage; 10] = [
         badge: "Capture Calculator",
         h1_characteristics: seo_copy::KEYWORD_CAPTURE_H1,
         page_description: seo_copy::KEYWORD_CAPTURE_DESC,
+        canonical_path: None,
+    },
+    SeoPage {
+        path: "/palworld-chain-breeding",
+        title: "Palworld Chain Breeding Calculator - Shortest Path to Any Pal",
+        meta_description: "Find the shortest Palworld breeding chain from a Pal you own to any target. Step-by-step parent pairs, special combos, and links to verify each egg.",
+        h1: "Palworld Chain Breeding Path Finder",
+        badge: "Chain Breeder",
+        h1_characteristics: seo_copy::CHAIN_H1,
+        page_description: seo_copy::CHAIN_DESC,
         canonical_path: None,
     },
 ];
@@ -327,19 +363,8 @@ async fn main() {
     let index_template = std::fs::read_to_string("index.html")
         .expect("index.html must exist in project root");
 
-    let state = AppState {
-        pals: data::load_pals(),
-        pal_locations: data::load_pal_locations(),
-        items: build_items(),
-        technologies: build_technologies(),
-        special_combos: data::load_special_combos(),
-        base_url: resolve_base_url(),
-        index_template,
-        combinations_cache: Arc::new(Mutex::new(HashMap::new())),
-    };
+    let state = build_app_state(index_template, resolve_base_url());
     let base_url_hint = state.base_url.clone();
-    let prewarm_state = state.clone();
-    tokio::task::spawn_blocking(move || prewarm_combo_cache(&prewarm_state));
 
     let assets_cache = SetResponseHeaderLayer::if_not_present(
         header::CACHE_CONTROL,
@@ -359,6 +384,9 @@ async fn main() {
         .route("/palworld-breeding-calculator", get(index_keyword_breeding_page))
         .route("/palworld-breeding-combinations", get(index_keyword_combos_page))
         .route("/palworld-capture-rate-calculator", get(index_keyword_capture_page))
+        .route("/palworld-chain-breeding", get(index_chain_breeding_page))
+        .route("/pal-pages", get(pal_pages_directory))
+        .route("/combo-pages", get(combo_pages_directory))
         .route("/pal/:name", get(pal_detail_page))
         .route("/combo/:parent_a/:parent_b", get(combo_detail_page))
         .route("/guides/how-to-breed-anubis", get(guide_page_handler))
@@ -385,6 +413,7 @@ async fn main() {
         .route("/api/calculate", post(api_calculate))
         .route("/api/combinations/:target", get(api_combinations))
         .route("/api/capture/:target", get(api_capture))
+        .route("/api/chain", get(api_chain))
         .nest_service(
             "/assets",
             Router::new()
@@ -422,6 +451,7 @@ async fn api_bootstrap(State(state): State<AppState>) -> impl IntoResponse {
         items: state.items.clone(),
         technologies: state.technologies.clone(),
         special_combos_count: state.special_combos.len(),
+        special_combos: state.special_combos.clone(),
     })
 }
 
@@ -438,59 +468,224 @@ async fn api_calculate(
         .ok_or_else(|| (StatusCode::BAD_REQUEST, "Invalid parent names".to_string()))
 }
 
-fn combinations_for_target(state: &AppState, target: &str) -> Vec<PairResult> {
-    let Some(pal) = find_pal_by_name(&state.pals, target) else {
+pub(crate) fn combinations_for_target(state: &AppState, target: &str) -> Vec<PairResult> {
+    let Some(pal) = find_pal_in_state(state, target) else {
         return Vec::new();
     };
-    let canonical = pal.name.as_str();
+    state
+        .reverse_combos
+        .get(&pal.name)
+        .cloned()
+        .unwrap_or_default()
+}
 
-    let mut cache = state
-        .combinations_cache
-        .lock()
-        .expect("combinations cache lock poisoned");
-    if let Some(cached) = cache.get(canonical) {
-        return cached.clone();
+fn build_app_state(index_template: String, base_url: String) -> AppState {
+    let pals = data::load_pals();
+    let special_combos = data::load_special_combos();
+    let started = Instant::now();
+
+    let mut pals_by_name = HashMap::with_capacity(pals.len());
+    for (i, pal) in pals.iter().enumerate() {
+        pals_by_name.insert(normalize_pal_name(&pal.name), i);
     }
 
-    let mut results = Vec::new();
-    for (i, first) in state.pals.iter().enumerate() {
-        for second in state.pals.iter().skip(i) {
-            if let Some(calc) = calculate_child(state, &first.name, &second.name) {
-                if calc.child.name == canonical {
-                    results.push(PairResult {
-                        a: first.name.clone(),
-                        b: second.name.clone(),
-                        method: calc.method,
-                    });
-                }
+    let mut power_order: Vec<usize> = (0..pals.len()).collect();
+    power_order.sort_by_key(|&i| pals[i].power);
+
+    let reverse_combos =
+        build_reverse_index(&pals, &pals_by_name, &power_order, &special_combos);
+    eprintln!(
+        "Breeding index ready: {} pals, {} targets, {} ms",
+        pals.len(),
+        reverse_combos.len(),
+        started.elapsed().as_millis()
+    );
+
+    let mut state = AppState {
+        pals,
+        pals_by_name,
+        power_order,
+        pal_locations: data::load_pal_locations(),
+        items: build_items(),
+        technologies: build_technologies(),
+        special_combos,
+        reverse_combos: Arc::new(reverse_combos),
+        base_url,
+        index_template: String::new(),
+    };
+    state.index_template = prepare_index_template(index_template, &state);
+    state
+}
+
+fn prepare_index_template(mut template: String, state: &AppState) -> String {
+    template = template.replace(
+        "<!--PAL_PAGES_LINKS-->",
+        &seo_pal_links_html(&state.pals, Some(60)),
+    );
+    template = template.replace(
+        "<!--COMBO_PAGES_LINKS-->",
+        &seo_combo_links_html(state, Some(80)),
+    );
+    template
+}
+
+fn seo_pal_links_html(pals: &[Pal], max: Option<usize>) -> String {
+    let mut sorted: Vec<&Pal> = pals.iter().collect();
+    sorted.sort_by(|a, b| a.name.cmp(&b.name));
+    let limit = max.unwrap_or(sorted.len());
+    sorted
+        .into_iter()
+        .take(limit)
+        .map(|pal| {
+            format!(
+                r#"<li><a href="/pal/{}">{}</a></li>"#,
+                pal_slug(&pal.name),
+                pal.name
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n          ")
+}
+
+fn collect_combo_page_pairs(state: &AppState, max: Option<usize>) -> Vec<(String, String)> {
+    let mut seen = HashSet::new();
+    let mut pairs = Vec::new();
+
+    for key in state.special_combos.keys() {
+        let Some((a, b)) = key.split_once('|') else {
+            continue;
+        };
+        let dedupe = combo_key(a, b);
+        if seen.insert(dedupe) {
+            pairs.push((a.to_string(), b.to_string()));
+        }
+    }
+
+    for name in PRIORITY_BREED_TARGETS {
+        for pair in combinations_for_target(state, name).iter().take(8) {
+            let dedupe = combo_key(&pair.a, &pair.b);
+            if seen.insert(dedupe) {
+                pairs.push((pair.a.clone(), pair.b.clone()));
             }
         }
     }
-    cache.insert(canonical.to_string(), results.clone());
-    results
-}
 
-fn prewarm_combo_cache(state: &AppState) {
-    const POPULAR: &[&str] = &[
-        "Frostallion",
-        "Anubis",
-        "Jetragon",
-        "Lamball",
-        "Cattiva",
-        "Foxparks",
-        "Lyleen",
-        "Necromus",
-        "Paladius",
-        "Penking",
-        "Relaxaurus",
-        "Shadowbeak",
-    ];
-    for name in POPULAR {
-        if find_pal_by_name(&state.pals, name).is_some() {
-            let _ = combinations_for_target(state, name);
+    for pair in LEGENDARY_COMBO_SEEDS {
+        let dedupe = combo_key(pair.0, pair.1);
+        if seen.insert(dedupe) {
+            pairs.push((pair.0.to_string(), pair.1.to_string()));
         }
     }
-    eprintln!("Pre-warmed breeding combinations for {} popular Pals", POPULAR.len());
+
+    if let Some(limit) = max {
+        pairs.truncate(limit);
+    }
+    pairs
+}
+
+fn seo_combo_links_html(state: &AppState, max: Option<usize>) -> String {
+    collect_combo_page_pairs(state, max)
+        .into_iter()
+        .map(|(a, b)| combo_pair_list_item(&a, &b))
+        .collect::<Vec<_>>()
+        .join("\n          ")
+}
+
+fn combo_pair_list_item(a: &str, b: &str) -> String {
+    format!(
+        r#"<li><a href="/combo/{}/{}">{} + {}</a></li>"#,
+        pal_slug(a),
+        pal_slug(b),
+        a,
+        b
+    )
+}
+
+fn normalize_pal_name(name: &str) -> String {
+    name.trim().to_lowercase()
+}
+
+fn find_pal_in_state<'a>(state: &'a AppState, name: &str) -> Option<&'a Pal> {
+    let key = normalize_pal_name(name);
+    state.pals_by_name.get(&key).map(|&i| &state.pals[i])
+}
+
+fn nearest_pal_index(pals: &[Pal], power_order: &[usize], target_power: i32) -> usize {
+    if power_order.is_empty() {
+        return 0;
+    }
+    let mut lo = 0usize;
+    let mut hi = power_order.len();
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2;
+        if pals[power_order[mid]].power < target_power {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+    let right = lo.min(power_order.len() - 1);
+    let left = right.saturating_sub(1);
+    let r_idx = power_order[right];
+    if left == right {
+        return r_idx;
+    }
+    let l_idx = power_order[left];
+    if (pals[l_idx].power - target_power).abs() <= (pals[r_idx].power - target_power).abs() {
+        l_idx
+    } else {
+        r_idx
+    }
+}
+
+fn build_reverse_index(
+    pals: &[Pal],
+    pals_by_name: &HashMap<String, usize>,
+    power_order: &[usize],
+    special_combos: &HashMap<String, String>,
+) -> HashMap<String, Vec<PairResult>> {
+    let mut reverse: HashMap<String, Vec<PairResult>> = HashMap::new();
+    for i in 0..pals.len() {
+        for j in (i + 1)..pals.len() {
+            let Some((child_idx, method)) =
+                child_for_pair(pals, pals_by_name, power_order, special_combos, i, j)
+            else {
+                continue;
+            };
+            let child_name = pals[child_idx].name.clone();
+            reverse
+                .entry(child_name)
+                .or_default()
+                .push(PairResult {
+                    a: pals[i].name.clone(),
+                    b: pals[j].name.clone(),
+                    method,
+                });
+        }
+    }
+    reverse
+}
+
+fn child_for_pair(
+    pals: &[Pal],
+    pals_by_name: &HashMap<String, usize>,
+    power_order: &[usize],
+    special_combos: &HashMap<String, String>,
+    i: usize,
+    j: usize,
+) -> Option<(usize, String)> {
+    let key = combo_key(&pals[i].name, &pals[j].name);
+    if let Some(child_name) = special_combos.get(&key) {
+        let child_key = normalize_pal_name(child_name);
+        let child_idx = *pals_by_name.get(&child_key)?;
+        return Some((child_idx, "Special combination".to_string()));
+    }
+    let target_power = (pals[i].power + pals[j].power) / 2;
+    let child_idx = nearest_pal_index(pals, power_order, target_power);
+    Some((
+        child_idx,
+        format!("Power average ({target_power})"),
+    ))
 }
 
 async fn api_combinations(
@@ -502,6 +697,122 @@ async fn api_combinations(
     };
 
     Ok(Json(combinations_for_target(&state, &pal.name)))
+}
+
+#[derive(Deserialize)]
+struct ChainQuery {
+    owned: String,
+    goal: String,
+}
+
+async fn api_chain(
+    State(state): State<AppState>,
+    Query(query): Query<ChainQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, String)> {
+    let owned = query.owned.trim().to_string();
+    let goal = query.goal.trim().to_string();
+    if owned.is_empty() || goal.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, "owned and goal are required".to_string()));
+    }
+
+    let owned_check = owned.clone();
+    let goal_check = goal.clone();
+    let work = tokio::task::spawn_blocking(move || {
+        let steps = chain::find_breeding_chain(&state, &owned_check, &goal_check, 15);
+        let hint = steps
+            .as_ref()
+            .is_none()
+            .then(|| chain_failure_hint(&state, &owned_check, &goal_check))
+            .flatten();
+        let partial = steps.as_ref().is_none().then(|| {
+            chain::direct_parent_combo_for_owned(&state, &owned_check, &goal_check).map(|pair| {
+                let partner = if pair.a.eq_ignore_ascii_case(&owned_check) {
+                    pair.b.clone()
+                } else {
+                    pair.a.clone()
+                };
+                serde_json::json!({
+                    "parent_a": pair.a,
+                    "parent_b": pair.b,
+                    "child": goal_check,
+                    "method": pair.method,
+                    "missing_partner": partner,
+                })
+            })
+        }).flatten();
+        (steps, hint, partial)
+    });
+
+    let (steps, hint, partial) = match tokio::time::timeout(std::time::Duration::from_secs(12), work).await {
+        Ok(Ok(result)) => result,
+        Ok(Err(_)) => {
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Chain search task failed".to_string(),
+            ));
+        }
+        Err(_) => {
+            return Err((
+                StatusCode::REQUEST_TIMEOUT,
+                format!(
+                    "Chain search timed out for {owned} → {goal}. Try closer Pals or use reverse lookup."
+                ),
+            ));
+        }
+    };
+
+    match steps {
+        Some(steps) => Ok(Json(serde_json::json!({
+            "owned": owned,
+            "goal": goal,
+            "found": true,
+            "steps": steps,
+            "step_count": steps.len()
+        }))),
+        None => Ok(Json(serde_json::json!({
+            "owned": owned,
+            "goal": goal,
+            "found": false,
+            "steps": [],
+            "step_count": 0,
+            "hint": hint,
+            "partial": partial,
+            "message": hint.clone().unwrap_or_else(|| format!(
+                "No breeding chain found from {owned} to {goal} within 15 steps. Try a different owned Pal or use reverse lookup."
+            ))
+        }))),
+    }
+}
+
+fn chain_failure_hint(state: &AppState, owned: &str, goal: &str) -> Option<String> {
+    let owned_pal = find_pal_by_name(&state.pals, owned)?;
+    let goal_pal = find_pal_by_name(&state.pals, goal)?;
+
+    if let Some(pair) = chain::direct_parent_combo_for_owned(state, owned, goal) {
+        let partner = if pair.a.eq_ignore_ascii_case(owned) {
+            pair.b.as_str()
+        } else {
+            pair.a.as_str()
+        };
+        let partner_pal = find_pal_by_name(&state.pals, partner)?;
+        return Some(format!(
+            "{owned} can breed {goal} with {partner}, but the planner could not reach {partner} (breeding power {}) starting from only {owned} (power {}). Capture or breed {partner} first, then use that pair in the calculator.",
+            partner_pal.power,
+            owned_pal.power
+        ));
+    }
+
+    let gap = goal_pal.power.saturating_sub(owned_pal.power);
+    if gap > 100 {
+        return Some(format!(
+            "{owned} (breeding power {}) is far below {goal} (power {}). Pick an owned Pal closer to your goal, or use reverse lookup for parent pairs."
+            ,
+            owned_pal.power,
+            goal_pal.power
+        ));
+    }
+
+    None
 }
 
 async fn api_capture(
@@ -575,6 +886,12 @@ async fn index_keyword_capture_page(
     render_index_with_seo(&state, SEO_PAGES[9]).await
 }
 
+async fn index_chain_breeding_page(
+    State(state): State<AppState>,
+) -> Result<Html<String>, (StatusCode, String)> {
+    render_index_with_seo(&state, SEO_PAGES[10]).await
+}
+
 async fn index_technology_page(
     State(state): State<AppState>,
 ) -> Result<Html<String>, (StatusCode, String)> {
@@ -619,17 +936,100 @@ fn pal_slug(name: &str) -> String {
 }
 
 fn combos_producing_target(state: &AppState, target_name: &str) -> Vec<(String, String, String)> {
-    let mut combos = Vec::new();
-    for (i, first) in state.pals.iter().enumerate() {
-        for second in state.pals.iter().skip(i) {
-            if let Some(calc) = calculate_child(state, &first.name, &second.name) {
-                if calc.child.name == target_name {
-                    combos.push((first.name.clone(), second.name.clone(), calc.method));
-                }
-            }
-        }
-    }
-    combos
+    combinations_for_target(state, target_name)
+        .into_iter()
+        .map(|pair| (pair.a, pair.b, pair.method))
+        .collect()
+}
+
+async fn pal_pages_directory(State(state): State<AppState>) -> Html<String> {
+    Html(build_pal_pages_directory_html(&state))
+}
+
+async fn combo_pages_directory(State(state): State<AppState>) -> Html<String> {
+    Html(build_combo_pages_directory_html(&state))
+}
+
+fn build_pal_pages_directory_html(state: &AppState) -> String {
+    let links: String = seo_pal_links_html(&state.pals, None);
+    let count = state.pals.len();
+    format!(
+        r#"<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Palworld Pal Breeding Pages ({count}) | Pal Breeding Calculator</title>
+  <meta name="description" content="Browse {count} Palworld Pal breeding pages with parent combinations, breeding power, map locations, and calculator shortcuts." />
+  <link rel="canonical" href="{base}/pal-pages" />
+  <style>
+    body {{ margin:0; font-family:Arial,sans-serif; background:#0b0f14; color:#e5ecf4; }}
+    .wrap {{ max-width:1100px; margin:2rem auto; padding:0 1rem; }}
+    a {{ color:#8ec8ff; }}
+    h1 {{ margin-bottom:0.4rem; }}
+    .muted {{ color:#9fb2c8; }}
+    .seo-directory-grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:0.4rem 0.75rem; margin:1rem 0; }}
+    .seo-directory-grid a {{ color:#8ec8ff; text-decoration:none; font-size:0.9rem; }}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="muted"><a href="/">Home</a> / Pal Pages</p>
+    <h1>All Pal Breeding Pages</h1>
+    <p class="muted">{count} Pal profile pages with combos, map data, and breeding calculator links.</p>
+    <ul class="seo-directory-grid">{links}</ul>
+    <p><a href="/palworld-breeding-calculator">Open breeding calculator</a></p>
+  </main>
+</body>
+</html>"#,
+        base = state.base_url,
+        count = count,
+        links = links
+    )
+}
+
+fn build_combo_pages_directory_html(state: &AppState) -> String {
+    let pairs = collect_combo_page_pairs(state, None);
+    let count = pairs.len();
+    let links = pairs
+        .iter()
+        .map(|(a, b)| combo_pair_list_item(a, b))
+        .collect::<Vec<_>>()
+        .join("\n");
+    format!(
+        r#"<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Palworld Breeding Combo Pages ({count}) | Parent Pair Results</title>
+  <meta name="description" content="Browse {count} Palworld parent-pair combo pages with child outcomes, special combinations, and breeding method details." />
+  <link rel="canonical" href="{base}/combo-pages" />
+  <style>
+    body {{ margin:0; font-family:Arial,sans-serif; background:#0b0f14; color:#e5ecf4; }}
+    .wrap {{ max-width:1100px; margin:2rem auto; padding:0 1rem; }}
+    a {{ color:#8ec8ff; }}
+    h1 {{ margin-bottom:0.4rem; }}
+    .muted {{ color:#9fb2c8; }}
+    .seo-directory-grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.4rem 0.75rem; margin:1rem 0; list-style:none; padding:0; }}
+    .seo-directory-grid li {{ list-style:none; }}
+    .seo-directory-grid a {{ color:#8ec8ff; text-decoration:none; font-size:0.9rem; }}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="muted"><a href="/">Home</a> / Combo Pages</p>
+    <h1>Featured Breeding Combo Pages</h1>
+    <p class="muted">{count} parent-pair pages including special combinations and top legendary routes.</p>
+    <ul class="seo-directory-grid">{links}</ul>
+    <p><a href="/palworld-breeding-calculator">Open breeding calculator</a></p>
+  </main>
+</body>
+</html>"#,
+        base = state.base_url,
+        count = count,
+        links = links
+    )
 }
 
 async fn how_to_breed_page(
@@ -666,10 +1066,7 @@ async fn pal_detail_page(
     State(state): State<AppState>,
     Path(name): Path<String>,
 ) -> Result<Html<String>, (StatusCode, String)> {
-    let target = state
-        .pals
-        .iter()
-        .find(|pal| pal.name.eq_ignore_ascii_case(&name))
+    let target = find_pal_by_slug(&state.pals, &name)
         .cloned()
         .ok_or_else(|| (StatusCode::NOT_FOUND, "Pal not found".to_string()))?;
 
@@ -707,17 +1104,11 @@ async fn combo_detail_page(
     let result = calculate_child(&state, &parent_a.name, &parent_b.name)
         .ok_or_else(|| (StatusCode::BAD_REQUEST, "Could not calculate combo".to_string()))?;
 
-    let mut alternative_pairs = Vec::new();
-    for (i, first) in state.pals.iter().enumerate() {
-        for second in state.pals.iter().skip(i) {
-            if let Some(calc) = calculate_child(&state, &first.name, &second.name) {
-                if calc.child.name == result.child.name {
-                    alternative_pairs.push((first.name.clone(), second.name.clone(), calc.method));
-                }
-            }
-        }
-    }
-    alternative_pairs.truncate(10);
+    let alternative_pairs: Vec<(String, String, String)> = combinations_for_target(&state, &result.child.name)
+        .into_iter()
+        .map(|pair| (pair.a, pair.b, pair.method))
+        .take(60)
+        .collect();
 
     Ok(Html(build_combo_page_html(
         &state.base_url,
@@ -810,6 +1201,18 @@ async fn sitemap_pages(State(state): State<AppState>) -> impl IntoResponse {
             "0.9",
         );
     }
+    push_url(
+        &mut urls,
+        &format!("{}/pal-pages", state.base_url),
+        &lastmod,
+        "0.88",
+    );
+    push_url(
+        &mut urls,
+        &format!("{}/combo-pages", state.base_url),
+        &lastmod,
+        "0.87",
+    );
     xml_response(urlset_body(&urls))
 }
 
@@ -942,12 +1345,12 @@ fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
     <link rel="apple-touch-icon" href="/assets/pals/anubis.webp" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="{title}" />
-    <meta property="og:description" content="{description}" />
+    <meta property="og:description" content="{short_description}" />
     <meta property="og:url" content="{page_url}" />
     <meta property="og:image" content="{base_url}/assets/pals/anubis.webp" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{title}" />
-    <meta name="twitter:description" content="{description}" />
+    <meta name="twitter:description" content="{short_description}" />
     <meta name="twitter:image" content="{base_url}/assets/pals/anubis.webp" />
     <script type="application/ld+json">
       {{
@@ -1043,14 +1446,62 @@ fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
       }}
     </script>"#,
         title = page.title,
-        description = page.meta_description,
-        app_description = page.page_description,
+        description = page.page_description,
+        short_description = page.meta_description,
+        app_description = page.meta_description,
         page_url = page_url
     )
 }
 
 fn query_escape(s: &str) -> String {
     s.replace(' ', "%20").replace('&', "%26")
+}
+
+fn html_escape(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+}
+
+const SEO_PAL_IMG_STYLES: &str = r#"
+      .pal-table-link { display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; color: #8ec8ff; }
+      .pal-table-link span { line-height: 1.2; }
+      .pal-table-img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 1px solid #4b6281; background: #0b1220; flex: 0 0 auto; }
+      .combo-hero { display: flex; align-items: center; gap: 0.45rem; margin: 0 0 0.85rem; flex-wrap: wrap; }
+      .combo-hero-img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; border: 1px solid #4b6281; background: #0b1220; }
+      .combo-hero-eq { color: #9fb2c8; font-weight: 700; font-size: 1.1rem; }
+      .combo-pair-cell { vertical-align: middle; }
+      .pal-table-pair { display: inline-flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+      .pal-table-pair .plus { color: #9fb2c8; font-weight: 700; }
+"#;
+
+fn pal_img_tag(name: &str, class: &str) -> String {
+    let slug = pal_slug(name);
+    let esc = html_escape(name);
+    let cdn = query_escape(name);
+    format!(
+        r#"<img class="{class}" src="/assets/pals/{slug}.webp" alt="{esc}" width="36" height="36" loading="lazy" decoding="async" onerror="if(!this.dataset.f){{this.dataset.f='cdn';this.src='https://ggservers.com/images/palworld/{cdn}.webp';}}else{{this.onerror=null;this.src='/assets/pals/placeholder.svg';}}" />"#
+    )
+}
+
+fn combo_parent_cell(name: &str, combo_a: &str, combo_b: &str) -> String {
+    let a_slug = pal_slug(combo_a);
+    let b_slug = pal_slug(combo_b);
+    format!(
+        r#"<a class="pal-table-link" href="/combo/{a_slug}/{b_slug}">{img}<span>{label}</span></a>"#,
+        img = pal_img_tag(name, "pal-table-img"),
+        label = html_escape(name)
+    )
+}
+
+fn combo_pair_table_row(a: &str, b: &str, method: &str) -> String {
+    format!(
+        "<tr><td>{}</td><td>{}</td><td>{}</td></tr>",
+        combo_parent_cell(a, a, b),
+        combo_parent_cell(b, a, b),
+        html_escape(method)
+    )
 }
 
 fn combo_table_rows(combos: &[(String, String, String)], limit: usize) -> String {
@@ -1061,7 +1512,10 @@ fn combo_table_rows(combos: &[(String, String, String)], limit: usize) -> String
             let a_slug = pal_slug(a);
             let b_slug = pal_slug(b);
             format!(
-                "<tr><td><a href=\"/combo/{a_slug}/{b_slug}\">{a} + {b}</a></td><td>{method}</td></tr>"
+                r#"<tr><td class="combo-pair-cell"><span class="pal-table-pair">{pa}<span class="plus">+</span>{pb}</span></td><td>{method}</td></tr>"#,
+                pa = combo_parent_cell(a, &a_slug, &b_slug),
+                pb = combo_parent_cell(b, &a_slug, &b_slug),
+                method = html_escape(method)
             )
         })
         .collect::<Vec<_>>()
@@ -1119,8 +1573,9 @@ fn build_how_to_breed_html(
       .crumbs {{ color: #9fb2c8; font-size: 0.9rem; margin-bottom: 0.8rem; }}
       .card {{ background: #131a23; border: 1px solid #2d3a4d; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }}
       table {{ width: 100%; border-collapse: collapse; }}
-      th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; }}
+      th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; vertical-align: middle; }}
       th {{ background: #182230; }}
+      {SEO_PAL_IMG_STYLES}
     </style>
     <script type="application/ld+json">
       {{"@context":"https://schema.org","@type":"HowTo","name":"How to breed {pal_name} in Palworld","description":"{description}","step":[{{"@type":"HowToStep","name":"Unlock Breeding Farm","text":"Research and build a Breeding Farm and Egg Incubator with cake in the feed box."}},{{"@type":"HowToStep","name":"Find parent pairs","text":"Use the reverse calculator to list valid parents for {pal_name}."}},{{"@type":"HowToStep","name":"Breed and incubate","text":"Assign parents, collect the egg, and incubate until {pal_name} hatches."}}]}}
@@ -1163,6 +1618,7 @@ fn build_how_to_breed_html(
         rows = rows,
         calc_link = calc_link,
         tier_note = pal_tier_note(target.power),
+        SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
     )
 }
 
@@ -1208,8 +1664,9 @@ fn build_combos_hub_html(
       .crumbs {{ color: #9fb2c8; font-size: 0.9rem; margin-bottom: 0.8rem; }}
       .card {{ background: #131a23; border: 1px solid #2d3a4d; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }}
       table {{ width: 100%; border-collapse: collapse; }}
-      th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; }}
+      th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; vertical-align: middle; }}
       th {{ background: #182230; }}
+      {SEO_PAL_IMG_STYLES}
     </style>
     <script type="application/ld+json">
       {{"@context":"https://schema.org","@type":"ItemList","name":"{pal_name} breeding combinations","numberOfItems":{combo_count},"itemListElement":[]}}
@@ -1239,6 +1696,7 @@ fn build_combos_hub_html(
         combo_count = combos.len(),
         rows = rows,
         calc_link = calc_link,
+        SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
     )
 }
 
@@ -1326,22 +1784,13 @@ fn build_pal_page_html(
     let slug = target.name.to_lowercase().replace(' ', "-");
     let page_url = format!("{base_url}/pal/{slug}");
     let title = format!(
-        "{} Breeding Guide – Best Combos, Parents & Location | Palworld",
+        "{} Breeding Calculator – All Combos, Chain Paths & How to Breed | Palworld",
         target.name
     );
-    let description = format!(
-        "Find every {} breeding combination in Palworld: parent pairs, reverse lookup routes, map location, capture tips, and legendary combo paths instantly.",
-        target.name
-    );
+    let description = pal_page_meta_description(target, combos.len());
     let combo_rows = combos
         .iter()
-        .map(|(a, b, method)| {
-            let a_slug = a.to_lowercase().replace(' ', "-");
-            let b_slug = b.to_lowercase().replace(' ', "-");
-            format!(
-                "<tr><td><a href=\"/combo/{a_slug}/{b_slug}\">{a}</a></td><td><a href=\"/combo/{a_slug}/{b_slug}\">{b}</a></td><td>{method}</td></tr>"
-            )
-        })
+        .map(|(a, b, method)| combo_pair_table_row(a, b, method))
         .collect::<Vec<_>>()
         .join("");
     let related_links = related
@@ -1384,6 +1833,7 @@ fn build_pal_page_html(
         PRIMARY_CALCULATOR_PATH,
         query_escape(&target.name)
     );
+    let pal_query = query_escape(&target.name);
     let guide_links = format!(
         "<a href=\"/how-to-breed/{slug}\">How to breed {}</a> • <a href=\"/guides/best-breeding-combos\">Best Breeding Combos</a> • <a href=\"/guides/capture-rate-explained\">Capture Rate</a> • <a href=\"/guides/breeding-not-working\">Breeding fixes</a>",
         target.name
@@ -1410,8 +1860,9 @@ fn build_pal_page_html(
       .crumbs {{ color: #9fb2c8; font-size: 0.9rem; margin-bottom: 0.8rem; }}
       .card {{ background: #131a23; border: 1px solid #2d3a4d; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }}
       table {{ width: 100%; border-collapse: collapse; }}
-      th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; }}
+      th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; vertical-align: middle; }}
       th {{ background: #182230; }}
+      {SEO_PAL_IMG_STYLES}
     </style>
     <script type="application/ld+json">
       {{
@@ -1442,7 +1893,7 @@ fn build_pal_page_html(
         <p><strong>Breeding Power:</strong> {power}</p>
         <p><strong>Map Area:</strong> {area} | <strong>Coordinates:</strong> {coords}</p>
         <p>{dynamic_summary}</p>
-        <p><a href="/how-to-breed/{slug}">How to breed {pal_name}</a> • <a href="/combos/{slug}">All {pal_name} combos ({combo_count})</a> • <a href="{calc_link}">Reverse calculator</a> • <a href="/palworld-breeding-calculator">Breeding tool</a></p>
+        <p><a href="/how-to-breed/{slug}">How to breed {pal_name}</a> • <a href="/combos/{slug}">All {pal_name} combos ({combo_count})</a> • <a href="{calc_link}">Reverse calculator</a> • <a href="/palworld-chain-breeding?owned=Lamball&goal={pal_query}">Chain from Lamball</a> • <a href="/palworld-breeding-calculator">Breeding tool</a></p>
       </div>
       <div class="card">
         <h2>{pal_name} Parent Combinations</h2>
@@ -1477,8 +1928,25 @@ fn build_pal_page_html(
         guide_links = guide_links,
         dynamic_summary = dynamic_summary,
         combo_count = combo_count,
-        calc_link = calc_link
+        calc_link = calc_link,
+        pal_query = pal_query,
+        SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
     )
+}
+
+fn pal_page_meta_description(pal: &Pal, combo_count: usize) -> String {
+    let base = format!(
+        "Complete {} Palworld breeding guide with {} verified parent pairs, breeding power {}, map location, chain breeding paths, and step-by-step how-to-breed instructions. Use our free calculator to reverse lookup every combo that produces {} and compare special combinations versus power-average outcomes before you spend cake in the Breeding Farm. Links to dedicated combo pages, capture tips, and related legendary routes help you plan full chains from early-game Pals to endgame targets without wasted eggs.",
+        pal.name, combo_count, pal.power, pal.name
+    );
+    if base.len() > 320 {
+        base
+    } else {
+        format!(
+            "{base} Popular searches: how to breed {}, {} breeding combinations, {} breeding calculator, fastest {} path, {} parent pairs.",
+            pal.name, pal.name, pal.name, pal.name, pal.name
+        )
+    }
 }
 
 fn build_combo_page_html(
@@ -1501,15 +1969,15 @@ fn build_combo_page_html(
     );
     let alt_rows = alternatives
         .iter()
-        .map(|(a, b, method)| {
-            let a_slug = a.to_lowercase().replace(' ', "-");
-            let b_slug = b.to_lowercase().replace(' ', "-");
-            format!(
-                "<tr><td><a href=\"/combo/{a_slug}/{b_slug}\">{a}</a></td><td><a href=\"/combo/{a_slug}/{b_slug}\">{b}</a></td><td>{method}</td></tr>"
-            )
-        })
+        .map(|(a, b, method)| combo_pair_table_row(a, b, method))
         .collect::<Vec<_>>()
         .join("");
+    let combo_hero = format!(
+        r#"<div class="combo-hero">{pa}<span class="combo-hero-eq">+</span>{pb}<span class="combo-hero-eq">=</span>{child}</div>"#,
+        pa = pal_img_tag(&parent_a.name, "combo-hero-img"),
+        pb = pal_img_tag(&parent_b.name, "combo-hero-img"),
+        child = pal_img_tag(&result.child.name, "combo-hero-img"),
+    );
     let related_combo_links = alternatives
         .iter()
         .take(8)
@@ -1560,8 +2028,9 @@ fn build_combo_page_html(
       .crumbs {{ color: #9fb2c8; font-size: 0.9rem; margin-bottom: 0.8rem; }}
       .card {{ background: #131a23; border: 1px solid #2d3a4d; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }}
       table {{ width: 100%; border-collapse: collapse; }}
-      th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; }}
+      th, td {{ border: 1px solid #33465a; padding: 0.45rem 0.52rem; text-align: left; font-size: 0.9rem; vertical-align: middle; }}
       th {{ background: #182230; }}
+      {SEO_PAL_IMG_STYLES}
     </style>
     <script type="application/ld+json">
       {{
@@ -1597,6 +2066,7 @@ fn build_combo_page_html(
     <main class="wrap">
       <div class="crumbs"><a href="/">Home</a> / <a href="{calc_path}">Breeding Calculator</a> / {parent_a_name} + {parent_b_name}</div>
       <div class="card">
+        {combo_hero}
         <h1>{parent_a_name} + {parent_b_name} = {child_name}</h1>
         <p><strong>Method:</strong> {method}</p>
         <p><strong>Distance:</strong> {distance}</p>
@@ -1631,6 +2101,8 @@ fn build_combo_page_html(
         method = result.method,
         distance = distance,
         alt_rows = alt_rows,
+        combo_hero = combo_hero,
+        SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
         related_combo_links = related_combo_links,
         related_guides = related_guides,
         calc_path = PRIMARY_CALCULATOR_PATH
@@ -1642,7 +2114,7 @@ fn find_pal_by_slug<'a>(pals: &'a [Pal], slug: &str) -> Option<&'a Pal> {
         .find(|pal| pal.name.to_lowercase().replace(' ', "-") == slug.to_lowercase())
 }
 
-fn find_pal_by_name<'a>(pals: &'a [Pal], name: &str) -> Option<&'a Pal> {
+pub(crate) fn find_pal_by_name<'a>(pals: &'a [Pal], name: &str) -> Option<&'a Pal> {
     let trimmed = name.trim();
     pals
         .iter()
@@ -1650,35 +2122,31 @@ fn find_pal_by_name<'a>(pals: &'a [Pal], name: &str) -> Option<&'a Pal> {
 }
 
 fn calculate_child(state: &AppState, parent_a: &str, parent_b: &str) -> Option<CalculateResponse> {
-    let first = find_pal_by_name(&state.pals, parent_a)?;
-    let second = find_pal_by_name(&state.pals, parent_b)?;
+    let first = find_pal_in_state(state, parent_a)?;
+    let second = find_pal_in_state(state, parent_b)?;
+    let fi = state.pals_by_name.get(&normalize_pal_name(&first.name))?;
+    let si = state.pals_by_name.get(&normalize_pal_name(&second.name))?;
 
-    let key = combo_key(&first.name, &second.name);
-    if let Some(exact_child_name) = state.special_combos.get(&key) {
-        let child = find_pal_by_name(&state.pals, exact_child_name)?;
-        return Some(CalculateResponse {
-            child: child.clone(),
-            method: "Special combination".to_string(),
-            distance: None,
-        });
-    }
-    let target_power = (first.power + second.power) / 2;
-
-    let mut nearest = state.pals.first()?.clone();
-    let mut best_distance = (nearest.power - target_power).abs();
-
-    for pal in &state.pals {
-        let distance = (pal.power - target_power).abs();
-        if distance < best_distance {
-            best_distance = distance;
-            nearest = pal.clone();
-        }
-    }
+    let (child_idx, method) = child_for_pair(
+        &state.pals,
+        &state.pals_by_name,
+        &state.power_order,
+        &state.special_combos,
+        *fi,
+        *si,
+    )?;
+    let child = state.pals[child_idx].clone();
+    let distance = if method.starts_with("Power average") {
+        let target_power = (first.power + second.power) / 2;
+        Some((child.power - target_power).abs())
+    } else {
+        None
+    };
 
     Some(CalculateResponse {
-        child: nearest,
-        method: format!("Power average ({target_power})"),
-        distance: Some(best_distance),
+        child,
+        method,
+        distance,
     })
 }
 

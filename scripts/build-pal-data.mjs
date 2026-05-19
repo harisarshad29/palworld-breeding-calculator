@@ -66,18 +66,46 @@ const PALS = [
   ["Turtacle", 1105], ["Turtacle Terra", 1065],
 ];
 
+/** Fixed parent pairs that always produce a specific child (not power-average). */
 const SPECIAL_COMBOS = [
+  // Subspecies / variant specials (community v1.3 reference)
+  ["Relaxaurus", "Sparkit", "Relaxaurus Lux"],
+  ["Incineram", "Maraith", "Incineram Noct"],
+  ["Mau", "Pengullet", "Mau Cryst"],
+  ["Vanwyrm", "Foxcicle", "Vanwyrm Cryst"],
+  ["Eikthyrdeer", "Hangyu", "Eikthyrdeer Terra"],
+  ["Elphidran", "Surfent", "Elphidran Aqua"],
+  ["Pyrin", "Katress", "Pyrin Noct"],
+  ["Mossanda", "Grizzbolt", "Mossanda Lux"],
+  ["Dinossom", "Rayhound", "Dinossom Lux"],
+  ["Jolthog", "Pengullet", "Jolthog Cryst"],
+  ["Frostallion", "Helzephyr", "Frostallion Noct"],
+  ["Kingpaca", "Reindrix", "Kingpaca Cryst"],
+  ["Lyleen", "Menasting", "Lyleen Noct"],
+  ["Blazehowl", "Felbat", "Blazehowl Noct"],
+  ["Robinquill", "Fuddler", "Robinquill Terra"],
+  ["Broncherry", "Fuack", "Broncherry Aqua"],
+  ["Surfent", "Dumud", "Surfent Terra"],
+  ["Suzaku", "Jormuntide", "Suzaku Aqua"],
+  ["Reptyro", "Foxcicle", "Reptyro Cryst"],
+  ["Hangyu", "Swee", "Hangyu Cryst"],
+  ["Mossanda", "Petallia", "Lyleen"],
+  ["Vanwyrm", "Anubis", "Faleris"],
+  ["Mossanda", "Rayhound", "Grizzbolt"],
+  ["Grizzbolt", "Relaxaurus", "Orserk"],
+  ["Kitsun", "Astegon", "Shadowbeak"],
+  // Early-game & extra fixed routes
   ["Lamball", "Cattiva", "Foxparks"],
   ["Foxparks", "Rooby", "Daedream"],
+  ["Penking", "Bushi", "Anubis"],
   ["Blazamut", "Suzaku", "Jormuntide"],
+  ["Blazamut", "Suzaku Aqua", "Jormuntide Ignis"],
+  ["Frostallion", "Frostallion Noct", "Frostallion"],
+  // Legendary shortcuts (widely used planner routes)
   ["Anubis", "Jetragon", "Frostallion"],
   ["Necromus", "Paladius", "Jetragon"],
   ["Grizzbolt", "Lyleen", "Jetragon"],
   ["Relaxaurus", "Mammorest", "Jetragon"],
-  ["Blazamut", "Suzaku Aqua", "Jormuntide Ignis"],
-  ["Frostallion", "Frostallion Noct", "Frostallion"],
-  ["Penking", "Bushi", "Anubis"],
-  ["Incineram", "Maraith", "Incineram Noct"],
   ["Suzaku", "Grizzbolt", "Jetragon"],
 ];
 
