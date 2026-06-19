@@ -1,5 +1,9 @@
 //! SEO copy: H1 characteristics = 50–60 words; page description = 150 words per route.
 
+/// Google Search Console HTML-tag verification (Search Console → URL prefix → HTML tag).
+pub const GOOGLE_SITE_VERIFICATION_META: &str =
+    r#"<meta name="google-site-verification" content="google0261c5c69eda848e" />"#;
+
 pub const HOME_H1: &str = "Our Palworld Breeding Calculator is a complete toolkit for parent pair testing, reverse target lookups, Pal database browsing, map references, item sources, technology milestones, and capture estimates. It helps you build structured breeding plans instead of random egg cycles, with routes for rare targets like Anubis, Jetragon, and Frostallion in one responsive interface.";
 
 pub const HOME_DESC: &str = "Palworld Breeding Calculator is a free online database and breeding planner for players who want faster routes to rare Pals and fewer wasted eggs. Select any two parents to predict the child, including special combination outcomes and breeding-power fallbacks. The reverse calculator lists every parent pair that can produce your target Pal so you can compare methods side by side. Browse Pal profiles with breeding power, map coordinates, item sources, and technology milestones in one responsive interface. Capture-rate estimates help you farm easier parents before expensive breeding chains. Dedicated pages for popular Pals, parent combos, and step-by-step guides support beginners and endgame breeders alike. With quick-pick grids, theme toggle, and server-rendered pages for search indexing, the tool turns breeding guesswork into repeatable decisions. Whether you are chasing Anubis, Jetragon, or efficient base workers, plan every session with structured data instead of trial and error. Free to use with no login required.";

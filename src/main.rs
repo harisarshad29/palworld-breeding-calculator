@@ -1346,6 +1346,7 @@ fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
         r#"
     <title>{title}</title>
     <meta name="description" content="{description}" />
+    {google_verification}
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <link rel="canonical" href="{page_url}" />
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -1457,7 +1458,8 @@ fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
         description = page.page_description,
         short_description = page.meta_description,
         app_description = page.meta_description,
-        page_url = page_url
+        page_url = page_url,
+        google_verification = seo_copy::GOOGLE_SITE_VERIFICATION_META,
     )
 }
 
