@@ -18,10 +18,16 @@ FIX:
   2. If still missing: node scripts/download-pal-icons.js
   3. Hard refresh Ctrl+Shift+R
 
+ERROR: Red "NativeCommandError" when running START-SERVER.bat (but build succeeded)
+-----------------------------------------------------------------------------------
+CAUSE: PowerShell treats cargo progress on stderr as an error (harmless).
+FIX: Updated scripts/Invoke-Cargo.ps1 — ignore red text if you see "Server OK" and browser opens.
+
 ERROR: Page not found (404) on palworld-breeding-calculator.us
 --------------------------------------------------------------
 CAUSE: Domain still points to NETLIFY (old static site).
-FIX: Point domain to RENDER (see DEPLOY-ALL.txt).
+FIX A (fast): Netlify dashboard -> redeploy this repo (netlify.toml redirects all paths to Render).
+FIX B (permanent): Point domain to RENDER (see DEPLOY-ALL.txt).
 
 WORKING URL RIGHT NOW (use until DNS fixed):
   https://palworld-breeding-calculator.onrender.com/palworld-breeding-calculator

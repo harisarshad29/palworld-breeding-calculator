@@ -1679,6 +1679,7 @@ fn build_how_to_breed_html(
       th {{ background: #182230; }}
       {SEO_BACKGROUND_STYLES}
       {SEO_PAL_IMG_STYLES}
+      {SEO_FOOTER_STYLES}
     </style>
     <script type="application/ld+json">
       {{"@context":"https://schema.org","@type":"HowTo","name":"How to breed {pal_name} in Palworld","description":"{description}","step":[{{"@type":"HowToStep","name":"Unlock Breeding Farm","text":"Research and build a Breeding Farm and Egg Incubator with cake in the feed box."}},{{"@type":"HowToStep","name":"Find parent pairs","text":"Use the reverse calculator to list valid parents for {pal_name}."}},{{"@type":"HowToStep","name":"Breed and incubate","text":"Assign parents, collect the egg, and incubate until {pal_name} hatches."}}]}}
@@ -1710,6 +1711,7 @@ fn build_how_to_breed_html(
         <table><thead><tr><th>Parents</th><th>Method</th></tr></thead><tbody>{rows}</tbody></table>
       </div>
     </main>
+    {site_footer}
   </body>
 </html>"#,
         title = title,
@@ -1724,7 +1726,9 @@ fn build_how_to_breed_html(
         tier_note = pal_tier_note(target.power),
         SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
         SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
+        SEO_FOOTER_STYLES = SEO_FOOTER_STYLES,
         kid_bg = seo_kid_background_html(),
+        site_footer = seo_copy::SITE_FOOTER_HTML,
     )
 }
 
