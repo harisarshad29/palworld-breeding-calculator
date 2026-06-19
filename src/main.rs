@@ -335,8 +335,11 @@ const GUIDE_PAGES: [GuidePage; 11] = [
     },
 ];
 
+/// Production canonical domain (sitemap, OG, JSON-LD).
+const PRODUCTION_CANONICAL_BASE: &str = "https://palworld-breeding-calculator.us";
+
 /// Production URL for canonicals, OG tags, and sitemaps.
-/// Prefer `BASE_URL` (custom domain). On Render, set `BASE_URL=https://palworld-breeding-calculator.us`.
+/// Prefer `BASE_URL` env. On Render without it, use `.us` (not onrender.com).
 fn resolve_base_url() -> String {
     for key in ["BASE_URL", "SITE_URL", "PUBLIC_URL"] {
         if let Ok(url) = std::env::var(key) {
@@ -346,14 +349,8 @@ fn resolve_base_url() -> String {
             }
         }
     }
-    if let Ok(url) = std::env::var("RENDER_EXTERNAL_URL") {
-        let trimmed = url.trim().trim_end_matches('/').to_string();
-        if !trimmed.is_empty() {
-            eprintln!(
-                "Note: using RENDER_EXTERNAL_URL for SEO URLs. Set BASE_URL to your custom domain when ready."
-            );
-            return trimmed;
-        }
+    if std::env::var("RENDER").is_ok() || std::env::var("RENDER_EXTERNAL_URL").is_ok() {
+        return PRODUCTION_CANONICAL_BASE.to_string();
     }
     "http://127.0.0.1:3000".to_string()
 }
