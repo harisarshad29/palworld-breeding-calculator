@@ -1339,6 +1339,20 @@ fn chrono_like_today() -> String {
     format!("{year:04}-{m:02}-{d:02}")
 }
 
+fn google_verification_meta_html() -> String {
+    let Ok(token) = std::env::var("GOOGLE_SITE_VERIFICATION") else {
+        return String::new();
+    };
+    let token = token.trim();
+    if token.is_empty() {
+        return String::new();
+    }
+    format!(
+        r#"<meta name="google-site-verification" content="{}" />"#,
+        html_escape(token)
+    )
+}
+
 fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
     let canonical_path = page.canonical_path.unwrap_or(page.path);
     let page_url = format!("{base_url}{canonical_path}");
@@ -1459,7 +1473,7 @@ fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
         short_description = page.meta_description,
         app_description = page.meta_description,
         page_url = page_url,
-        google_verification = seo_copy::GOOGLE_SITE_VERIFICATION_META,
+        google_verification = google_verification_meta_html(),
     )
 }
 
