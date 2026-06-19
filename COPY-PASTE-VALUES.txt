@@ -1,0 +1,49 @@
+PALWORLD - SIRF COPY PASTE (login ke baad)
+==========================================
+
+NAMECHEAP -> Advanced DNS (palworld-breeding-calculator.us)
+------------------------------------------------------------
+DELETE (purani Netlify):
+  A      @     75.2.60.5
+  CNAME  www   (koi bhi netlify.app wala)
+
+ADD (Render):
+  Type   Host   Value
+  A      @      216.24.57.1
+  CNAME  www    palworld-breeding-calculator.onrender.com
+
+Redirect / Parking = OFF
+
+
+RENDER -> Environment Variables
+--------------------------------
+HOST     = 0.0.0.0
+BASE_URL = https://palworld-breeding-calculator.us
+
+
+RENDER -> Custom Domains (Settings)
+------------------------------------
+palworld-breeding-calculator.us
+www.palworld-breeding-calculator.us
+
+
+GOOGLE SEARCH CONSOLE
+---------------------
+Property: https://palworld-breeding-calculator.us
+
+Sitemap URL (submit):
+https://palworld-breeding-calculator.us/sitemap.xml
+
+Request indexing (URL Inspection):
+https://palworld-breeding-calculator.us/
+https://palworld-breeding-calculator.us/palworld-breeding-calculator
+https://palworld-breeding-calculator.us/pal/anubis
+https://palworld-breeding-calculator.us/how-to-breed/anubis
+https://palworld-breeding-calculator.us/pal-pages
+
+
+NETLIFY (conflict band karo)
+----------------------------
+Site settings -> Domain management -> Remove custom domain
+   OR delete old site
+   OR redeploy this repo (netlify.toml auto-redirects to Render)
