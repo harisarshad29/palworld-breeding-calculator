@@ -99,7 +99,7 @@ let appData = {
 };
 
 /** Pal Box: show this many until user searches or clicks "show all" */
-const PAL_GRID_INITIAL = 72;
+const PAL_GRID_INITIAL = 24;
 const COMBO_LIST_WITH_IMAGES = 24;
 const COMBO_LIST_MAX = 80;
 
@@ -133,7 +133,7 @@ function palSlug(palName) {
 }
 
 function getPalImageUrl(palName) {
-  return `/assets/pals/${palSlug(resolvePalDisplayName(palName))}.webp`;
+  return `/assets/pals/thumbs/${palSlug(resolvePalDisplayName(palName))}.webp`;
 }
 
 function buildPalIndexes() {
@@ -240,7 +240,8 @@ globalThis.__palImgFallback = (img) => {
 function buildPalImage(palName, className = "pal-image") {
   const local = getPalImageUrl(palName);
   const cdn = getPalCdnUrl(palName);
-  return `<img class="${escapeHtml(className)}" src="${local}" alt="${getPalAltText(palName)}" loading="lazy" decoding="async"
+  const size = className.includes("grid") ? 100 : className.includes("hero") ? 42 : 36;
+  return `<img class="${escapeHtml(className)}" src="${local}" alt="${getPalAltText(palName)}" width="${size}" height="${size}" loading="lazy" decoding="async"
     data-cdn="${cdn}" data-placeholder="${PAL_PLACEHOLDER}"
     onerror="window.__palImgFallback&&window.__palImgFallback(this)" />`;
 }

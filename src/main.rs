@@ -1573,7 +1573,7 @@ fn pal_img_tag(name: &str, class: &str) -> String {
     let esc = html_escape(name);
     let cdn = query_escape(name);
     format!(
-        r#"<img class="{class}" src="/assets/pals/{slug}.webp" alt="{esc}" width="36" height="36" loading="lazy" decoding="async" onerror="if(!this.dataset.f){{this.dataset.f='cdn';this.src='https://ggservers.com/images/palworld/{cdn}.webp';}}else{{this.onerror=null;this.src='/assets/pals/placeholder.svg';}}" />"#
+        r#"<img class="{class}" src="/assets/pals/thumbs/{slug}.webp" alt="{esc}" width="36" height="36" loading="lazy" decoding="async" onerror="if(!this.dataset.f){{this.dataset.f='cdn';this.src='https://ggservers.com/images/palworld/{cdn}.webp';}}else{{this.onerror=null;this.src='/assets/pals/placeholder.svg';}}" />"#
     )
 }
 
