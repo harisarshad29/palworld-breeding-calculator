@@ -1,6 +1,8 @@
 # Priority URLs — Google Search Console → URL Inspection → paste → Request indexing
 # Do 5-10 per day max. Sitemap already submitted: sitemap.xml
 #
+# Also run SUBMIT-INDEXNOW.bat after deploys (Bing/Yandex IndexNow — no Google login needed).
+#
 # Use www host (below). Apex https://palworld-breeding-calculator.us/... currently
 # 301-redirects to www, so GSC often rejects / won't index the apex form.
 # Prefer Domain property: palworld-breeding-calculator.us (covers www + apex).
