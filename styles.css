@@ -63,6 +63,12 @@ body {
   }
 }
 
+@media (max-width: 900px) {
+  .bg-pal-sticker {
+    display: none !important;
+  }
+}
+
 .confetti-layer {
   position: fixed;
   inset: 0;

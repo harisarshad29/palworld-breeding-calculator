@@ -621,6 +621,8 @@ async function renderDatabasePanel(view) {
   databasePanelBody.innerHTML = `Breeding calculator is active. Current special combinations: <strong>${appData.special_combos_count}</strong>.`;
 }
 
+const HERO_STRIP_MAX_ICONS = 24;
+
 function heroStripPalNames(view) {
   const seeds = routeIconSeeds[view] || routeIconSeeds.breeding;
   const seen = new Set();
@@ -634,6 +636,9 @@ function heroStripPalNames(view) {
     }
   }
   for (const pal of appData.pals) {
+    if (names.length >= HERO_STRIP_MAX_ICONS) {
+      break;
+    }
     const key = pal.name.toLowerCase();
     if (!seen.has(key)) {
       seen.add(key);
@@ -930,13 +935,19 @@ function quickPickPal(palName) {
 
 function renderKidBackground() {
   if (!kidBg) return;
-  const pals = ["Lamball","Cattiva","Chikipi","Foxparks","Pengullet","Anubis","Jetragon","Frostallion","Blazamut","Suzaku","Necromus","Paladius","Relaxaurus","Penking","Elizabee","Grizzbolt","Lyleen","Mossanda","Azurobe","Incineram","Beakon","Sibelyx","Astegon","Shadowbeak","Bellanoir","Kitsun","Rooby","Daedream"];
+  // Mobile PSI: skip decorative stickers (fixed/in-viewport → always download).
+  if (window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)").matches) {
+    kidBg.replaceChildren();
+    return;
+  }
+  const pals = ["Anubis", "Jetragon", "Frostallion", "Lamball", "Foxparks", "Blazamut"];
   const slots = [
-    {l:1,t:4,s:76,r:-12},{l:3,t:28,s:58,r:6},{l:2,t:52,s:64,r:-8},{l:4,t:76,s:54,r:10},{l:1,t:90,s:62,r:-15},
-    {l:88,t:3,s:72,r:14},{l:91,t:26,s:56,r:-9},{l:89,t:48,s:68,r:11},{l:92,t:70,s:60,r:-7},{l:87,t:88,s:66,r:16},
-    {l:14,t:2,s:50,r:8},{l:78,t:2,s:48,r:-11},{l:8,t:42,s:44,r:-5},{l:84,t:38,s:46,r:7},{l:6,t:64,s:42,r:12},
-    {l:86,t:58,s:44,r:-13},{l:18,t:86,s:40,r:6},{l:76,t:84,s:42,r:-8},{l:22,t:14,s:38,r:-4},{l:72,t:16,s:38,r:5},
-    {l:10,t:18,s:36,r:9},{l:82,t:20,s:36,r:-6}
+    { l: 2, t: 8, s: 56, r: -10 },
+    { l: 90, t: 6, s: 52, r: 12 },
+    { l: 4, t: 72, s: 48, r: 8 },
+    { l: 88, t: 70, s: 50, r: -8 },
+    { l: 8, t: 40, s: 44, r: -6 },
+    { l: 86, t: 38, s: 44, r: 7 }
   ];
   const frag = document.createDocumentFragment();
   slots.forEach((sl, i) => {
@@ -944,9 +955,16 @@ function renderKidBackground() {
     img.className = "bg-pal-sticker";
     img.src = getPalImageUrl(pals[i % pals.length]);
     img.alt = "";
+    img.width = sl.s;
+    img.height = sl.s;
+    img.decoding = "async";
+    img.fetchPriority = "low";
     img.loading = "lazy";
-    img.style.cssText = `left:${sl.l}%;top:${sl.t}%;width:${sl.s}px;height:${sl.s}px;transform:rotate(${sl.r}deg);animation-delay:${(i%8)*0.22}s;animation-duration:${7+(i%6)}s;`;
-    img.onerror = () => { img.onerror = null; img.src = PAL_PLACEHOLDER; };
+    img.style.cssText = `left:${sl.l}%;top:${sl.t}%;width:${sl.s}px;height:${sl.s}px;transform:rotate(${sl.r}deg);animation-delay:${(i % 8) * 0.22}s;animation-duration:${7 + (i % 6)}s;`;
+    img.onerror = () => {
+      img.onerror = null;
+      img.src = PAL_PLACEHOLDER;
+    };
     frag.appendChild(img);
   });
   kidBg.replaceChildren(frag);

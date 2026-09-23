@@ -435,7 +435,7 @@ async fn main() {
                 .nest_service("/", ServeDir::new("."))
                 .layer(SetResponseHeaderLayer::if_not_present(
                     header::CACHE_CONTROL,
-                    HeaderValue::from_static("public, max-age=3600"),
+                    HeaderValue::from_static("public, max-age=604800, immutable"),
                 )),
         );
 
@@ -1531,6 +1531,9 @@ const SEO_BACKGROUND_STYLES: &str = r#"
       @media (prefers-reduced-motion: reduce) {
         .bg-pal-sticker { animation: none !important; }
       }
+      @media (max-width: 900px) {
+        .bg-pal-sticker { display: none !important; }
+      }
 "#;
 
 const SEO_FOOTER_STYLES: &str = r#"
@@ -1558,49 +1561,11 @@ const SEO_PAL_IMG_STYLES: &str = r#"
       .pal-table-pair .plus { color: #9fb2c8; font-weight: 700; }
 "#;
 
+/// Gradient-only background (no sticker <img>). Decorative pals load client-side
+/// after idle on desktop only — fixed stickers sit in the viewport so "lazy" still
+/// downloads everything and tanks mobile LCP / image-delivery audits.
 fn seo_kid_background_html() -> String {
-    const PALS: &[&str] = &[
-        "Lamball", "Cattiva", "Chikipi", "Foxparks", "Pengullet", "Anubis", "Jetragon", "Frostallion",
-        "Blazamut", "Suzaku", "Necromus", "Paladius", "Relaxaurus", "Penking", "Elizabee", "Grizzbolt",
-        "Lyleen", "Mossanda", "Azurobe", "Incineram", "Beakon", "Sibelyx", "Astegon", "Shadowbeak",
-        "Bellanoir", "Kitsun", "Rooby", "Daedream",
-    ];
-    const SLOTS: &[(u8, u8, u8, i8)] = &[
-        (1, 4, 76, -12),
-        (3, 28, 58, 6),
-        (2, 52, 64, -8),
-        (4, 76, 54, 10),
-        (1, 90, 62, -15),
-        (88, 3, 72, 14),
-        (91, 26, 56, -9),
-        (89, 48, 68, 11),
-        (92, 70, 60, -7),
-        (87, 88, 66, 16),
-        (14, 2, 50, 8),
-        (78, 2, 48, -11),
-        (8, 42, 44, -5),
-        (84, 38, 46, 7),
-        (6, 64, 42, 12),
-        (86, 58, 44, -13),
-        (18, 86, 40, 6),
-        (76, 84, 42, -8),
-        (22, 14, 38, -4),
-        (72, 16, 38, 5),
-        (10, 18, 36, 9),
-        (82, 20, 36, -6),
-    ];
-    let mut imgs = String::new();
-    for (i, &(l, t, s, r)) in SLOTS.iter().enumerate() {
-        let name = PALS[i % PALS.len()];
-        let slug = pal_slug(name);
-        let cdn = query_escape(name);
-        let delay = (i % 8) as f32 * 0.22;
-        let dur = 7 + (i % 6);
-        imgs.push_str(&format!(
-            r#"<img class="bg-pal-sticker" src="/assets/pals/{slug}.webp" alt="" loading="lazy" decoding="async" style="left:{l}%;top:{t}%;width:{s}px;height:{s}px;transform:rotate({r}deg);animation-delay:{delay}s;animation-duration:{dur}s;" onerror="if(!this.dataset.f){{this.dataset.f='cdn';this.src='https://ggservers.com/images/palworld/{cdn}.webp';}}else{{this.onerror=null;this.src='/assets/pals/placeholder.svg';}}" />"#
-        ));
-    }
-    format!(r#"<div class="kid-bg" aria-hidden="true">{imgs}</div>"#)
+    r#"<div class="kid-bg" aria-hidden="true"></div>"#.to_string()
 }
 
 fn pal_img_tag(name: &str, class: &str) -> String {
