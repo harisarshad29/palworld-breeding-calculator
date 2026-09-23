@@ -1,5 +1,5 @@
 # Daily SEO routine reminder — run each morning
-$Base = if ($env:LIVE_SITE_URL) { $env:LIVE_SITE_URL.TrimEnd("/") } else { "https://palworld-breeding-calculator.us" }
+$Base = if ($env:LIVE_SITE_URL) { $env:LIVE_SITE_URL.TrimEnd("/") } else { "https://www.palworld-breeding-calculator.us" }
 
 Write-Host ""
 Write-Host "=== Daily SEO (15-30 min) ===" -ForegroundColor Cyan

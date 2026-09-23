@@ -17,7 +17,7 @@ PART 2 - RENDER.COM (Rust server)
 3. Runtime: Rust (ya render.yaml auto)
 4. Environment variables (ZAROORI):
    HOST = 0.0.0.0
-   BASE_URL = https://palworld-breeding-calculator.us
+   BASE_URL = https://www.palworld-breeding-calculator.us
    (PORT mat set karo - Render khud deta hai)
 5. Deploy -> wait green
 6. Test: https://palworld-breeding-calculator.onrender.com/palworld-breeding-calculator
@@ -53,7 +53,7 @@ PART 6 - VERIFY (sab theek?)
 -----------------------------
 PowerShell project folder:
 
-  $env:LIVE_SITE_URL="https://palworld-breeding-calculator.us"
+  $env:LIVE_SITE_URL="https://www.palworld-breeding-calculator.us"
   powershell -File scripts\verify-live-seo.ps1
 
 Sab PASS hona chahiye:
@@ -68,7 +68,7 @@ PART 7 - GOOGLE SEARCH CONSOLE
 -------------------------------
 1. search.google.com/search-console
 2. Property: palworld-breeding-calculator.us
-3. Sitemap submit: https://palworld-breeding-calculator.us/sitemap.xml
+3. Sitemap submit: https://www.palworld-breeding-calculator.us/sitemap.xml
 4. URL Inspection -> Request indexing for:
    /
    /palworld-breeding-calculator

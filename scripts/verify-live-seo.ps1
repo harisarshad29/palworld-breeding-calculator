@@ -1,7 +1,7 @@
 # Audit LIVE site on-page SEO (after Render + domain)
 $ErrorActionPreference = "Continue"
 $RenderUrl = "https://palworld-breeding-calculator.onrender.com"
-$Base = if ($env:LIVE_SITE_URL) { $env:LIVE_SITE_URL.TrimEnd("/") } else { "https://palworld-breeding-calculator.us" }
+$Base = if ($env:LIVE_SITE_URL) { $env:LIVE_SITE_URL.TrimEnd("/") } else { "https://www.palworld-breeding-calculator.us" }
 $Failed = 0
 
 function Fail($msg) { Write-Host "[FAIL] $msg" -ForegroundColor Red; $script:Failed++ }

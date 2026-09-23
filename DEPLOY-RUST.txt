@@ -9,7 +9,7 @@ RENDER:
   Build: cargo build --release
   Start: ./target/release/palworld-breeding-calculator
   Env HOST=0.0.0.0
-  Env BASE_URL=https://palworld-breeding-calculator.us
+  Env BASE_URL=https://www.palworld-breeding-calculator.us
 
 NAMECHEAP (Render, not Netlify):
   A @ -> 216.24.57.1

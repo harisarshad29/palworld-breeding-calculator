@@ -1,13 +1,14 @@
 $ErrorActionPreference = "Continue"
 $live = "https://palworld-breeding-calculator.onrender.com"
-$domain = "https://palworld-breeding-calculator.us"
+$domain = "https://www.palworld-breeding-calculator.us"
 
 Write-Host "`n=== Palworld Breeding Calculator - GO LIVE ===" -ForegroundColor Cyan
 Write-Host ""
 
 # 1) Render (already deployed if repo connected)
-Write-Host "[1] Render live URL (works now):" -ForegroundColor Yellow
-Write-Host "    $live/palworld-breeding-calculator" -ForegroundColor Green
+Write-Host "[1] Public URL (share this):" -ForegroundColor Yellow
+Write-Host "    $domain/palworld-breeding-calculator" -ForegroundColor Green
+Write-Host "    Backup: $live/palworld-breeding-calculator" -ForegroundColor Gray
 
 $checks = @(
     "/palworld-breeding-calculator",
@@ -19,7 +20,7 @@ $checks = @(
 $ok = 0
 foreach ($path in $checks) {
     try {
-        $r = Invoke-WebRequest "$live$path" -UseBasicParsing -TimeoutSec 90
+        $r = Invoke-WebRequest "$domain$path" -UseBasicParsing -TimeoutSec 90
         if ($r.StatusCode -eq 200) {
             Write-Host "    [OK] $path" -ForegroundColor Green
             $ok++
@@ -54,6 +55,6 @@ Write-Host "Full guide: DEPLOY-ALL.txt`n" -ForegroundColor Gray
 if ($env:LIVE_SITE_URL) {
     & (Join-Path $PSScriptRoot "verify-live-seo.ps1")
 } else {
-    $env:LIVE_SITE_URL = $live
+    $env:LIVE_SITE_URL = $domain
     & (Join-Path $PSScriptRoot "verify-live-seo.ps1")
 }

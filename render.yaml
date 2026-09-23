@@ -10,6 +10,6 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: BASE_URL
-        value: https://palworld-breeding-calculator.us
+        value: https://www.palworld-breeding-calculator.us
       - key: RUST_VERSION
         value: 1.85.0

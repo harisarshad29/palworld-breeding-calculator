@@ -48,6 +48,6 @@ Double-click **RESET.bat** (removes static-site / wordpress folders).
 ### Verify live SEO
 
 ```powershell
-$env:LIVE_SITE_URL="https://palworld-breeding-calculator.us"
+$env:LIVE_SITE_URL="https://www.palworld-breeding-calculator.us"
 powershell -File scripts\verify-live-seo.ps1
 ```

@@ -1,0 +1,24 @@
+# Priority URLs — Google Search Console → URL Inspection → paste → Request indexing
+# Do 5-10 per day max. Sitemap already submitted: sitemap.xml
+#
+# Use www host (below). Apex https://palworld-breeding-calculator.us/... currently
+# 301-redirects to www, so GSC often rejects / won't index the apex form.
+# Prefer Domain property: palworld-breeding-calculator.us (covers www + apex).
+
+https://www.palworld-breeding-calculator.us/
+https://www.palworld-breeding-calculator.us/palworld-breeding-calculator
+https://www.palworld-breeding-calculator.us/palworld-breeding-combinations
+https://www.palworld-breeding-calculator.us/palworld-chain-breeding
+https://www.palworld-breeding-calculator.us/pals
+https://www.palworld-breeding-calculator.us/pal/anubis
+https://www.palworld-breeding-calculator.us/pal/jetragon
+https://www.palworld-breeding-calculator.us/pal/frostallion
+https://www.palworld-breeding-calculator.us/how-to-breed/anubis
+https://www.palworld-breeding-calculator.us/how-to-breed/jetragon
+https://www.palworld-breeding-calculator.us/combos/anubis
+https://www.palworld-breeding-calculator.us/pal-pages
+https://www.palworld-breeding-calculator.us/combo-pages
+https://www.palworld-breeding-calculator.us/guides/best-breeding-combos
+https://www.palworld-breeding-calculator.us/guides/how-to-breed-anubis
+https://www.palworld-breeding-calculator.us/legendary-breeding
+https://www.palworld-breeding-calculator.us/fastest-anubis-breed

@@ -336,16 +336,28 @@ const GUIDE_PAGES: [GuidePage; 11] = [
 ];
 
 /// Production canonical domain (sitemap, OG, JSON-LD).
-const PRODUCTION_CANONICAL_BASE: &str = "https://palworld-breeding-calculator.us";
+/// Must match the live 200 host (www). Apex 301s to www.
+const PRODUCTION_CANONICAL_BASE: &str = "https://www.palworld-breeding-calculator.us";
+
+/// Prefer www host so sitemap/canonicals match the live 200 URL (apex 301s to www).
+fn normalize_public_base_url(url: &str) -> String {
+    let trimmed = url.trim().trim_end_matches('/');
+    if trimmed == "https://palworld-breeding-calculator.us"
+        || trimmed == "http://palworld-breeding-calculator.us"
+    {
+        return PRODUCTION_CANONICAL_BASE.to_string();
+    }
+    trimmed.to_string()
+}
 
 /// Production URL for canonicals, OG tags, and sitemaps.
-/// Prefer `BASE_URL` env. On Render without it, use `.us` (not onrender.com).
+/// Prefer `BASE_URL` env. On Render without it, use www `.us` (not onrender.com).
 fn resolve_base_url() -> String {
     for key in ["BASE_URL", "SITE_URL", "PUBLIC_URL"] {
         if let Ok(url) = std::env::var(key) {
             let trimmed = url.trim().trim_end_matches('/').to_string();
             if !trimmed.is_empty() {
-                return trimmed;
+                return normalize_public_base_url(&trimmed);
             }
         }
     }

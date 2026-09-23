@@ -37,7 +37,7 @@ Namecheap DNS (Render):
   CNAME www  palworld-breeding-calculator.onrender.com
 
 Render env (required):
-  BASE_URL = https://palworld-breeding-calculator.us
+  BASE_URL = https://www.palworld-breeding-calculator.us
   HOST = 0.0.0.0
 
 ERROR: Chain breeding failed / red error text
@@ -62,5 +62,5 @@ VERIFY LOCAL:
   powershell -File scripts\seo-qa.ps1
 
 VERIFY LIVE (after Render DNS):
-  $env:LIVE_SITE_URL="https://palworld-breeding-calculator.us"
+  $env:LIVE_SITE_URL="https://www.palworld-breeding-calculator.us"
   powershell -File scripts\verify-live-seo.ps1

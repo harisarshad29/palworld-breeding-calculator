@@ -1,7 +1,7 @@
 # Tum login karo — yeh script baaki guide + auto-check karegi
 $ErrorActionPreference = "Continue"
 $root = Resolve-Path (Join-Path $PSScriptRoot "..")
-$domain = "https://palworld-breeding-calculator.us"
+$domain = "https://www.palworld-breeding-calculator.us"
 $render = "https://palworld-breeding-calculator.onrender.com"
 
 function Step($n, $title) {
@@ -57,7 +57,7 @@ Write-Host @"
 
 Service -> Environment:
   HOST     = 0.0.0.0
-  BASE_URL = https://palworld-breeding-calculator.us
+  BASE_URL = https://www.palworld-breeding-calculator.us
 
 Settings -> Custom Domains -> Add:
   palworld-breeding-calculator.us
