@@ -1,8 +1,10 @@
 @echo off
 cd /d "%~dp0"
 echo.
-echo GOOGLE INDEXING - priority URLs (sitemap already submitted)
-echo ============================================================
+echo GOOGLE SEARCH CONSOLE HELPER (manual steps only)
+echo =================================================
+echo This file does NOT index your site automatically.
+echo It opens Search Console + INDEX-URLS.txt so you can Request indexing by hand.
 echo.
 start "" "https://search.google.com/search-console?resource_id=sc-domain:palworld-breeding-calculator.us"
 timeout /t 2 >nul

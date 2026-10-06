@@ -43,8 +43,13 @@ $tmp = Join-Path $env:TEMP "indexnow-body.json"
 Set-Content -Path $tmp -Value $body -Encoding utf8
 curl.exe -s -w "`nHTTP %{http_code}`n" -X POST "https://api.indexnow.org/indexnow" -H "Content-Type: application/json; charset=utf-8" --data-binary "@$tmp"
 
-Write-Host "`nPinging sitemaps..." -ForegroundColor Cyan
+Write-Host "`nPinging sitemap (Bing)..." -ForegroundColor Cyan
 $sitemap = [uri]::EscapeDataString("https://$HostName/sitemap.xml")
-curl.exe -s -o NUL -w "Google ping: %{http_code}`n" "https://www.google.com/ping?sitemap=$sitemap"
-curl.exe -s -o NUL -w "Bing ping: %{http_code}`n" "https://www.bing.com/ping?sitemap=$sitemap"
+Write-Host "Google sitemap ping skipped (google.com/ping returns 404; use Search Console Sitemaps)." -ForegroundColor Yellow
+$bingCode = curl.exe -s -o NUL -w "%{http_code}" "https://www.bing.com/ping?sitemap=$sitemap"
+if ($bingCode -eq "200") {
+    Write-Host "Bing ping: $bingCode" -ForegroundColor Green
+} else {
+    Write-Host "Bing ping: $bingCode (check sitemap URL or retry later)" -ForegroundColor Yellow
+}
 Write-Host "Done." -ForegroundColor Green
