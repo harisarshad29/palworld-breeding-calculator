@@ -28,6 +28,7 @@ const findChainBtn = document.getElementById("findChainBtn");
 const chainResultDiv = document.getElementById("chainResult");
 const palBoxCard = document.getElementById("palBoxCard");
 const heroStrip = document.getElementById("heroStrip");
+
 const pathToView = {
   "/": "breeding",
   "/breeding-calculator": "breeding",
@@ -42,6 +43,7 @@ const pathToView = {
   "/palworld-capture-rate-calculator": "capture",
   "/palworld-chain-breeding": "chain"
 };
+
 const viewMeta = {
   breeding: {
     badge: "Breeding View",
@@ -79,6 +81,7 @@ const viewMeta = {
     focusCardId: "chainCard"
   }
 };
+
 const routeIconSeeds = {
   breeding: ["anubis", "jetragon", "frostallion", "blazamut", "suzaku", "jormuntide", "necromus"],
   pals: ["lamball", "cattiva", "chikipi", "lifmunk", "tanzee", "foxparks", "rooby"],
@@ -98,13 +101,11 @@ let appData = {
   special_combos: {}
 };
 
-/** Pal Box: show this many until user searches or clicks "show all" */
 const PAL_GRID_INITIAL = 24;
 const COMBO_LIST_WITH_IMAGES = 24;
 const COMBO_LIST_MAX = 80;
-
-/** Show every Pal in Pal Box when searching */
 const PAL_GRID_SEARCH_ALL = 9999;
+
 let palByNameLower = new Map();
 let palBySlugMap = new Map();
 let palsByPower = [];
@@ -115,6 +116,7 @@ let lastHeroView = "";
 let combinationsRequestId = 0;
 let chainRequestId = 0;
 const MAP_ROWS_INITIAL = 9999;
+
 const serverRouteIntro =
   document.body.dataset.routeIntro?.trim() ||
   document.getElementById("routeSubtitle")?.textContent?.trim() ||
@@ -132,8 +134,13 @@ function palSlug(palName) {
     .replace(/^-+|-+$/g, "");
 }
 
+// Relative Path for better local/static hosting compatibility
 function getPalImageUrl(palName) {
-  return `/assets/pals/thumbs/${palSlug(resolvePalDisplayName(palName))}.webp`;
+  return `assets/pals/thumbs/${palSlug(resolvePalDisplayName(palName))}.webp`;
+}
+
+function getPalFullImageUrl(palName) {
+  return `assets/pals/${palSlug(resolvePalDisplayName(palName))}.webp`;
 }
 
 function buildPalIndexes() {
@@ -147,13 +154,9 @@ function buildPalIndexes() {
 }
 
 function resolvePalDisplayName(palName) {
-  if (!palName) {
-    return palName;
-  }
+  if (!palName) return palName;
   const exact = palByNameLower.get(palName) || palByNameLower.get(palName.toLowerCase());
-  if (exact) {
-    return exact.name;
-  }
+  if (exact) return exact.name;
   const bySlug = palBySlugMap.get(palSlug(palName));
   return bySlug?.name ?? palName;
 }
@@ -163,9 +166,7 @@ function comboKey(a, b) {
 }
 
 function nearestPalByPower(targetPower) {
-  if (!palsByPower.length) {
-    return null;
-  }
+  if (!palsByPower.length) return null;
   let lo = 0;
   let hi = palsByPower.length;
   while (lo < hi) {
@@ -186,13 +187,11 @@ function nearestPalByPower(targetPower) {
   return r;
 }
 
-/** Instant breeding result in the browser (no API wait). */
 function calculateChildLocal(parentA, parentB) {
   const first = palByNameLower.get(parentA) || palByNameLower.get(parentA?.toLowerCase());
   const second = palByNameLower.get(parentB) || palByNameLower.get(parentB?.toLowerCase());
-  if (!first || !second) {
-    return null;
-  }
+  if (!first || !second) return null;
+
   const key = comboKey(first.name, second.name);
   const specialChild = appData.special_combos?.[key];
   if (specialChild) {
@@ -203,9 +202,8 @@ function calculateChildLocal(parentA, parentB) {
   }
   const targetPower = Math.floor((first.power + second.power) / 2);
   const child = nearestPalByPower(targetPower);
-  if (!child) {
-    return null;
-  }
+  if (!child) return null;
+
   return {
     child,
     method: `Power average (${targetPower})`,
@@ -218,11 +216,13 @@ function getPalCdnUrl(palName) {
   return `https://ggservers.com/images/palworld/${encodeURIComponent(name)}.webp`;
 }
 
-const PAL_PLACEHOLDER = "/assets/pals/placeholder.svg";
+const PAL_PLACEHOLDER = "assets/pals/placeholder.svg";
 
-/** Local webp → CDN → placeholder (works even if assets/pals is empty). */
 globalThis.__palImgFallback = (img) => {
-  if (!img?.dataset) {
+  if (!img?.dataset) return;
+  if (img.dataset.fallback !== "full") {
+    img.dataset.fallback = "full";
+    img.src = img.dataset.full;
     return;
   }
   if (img.dataset.fallback !== "cdn" && img.dataset.cdn) {
@@ -238,15 +238,16 @@ globalThis.__palImgFallback = (img) => {
 };
 
 function buildPalImage(palName, className = "pal-image") {
-  const local = getPalImageUrl(palName);
+  const localThumb = getPalImageUrl(palName);
+  const localFull = getPalFullImageUrl(palName);
   const cdn = getPalCdnUrl(palName);
   const size = className.includes("grid") ? 100 : className.includes("hero") ? 42 : 36;
-  return `<img class="${escapeHtml(className)}" src="${local}" alt="${getPalAltText(palName)}" width="${size}" height="${size}" loading="lazy" decoding="async"
-    data-cdn="${cdn}" data-placeholder="${PAL_PLACEHOLDER}"
+  
+  return `<img class="${escapeHtml(className)}" src="${localThumb}" alt="${getPalAltText(palName)}" width="${size}" height="${size}" loading="lazy" decoding="async"
+    data-full="${localFull}" data-cdn="${cdn}" data-placeholder="${PAL_PLACEHOLDER}"
     onerror="window.__palImgFallback&&window.__palImgFallback(this)" />`;
 }
 
-/** Hero strip: fast local-only loads, queued + viewport-based (no CDN while scrolling). */
 const HERO_ICON_EAGER = 20;
 const HERO_STRIP_MAX_PARALLEL = 8;
 const heroStripLoadQueue = [];
@@ -257,9 +258,8 @@ function drainHeroStripQueue() {
   while (heroStripLoadsActive < HERO_STRIP_MAX_PARALLEL && heroStripLoadQueue.length) {
     const img = heroStripLoadQueue.shift();
     const url = img.dataset.src;
-    if (!url || img.dataset.loaded === "1") {
-      continue;
-    }
+    if (!url || img.dataset.loaded === "1") continue;
+
     heroStripLoadsActive += 1;
     const probe = new Image();
     probe.decoding = "async";
@@ -282,9 +282,7 @@ function drainHeroStripQueue() {
 }
 
 function queueHeroStripImage(img) {
-  if (!img || img.dataset.loaded === "1" || img.dataset.queued === "1") {
-    return;
-  }
+  if (!img || img.dataset.loaded === "1" || img.dataset.queued === "1") return;
   img.dataset.queued = "1";
   heroStripLoadQueue.push(img);
   drainHeroStripQueue();
@@ -307,15 +305,11 @@ function teardownHeroStripLoader() {
 }
 
 function prefetchHeroIconsNearScroll() {
-  if (!heroStrip) {
-    return;
-  }
+  if (!heroStrip) return;
   const stripRect = heroStrip.getBoundingClientRect();
   const pad = 320;
   for (const img of heroStrip.querySelectorAll(".hero-icon[data-src]")) {
-    if (img.dataset.loaded === "1") {
-      continue;
-    }
+    if (img.dataset.loaded === "1") continue;
     const r = img.getBoundingClientRect();
     if (r.right >= stripRect.left - pad && r.left <= stripRect.right + pad) {
       queueHeroStripImage(img);
@@ -331,9 +325,7 @@ function onHeroStripScroll() {
 }
 
 function setupHeroStripLoader() {
-  if (!heroStrip) {
-    return;
-  }
+  if (!heroStrip) return;
   teardownHeroStripLoader();
   heroStripObserver = new IntersectionObserver(
     (entries) => {
@@ -361,6 +353,7 @@ function setupHeroStripLoader() {
     heroStrip.addEventListener("scroll", onHeroStripScroll, { passive: true });
   }
 }
+
 let calculateRequestId = 0;
 let parentCalcTimer = null;
 
@@ -487,9 +480,7 @@ function celebrateConfetti() {
 }
 
 async function ensureLocations() {
-  if (locationsLoaded) {
-    return;
-  }
+  if (locationsLoaded) return;
   if (locationsLoading) {
     await locationsLoading;
     return;
@@ -637,9 +628,7 @@ function heroStripPalNames(view) {
     }
   }
   for (const pal of appData.pals) {
-    if (names.length >= HERO_STRIP_MAX_ICONS) {
-      break;
-    }
+    if (names.length >= HERO_STRIP_MAX_ICONS) break;
     const key = pal.name.toLowerCase();
     if (!seen.has(key)) {
       seen.add(key);
@@ -650,12 +639,9 @@ function heroStripPalNames(view) {
 }
 
 function renderHeroStrip(view, force = false) {
-  if (!heroStrip) {
-    return;
-  }
-  if (!force && view === lastHeroView && heroStrip.childElementCount > 5) {
-    return;
-  }
+  if (!heroStrip) return;
+  if (!force && view === lastHeroView && heroStrip.childElementCount > 5) return;
+  
   const icons = heroStripPalNames(view);
   teardownHeroStripLoader();
   heroStrip.replaceChildren();
@@ -679,27 +665,17 @@ function normalizePath(pathname) {
 
 function resolveViewFromPath(pathname) {
   const normalized = normalizePath(pathname);
-  if (pathToView[normalized]) {
-    return pathToView[normalized];
-  }
-  if (normalized.startsWith("/pal/")) {
-    return "pals";
-  }
-  if (normalized.startsWith("/combo/")) {
-    return "breeding";
-  }
-  if (normalized.startsWith("/guides/")) {
-    return "breeding";
-  }
+  if (pathToView[normalized]) return pathToView[normalized];
+  if (normalized.startsWith("/pal/")) return "pals";
+  if (normalized.startsWith("/combo/")) return "breeding";
+  if (normalized.startsWith("/guides/")) return "breeding";
   return "breeding";
 }
 
 function focusViewCard(view) {
   const meta = viewMeta[view] || viewMeta.breeding;
   const target = document.getElementById(meta.focusCardId);
-  if (!target) {
-    return;
-  }
+  if (!target) return;
   target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -723,9 +699,7 @@ function renderResult(options = {}) {
     showResultError("Could not find those Pals. Refresh the page or pick names from the list.");
     return;
   }
-  if (requestId !== calculateRequestId) {
-    return;
-  }
+  if (requestId !== calculateRequestId) return;
   paintResult(calc, parentA, parentB, celebrate);
 }
 
@@ -733,18 +707,15 @@ async function renderChainBreeding() {
   const requestId = ++chainRequestId;
   const owned = chainOwnedSelect?.value?.trim();
   const goal = chainGoalSelect?.value?.trim();
-  if (!chainResultDiv || !owned || !goal) {
-    return;
-  }
+  if (!chainResultDiv || !owned || !goal) return;
+  
   if (owned.toLowerCase() === goal.toLowerCase()) {
     chainResultDiv.innerHTML = `<span class="muted">You already own <strong>${escapeHtml(goal)}</strong> — no breeding steps needed.</span>`;
     return;
   }
 
   chainResultDiv.innerHTML = `<span class="muted">Finding chain from ${escapeHtml(owned)} to ${escapeHtml(goal)}…</span>`;
-  if (findChainBtn) {
-    findChainBtn.disabled = true;
-  }
+  if (findChainBtn) findChainBtn.disabled = true;
 
   const params = new URLSearchParams({ owned, goal });
   const shareUrl = `${globalThis.location.pathname}?${params}`;
@@ -754,9 +725,7 @@ async function renderChainBreeding() {
 
   try {
     const data = await apiFetch(`/api/chain?${params}`);
-    if (requestId !== chainRequestId) {
-      return;
-    }
+    if (requestId !== chainRequestId) return;
     const steps = data.steps || [];
     if (data.found === false || (!steps.length && data.found !== true)) {
       const msg =
@@ -844,9 +813,7 @@ async function renderCombinations() {
       pairs = await apiFetch(`/api/combinations/${encodeURIComponent(targetName)}`);
       combinationsCache.set(targetName, pairs);
     }
-    if (requestId !== combinationsRequestId) {
-      return;
-    }
+    if (requestId !== combinationsRequestId) return;
     if (!pairs.length) {
       combosDiv.innerHTML = `<span class="muted">No combinations found for ${escapeHtml(targetName)}.</span>`;
       return;
@@ -930,226 +897,4 @@ function quickPickPal(palName) {
     scheduleRenderResult();
     return;
   }
-  targetChildSelect.value = palName;
-  combosDiv.innerHTML = `<span class="muted">Target set to <strong>${escapeHtml(palName)}</strong>. Click <strong>Find Combinations</strong>.</span>`;
-}
-
-function renderKidBackground() {
-  if (!kidBg) return;
-  // Mobile PSI: skip decorative stickers (fixed/in-viewport → always download).
-  if (window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)").matches) {
-    kidBg.replaceChildren();
-    return;
-  }
-  const pals = ["Anubis", "Jetragon", "Frostallion", "Lamball", "Foxparks", "Blazamut"];
-  const slots = [
-    { l: 2, t: 8, s: 56, r: -10 },
-    { l: 90, t: 6, s: 52, r: 12 },
-    { l: 4, t: 72, s: 48, r: 8 },
-    { l: 88, t: 70, s: 50, r: -8 },
-    { l: 8, t: 40, s: 44, r: -6 },
-    { l: 86, t: 38, s: 44, r: 7 }
-  ];
-  const frag = document.createDocumentFragment();
-  slots.forEach((sl, i) => {
-    const img = document.createElement("img");
-    img.className = "bg-pal-sticker";
-    img.src = getPalImageUrl(pals[i % pals.length]);
-    img.alt = "";
-    img.width = sl.s;
-    img.height = sl.s;
-    img.decoding = "async";
-    img.fetchPriority = "low";
-    img.loading = "lazy";
-    img.style.cssText = `left:${sl.l}%;top:${sl.t}%;width:${sl.s}px;height:${sl.s}px;transform:rotate(${sl.r}deg);animation-delay:${(i % 8) * 0.22}s;animation-duration:${7 + (i % 6)}s;`;
-    img.onerror = () => {
-      img.onerror = null;
-      img.src = PAL_PLACEHOLDER;
-    };
-    frag.appendChild(img);
-  });
-  kidBg.replaceChildren(frag);
-}
-
-function resolvePalName(raw, palNames) {
-  if (!raw) {
-    return null;
-  }
-  if (palNames.has(raw)) {
-    return raw;
-  }
-  const query = raw.toLowerCase();
-  for (const name of palNames) {
-    if (name.toLowerCase() === query) {
-      return name;
-    }
-  }
-  return null;
-}
-
-function applyQueryFromUrl() {
-  const params = new URLSearchParams(globalThis.location.search);
-  const parentA = params.get("parentA") || params.get("parent_a");
-  const parentB = params.get("parentB") || params.get("parent_b");
-  const target = params.get("target") || params.get("child");
-  const owned = params.get("owned");
-  const goal = params.get("goal");
-  const palNames = new Set(appData.pals.map((p) => p.name));
-
-  const matchedA = resolvePalName(parentA, palNames);
-  const matchedB = resolvePalName(parentB, palNames);
-  const matchedTarget = resolvePalName(target, palNames);
-  const matchedOwned = resolvePalName(owned, palNames);
-  const matchedGoal = resolvePalName(goal, palNames);
-  if (matchedA) {
-    parentASelect.value = matchedA;
-  }
-  if (matchedB) {
-    parentBSelect.value = matchedB;
-  }
-  if (matchedTarget) {
-    targetChildSelect.value = matchedTarget;
-  }
-  if (chainOwnedSelect && matchedOwned) {
-    chainOwnedSelect.value = matchedOwned;
-  }
-  if (chainGoalSelect && matchedGoal) {
-    chainGoalSelect.value = matchedGoal;
-  }
-  return {
-    hasTarget: Boolean(matchedTarget),
-    hasChain: Boolean(matchedOwned && matchedGoal)
-  };
-}
-
-async function bootstrap() {
-  appData = await apiFetch("/api/bootstrap");
-  buildPalIndexes();
-  lastHeroView = "";
-  populateSelect(parentASelect);
-  populateSelect(parentBSelect);
-  populateSelect(targetChildSelect);
-  if (chainOwnedSelect) {
-    populateSelect(chainOwnedSelect);
-  }
-  if (chainGoalSelect) {
-    populateSelect(chainGoalSelect);
-  }
-
-  const { hasTarget, hasChain } = applyQueryFromUrl();
-  if (!parentASelect.value) {
-    parentASelect.value = "Anubis";
-  }
-  if (!parentBSelect.value) {
-    parentBSelect.value = "Jetragon";
-  }
-  if (!targetChildSelect.value) {
-    targetChildSelect.value = "Frostallion";
-  }
-
-  const savedTheme = localStorage.getItem("palworldTheme");
-  setTheme(savedTheme === "light" ? "light" : "dark");
-
-  renderStatsBar();
-  renderPalGrid(false);
-  if (typeof requestIdleCallback === "function") {
-    requestIdleCallback(() => renderKidBackground(), { timeout: 2000 });
-  } else {
-    setTimeout(renderKidBackground, 300);
-  }
-  const initialView = resolveViewFromPath(globalThis.location.pathname);
-  const panelPromise = renderDatabasePanel(initialView);
-  if (initialView === "map") {
-    await panelPromise;
-  } else {
-    void panelPromise;
-  }
-
-  const runDeferred = () => {
-    void renderResult();
-    if (hasTarget) {
-      void renderCombinations();
-    } else {
-      combosDiv.innerHTML =
-        '<span class="muted">Select a target Pal and click <strong>Find Combinations</strong>.</span>';
-    }
-    if (hasChain || initialView === "chain") {
-      void renderChainBreeding();
-    } else if (chainResultDiv) {
-      chainResultDiv.innerHTML =
-        '<span class="muted">Pick the Pal you own and your goal, then click <strong>Find Breeding Chain</strong>.</span>';
-    }
-  };
-  if (typeof requestIdleCallback === "function") {
-    requestIdleCallback(runDeferred, { timeout: 600 });
-  } else {
-    setTimeout(runDeferred, 50);
-  }
-  setTimeout(() => focusViewCard(initialView), 120);
-}
-
-calculateBtn.addEventListener("click", () => renderResult({ celebrate: true }));
-swapBtn.addEventListener("click", () => {
-  const currentA = parentASelect.value;
-  parentASelect.value = parentBSelect.value;
-  parentBSelect.value = currentA;
-  renderResult({ celebrate: true });
-});
-findCombosBtn.addEventListener("click", () => renderCombinations());
-findChainBtn?.addEventListener("click", () => renderChainBreeding());
-themeToggleBtn.addEventListener("click", () => {
-  const nextTheme = document.body.dataset.theme === "light" ? "dark" : "light";
-  setTheme(nextTheme);
-});
-navButtons.forEach((button) => {
-  button.addEventListener("click", (event) => {
-    const view = button.dataset.view;
-    if (button instanceof HTMLAnchorElement) {
-      event.preventDefault();
-      const href = button.getAttribute("href");
-      if (href) {
-        globalThis.history.pushState({}, "", href);
-      }
-    }
-    renderDatabasePanel(view);
-    focusViewCard(view);
-  });
-});
-globalThis.addEventListener("popstate", () => {
-  const view = resolveViewFromPath(globalThis.location.pathname);
-  renderDatabasePanel(view);
-  focusViewCard(view);
-});
-function onParentSelectUpdate() {
-  scheduleRenderResult();
-}
-
-parentASelect.addEventListener("change", onParentSelectUpdate);
-parentBSelect.addEventListener("change", onParentSelectUpdate);
-parentASelect.addEventListener("input", onParentSelectUpdate);
-parentBSelect.addEventListener("input", onParentSelectUpdate);
-palSearch.addEventListener("input", renderPalGrid);
-palGrid.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-pal-name]");
-  if (!button) {
-    return;
-  }
-  quickPickPal(button.dataset.palName);
-});
-
-try {
-  await bootstrap();
-} catch (error) {
-  console.error(error);
-  renderKidBackground();
-  if (databasePanelTitle && databasePanelBody) {
-    databasePanelTitle.textContent = "Rust API Required";
-    databasePanelBody.innerHTML =
-      "Start the server with <code>cargo run</code> or <strong>START-SERVER.bat</strong>, then refresh this page.";
-  }
-  if (resultDiv) {
-    resultDiv.innerHTML =
-      '<span class="muted">Server not running. Double-click <strong>START-SERVER.bat</strong> in the project folder.</span>';
-  }
-}
-
+  targetChildSelect.value
