@@ -145,7 +145,7 @@ struct GuidePage {
 const SEO_PAGES: [SeoPage; 11] = [
     SeoPage {
         path: "/",
-        title: "Palworld Breeding Calculator – Free Tool, Combos & Reverse Lookup",
+        title: "Palworld Breeding Calculator – Combos & Reverse Lookup",
         meta_description: "Free Palworld breeding calculator with parent pair testing, reverse lookup for any Pal, combo pages, and guides for Anubis, Jetragon, and legendaries.",
         h1: "Palworld Breeding Calculator",
         badge: "Home",
@@ -155,8 +155,8 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
     SeoPage {
         path: "/breeding-calculator",
-        title: "Palworld Breeding Calculator – Best Combos, Reverse Lookup & Egg Guide",
-        meta_description: "Use the ultimate Palworld Breeding Calculator to find breeding combinations, reverse breeding results, egg routes, and legendary pal combos instantly.",
+        title: "Palworld Breeding Calculator – Parent Tests & Reverse Lookup",
+        meta_description: "Test two Palworld parents, see the predicted child, and check special combinations with reverse lookup before you commit cake to an egg chain on your save.",
         h1: "Palworld Parent Combo Calculator",
         badge: "Breeding Calculator",
         h1_characteristics: seo_copy::BREEDING_H1,
@@ -166,7 +166,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     SeoPage {
         path: "/pals",
         title: "Palworld Pals Database - Powers and References",
-        meta_description: "Browse Palworld Pals with breeding power values, quick picks, and links to combo and capture planning tools.",
+        meta_description: "Browse Palworld Pals by breeding power, open a profile for parent combos and map notes, then send that Pal into the breeding calculator when you are ready.",
         h1: "Palworld Pals Database",
         badge: "Pals Database",
         h1_characteristics: seo_copy::PALS_H1,
@@ -176,7 +176,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     SeoPage {
         path: "/map",
         title: "Palworld Map Reference - Pal Locations",
-        meta_description: "Find Palworld spawn regions and coordinates for key Pals to shorten farming routes before breeding setup.",
+        meta_description: "Find Palworld spawn areas and coordinates for breeding parents so you can capture them on one trip before an egg chain starts at your base with your team.",
         h1: "Palworld Map & Pal Locations",
         badge: "Map Reference",
         h1_characteristics: seo_copy::MAP_H1,
@@ -186,7 +186,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     SeoPage {
         path: "/items",
         title: "Palworld Items Database - Sources and Drops",
-        meta_description: "Explore Palworld item sources, drop notes, and farming tips that support breeding, crafting, and base progression.",
+        meta_description: "Look up Palworld item sources and drop notes for cake ingredients, spheres, and crafting parts that keep breeding and base production on schedule each session.",
         h1: "Palworld Items Database",
         badge: "Items Database",
         h1_characteristics: seo_copy::ITEMS_H1,
@@ -196,7 +196,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     SeoPage {
         path: "/technology",
         title: "Palworld Technology Tree Guide - Key Milestones",
-        meta_description: "Track Palworld technology unlock levels for breeding, incubation, crafting, and production milestones.",
+        meta_description: "Track Palworld technology levels for the Breeding Farm, Egg Incubator, Pal Spheres, and production tools you need before starting a breeding chain on your save.",
         h1: "Palworld Technology Milestones",
         badge: "Technology Guide",
         h1_characteristics: seo_copy::TECH_H1,
@@ -206,7 +206,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     SeoPage {
         path: "/capture-rate",
         title: "Palworld Capture Rate Guide - Difficulty Estimates",
-        meta_description: "Estimate Palworld capture difficulty from breeding power and pick easier parent targets before expensive breeding loops.",
+        meta_description: "Estimate Palworld capture difficulty from breeding power, then pick easier parents to catch before you spend cake on a harder breeding chain on your save.",
         h1: "Palworld Capture Rate Estimates",
         badge: "Capture Rate",
         h1_characteristics: seo_copy::CAPTURE_H1,
@@ -215,8 +215,8 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
     SeoPage {
         path: "/palworld-breeding-calculator",
-        title: "Palworld Breeding Calculator – Best Combos, Reverse Lookup & Egg Guide",
-        meta_description: "Use the ultimate Palworld Breeding Calculator to find breeding combinations, reverse breeding results, passive skills, egg chains, and legendary pal combos instantly.",
+        title: "Palworld Breeding Calculator Online – Reverse Lookup",
+        meta_description: "Online Palworld breeding calculator for parent-pair tests, reverse lookup, and legendary combo checks, with results to verify before using cake on mobile.",
         h1: "Palworld Breeding Calculator Online",
         badge: "Online Calculator",
         h1_characteristics: seo_copy::KEYWORD_BREED_H1,
@@ -226,7 +226,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     SeoPage {
         path: "/palworld-breeding-combinations",
         title: "Palworld Breeding Combinations - Parent Pair Database",
-        meta_description: "Explore Palworld breeding combinations, special pair outcomes, and parent routes for rare and meta Pals.",
+        meta_description: "Explore Palworld breeding combinations, including special pairs and power-average results, then open a combo page to confirm the child before cake is spent.",
         h1: "Palworld Breeding Combinations",
         badge: "Combinations",
         h1_characteristics: seo_copy::KEYWORD_COMBOS_H1,
@@ -235,8 +235,8 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
     SeoPage {
         path: "/palworld-capture-rate-calculator",
-        title: "Palworld Capture Rate Calculator - Catch Difficulty Estimator",
-        meta_description: "Palworld capture rate calculator with difficulty estimates and easier parent suggestions for faster breeding setup.",
+        title: "Palworld Capture Rate Calculator – Difficulty Guide",
+        meta_description: "Palworld capture rate calculator that turns breeding power into a difficulty estimate and points you to easier parents for the same project on your save.",
         h1: "Palworld Capture Rate Calculator",
         badge: "Capture Calculator",
         h1_characteristics: seo_copy::KEYWORD_CAPTURE_H1,
@@ -245,8 +245,8 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
     SeoPage {
         path: "/palworld-chain-breeding",
-        title: "Palworld Chain Breeding Calculator - Shortest Path to Any Pal",
-        meta_description: "Find the shortest Palworld breeding chain from a Pal you own to any target. Step-by-step parent pairs, special combos, and links to verify each egg.",
+        title: "Palworld Chain Breeding Calculator – Shortest Path",
+        meta_description: "Find the shortest Palworld breeding chain from a Pal you already own to any target. Each step lists a parent pair to verify before you spend any cake.",
         h1: "Palworld Chain Breeding Path Finder",
         badge: "Chain Breeder",
         h1_characteristics: seo_copy::CHAIN_H1,
@@ -615,11 +615,15 @@ fn seo_combo_links_html(state: &AppState, max: Option<usize>) -> String {
         .join("\n          ")
 }
 
+fn combo_href(a: &str, b: &str) -> String {
+    let (a_slug, b_slug) = canonical_combo_slugs(a, b);
+    format!("/combo/{a_slug}/{b_slug}")
+}
+
 fn combo_pair_list_item(a: &str, b: &str) -> String {
     format!(
-        r#"<li><a href="/combo/{}/{}">{} + {}</a></li>"#,
-        pal_slug(a),
-        pal_slug(b),
+        r#"<li><a href="{}">{} + {}</a></li>"#,
+        combo_href(a, b),
         a,
         b
     )
@@ -983,8 +987,9 @@ fn build_pal_pages_directory_html(state: &AppState) -> String {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>All Palworld Pal Breeding Pages ({count}) | Pal Breeding Calculator</title>
-  <meta name="description" content="Browse {count} Palworld Pal breeding pages with parent combinations, breeding power, map locations, calculator shortcuts, how-to-breed hubs, and chain breeding links for every Pal in our live database. Use this directory to jump from Anubis and Jetragon to early-game workers without guessing URLs. Each profile connects reverse lookup results, combo tables, and capture planning so legendary or mid-game projects stay organized. Mobile-friendly index for solo and co-op breeders who need fast navigation across the full roster. Free unofficial fan tool updated with server-rendered SEO pages for search indexing and shareable internal links." />
+  <title>All Pal Breeding Pages ({count}) | Palworld</title>
+  <meta name="description" content="{description}" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
   <link rel="canonical" href="{base}/pal-pages" />
   <style>
     body {{ margin:0; font-family:Arial,sans-serif; background:#0b0f14; color:#e5ecf4; }}
@@ -1010,6 +1015,7 @@ fn build_pal_pages_directory_html(state: &AppState) -> String {
 </html>"#,
         base = state.base_url,
         count = count,
+        description = pal_directory_description(count),
         links = links,
         kid_bg = seo_kid_background_html(),
         SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
@@ -1030,8 +1036,9 @@ fn build_combo_pages_directory_html(state: &AppState) -> String {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Palworld Breeding Combo Pages ({count}) | Parent Pair Results</title>
-  <meta name="description" content="Browse {count} Palworld parent-pair combo pages with child outcomes, special combinations, breeding method details, and calculator verification links. Use this directory to open shareable parent-pair style URLs for Discord notes, co-op planning, and long legendary chains without re-testing pairs every session. Each combo page connects reverse lookup, alternative routes, and related guides for Anubis, Jetragon, and other popular targets. Mobile-friendly index for systematic pair exploration across our live breeding database. Free unofficial fan tool built for search indexing and fast internal crawl paths." />
+  <title>Palworld Combo Pages ({count}) | Parent Pairs</title>
+  <meta name="description" content="{description}" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
   <link rel="canonical" href="{base}/combo-pages" />
   <style>
     body {{ margin:0; font-family:Arial,sans-serif; background:#0b0f14; color:#e5ecf4; }}
@@ -1058,6 +1065,7 @@ fn build_combo_pages_directory_html(state: &AppState) -> String {
 </html>"#,
         base = state.base_url,
         count = count,
+        description = combo_directory_description(count),
         links = links,
         kid_bg = seo_kid_background_html(),
         SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
@@ -1125,13 +1133,21 @@ async fn pal_detail_page(
 async fn combo_detail_page(
     State(state): State<AppState>,
     Path((parent_a_slug, parent_b_slug)): Path<(String, String)>,
-) -> Result<Html<String>, (StatusCode, String)> {
+) -> Result<axum::response::Response, (StatusCode, String)> {
     let parent_a = find_pal_by_slug(&state.pals, &parent_a_slug)
         .cloned()
         .ok_or_else(|| (StatusCode::NOT_FOUND, "Parent A not found".to_string()))?;
     let parent_b = find_pal_by_slug(&state.pals, &parent_b_slug)
         .cloned()
         .ok_or_else(|| (StatusCode::NOT_FOUND, "Parent B not found".to_string()))?;
+
+    let (canon_a, canon_b) = canonical_combo_slugs(&parent_a.name, &parent_b.name);
+    if parent_a_slug.to_lowercase() != canon_a || parent_b_slug.to_lowercase() != canon_b {
+        return Ok(axum::response::Redirect::permanent(&format!(
+            "/combo/{canon_a}/{canon_b}"
+        ))
+        .into_response());
+    }
 
     let result = calculate_child(&state, &parent_a.name, &parent_b.name)
         .ok_or_else(|| (StatusCode::BAD_REQUEST, "Could not calculate combo".to_string()))?;
@@ -1148,7 +1164,8 @@ async fn combo_detail_page(
         &parent_b,
         &result,
         &alternative_pairs,
-    )))
+    ))
+    .into_response())
 }
 
 async fn render_index_with_seo(
@@ -1520,7 +1537,7 @@ fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
       }}
     </script>"#,
         title = page.title,
-        description = page.page_description,
+        description = page.meta_description,
         short_description = page.meta_description,
         app_description = page.meta_description,
         page_url = page_url,
@@ -1620,10 +1637,9 @@ fn pal_img_tag(name: &str, class: &str) -> String {
 }
 
 fn combo_parent_cell(name: &str, combo_a: &str, combo_b: &str) -> String {
-    let a_slug = pal_slug(combo_a);
-    let b_slug = pal_slug(combo_b);
     format!(
-        r#"<a class="pal-table-link" href="/combo/{a_slug}/{b_slug}">{img}<span>{label}</span></a>"#,
+        r#"<a class="pal-table-link" href="{href}">{img}<span>{label}</span></a>"#,
+        href = combo_href(combo_a, combo_b),
         img = pal_img_tag(name, "pal-table-img"),
         label = html_escape(name)
     )
@@ -1673,16 +1689,8 @@ fn build_how_to_breed_html(
 ) -> String {
     let slug = pal_slug(&target.name);
     let page_url = format!("{base_url}/how-to-breed/{slug}");
-    let title = format!(
-        "How to Breed {} in Palworld – Fastest Combos & Parent Guide",
-        target.name
-    );
-    let description = format!(
-        "Learn how to breed {name} in Palworld with every verified parent pair, special combinations, breeding power {power}, and step-by-step Breeding Farm setup. This hub lists up to twenty routes from our live reverse calculator so you can compare capture difficulty before spending cake. Open the {name} Pal profile, combo hub, and free online breeding calculator to validate special pairs versus power-average outcomes. Chain breeding links help when you start from Lamball, Cattiva, or other early Pals. Mobile-friendly instructions cover incubators, method labels, and why gender does not change predicted children in standard math. Use this how-to-breed page to plan {name} projects without wasted eggs, then bookmark combo URLs for co-op teammates. Ideal for beginners and veterans updating routes after patches. Total routes tracked for {name}: {combo_count}.",
-        name = target.name,
-        power = target.power,
-        combo_count = combos.len()
-    );
+    let title = format!("How to Breed {} in Palworld", target.name);
+    let description = how_to_breed_meta_description(target, combos.len());
     let rows = combo_table_rows(combos, 20);
     let calc_link = format!(
         "{}?target={}",
@@ -1738,6 +1746,7 @@ fn build_how_to_breed_html(
           <li>Place parents, hatch the child, repeat if you need better passives.</li>
         </ol>
         <p><a href="/pal/{slug}">{pal_name} Pal profile</a> • <a href="/palworld-breeding-calculator">Full calculator</a></p>
+        <p><a href="/guides/best-breeding-combos">Best breeding combos</a> • <a href="/guides/capture-rate-explained">Capture rate guide</a> • <a href="/guides/breeding-not-working">Breeding fixes</a></p>
       </div>
       <div class="card">
         <h2>Parent pairs that produce {pal_name}</h2>
@@ -1773,15 +1782,8 @@ fn build_combos_hub_html(
 ) -> String {
     let slug = pal_slug(&target.name);
     let page_url = format!("{base_url}/combos/{slug}");
-    let title = format!(
-        "{} Breeding Combinations – All Parent Pairs | Palworld",
-        target.name
-    );
-    let description = format!(
-        "Browse every Palworld breeding combination that can produce {name}, including {count} parent pairs with special combination flags and power-average methods. Sort easier captures first, then open dedicated combo pages and the reverse calculator to verify outcomes before cake is spent in the Breeding Farm. This {name} combinations hub links how-to-breed steps, chain breeding paths, map farming, and capture estimates so legendary or mid-game projects stay organized. Method labels stay transparent so fixed pairs are never confused with power averages. Mobile-friendly tables help co-op teams share the same {name} routes. Use this page as the bookmarkable index for {name} parent planning after patches when new Pals shift viable pairs. Free tool with no login required.",
-        name = target.name,
-        count = combos.len()
-    );
+    let title = format!("{} Breeding Combinations | Palworld", target.name);
+    let description = combos_hub_meta_description(target, combos.len());
     let rows = combo_table_rows(combos, 30);
     let calc_link = format!(
         "{}?target={}",
@@ -1825,6 +1827,7 @@ fn build_combos_hub_html(
         <h1>{pal_name} Breeding Combinations</h1>
         <p><strong>{combo_count}</strong> parent pair routes can produce <strong>{pal_name}</strong> (breeding power {power}).</p>
         <p><a href="{calc_link}">Open reverse calculator for {pal_name}</a> • <a href="/how-to-breed/{slug}">How to breed {pal_name}</a> • <a href="/pal/{slug}">Pal page</a></p>
+        <p><a href="/guides/best-breeding-combos">Best breeding combos</a> • <a href="/guides/capture-rate-explained">Capture rate guide</a> • <a href="/guides/breeding-not-working">Breeding fixes</a></p>
       </div>
       <div class="card">
         <h2>All parent pairs</h2>
@@ -1939,10 +1942,7 @@ fn build_pal_page_html(
 ) -> String {
     let slug = target.name.to_lowercase().replace(' ', "-");
     let page_url = format!("{base_url}/pal/{slug}");
-    let title = format!(
-        "{} Breeding Calculator – All Combos, Chain Paths & How to Breed | Palworld",
-        target.name
-    );
+    let title = format!("{} Breeding Calculator | Palworld", target.name);
     let description = pal_page_meta_description(target, combos.len());
     let combo_rows = combos
         .iter()
@@ -1962,9 +1962,8 @@ fn build_pal_page_html(
         .take(6)
         .map(|(a, b, _)| {
             format!(
-                "<a href=\"/combo/{}/{}\">{} + {}</a>",
-                a.to_lowercase().replace(' ', "-"),
-                b.to_lowercase().replace(' ', "-"),
+                "<a href=\"{}\">{} + {}</a>",
+                combo_href(a, b),
                 a,
                 b
             )
@@ -2098,13 +2097,98 @@ fn build_pal_page_html(
     )
 }
 
+/// Second sentences of fixed lengths. One of them always lands a lead of 57–90
+/// characters in the 150–160 meta description window.
+const META_DESCRIPTION_TAILS: &[&str] = &[
+    "Open the calculator and compare routes before spending cake.",
+    "Read the combo list, then compare parent routes before you spend cake.",
+    "Open the combo list and compare all parent routes in the calculator before cake.",
+    "Check the Pal page, the combo list, and parent routes in the calculator before using cake.",
+    "Check the Pal page, the combo list, and parent routes in the calculator before using cake at a base.",
+];
+
+fn fit_meta_description(lead: &str) -> String {
+    let lead = lead.trim().trim_end_matches('.').trim();
+    let mut best: Option<(usize, String)> = None;
+    for tail in META_DESCRIPTION_TAILS {
+        let candidate = format!("{lead}. {tail}");
+        let len = candidate.chars().count();
+        if (150..=160).contains(&len) {
+            let score = len.abs_diff(155);
+            if best.as_ref().map(|(prev, _)| score < *prev).unwrap_or(true) {
+                best = Some((score, candidate));
+            }
+        }
+    }
+    best.map(|(_, text)| text)
+        .unwrap_or_else(|| format!("{lead}."))
+}
+
+fn counted(n: usize, singular: &str, plural: &str) -> String {
+    if n == 1 {
+        format!("1 {singular}")
+    } else {
+        format!("{n} {plural}")
+    }
+}
+
 fn pal_page_meta_description(pal: &Pal, combo_count: usize) -> String {
-    format!(
-        "Complete {name} Palworld breeding guide with {combo_count} verified parent pairs, breeding power {power}, map location tips, chain breeding paths, and step-by-step how-to-breed instructions. Use our free calculator to reverse lookup every combo that produces {name} and compare special combinations versus power-average outcomes before you spend cake in the Breeding Farm. Links to dedicated combo pages, capture tips, and related legendary routes help you plan full chains from early-game Pals to endgame targets without wasted eggs. Open the {name} combinations hub for parent tables, then validate each method online on mobile or desktop. Popular searches covered: how to breed {name}, {name} breeding combinations, {name} breeding calculator, fastest {name} path, and {name} parent pairs for co-op or solo bases. Free unofficial fan tool updated with live roster data.",
+    fit_meta_description(&format!(
+        "Breed {name} in Palworld using {pairs} at breeding power {power}",
         name = pal.name,
-        combo_count = combo_count,
-        power = pal.power
-    )
+        pairs = counted(combo_count, "parent pair", "parent pairs"),
+        power = pal.power,
+    ))
+}
+
+fn how_to_breed_meta_description(pal: &Pal, combo_count: usize) -> String {
+    fit_meta_description(&format!(
+        "Learn how to breed {name} in Palworld: breeding power {power} and {routes}",
+        name = pal.name,
+        power = pal.power,
+        routes = counted(combo_count, "parent route", "parent routes"),
+    ))
+}
+
+fn combos_hub_meta_description(pal: &Pal, combo_count: usize) -> String {
+    fit_meta_description(&format!(
+        "See {name} breeding combinations in Palworld: {pairs} at power {power}",
+        name = pal.name,
+        pairs = counted(combo_count, "parent pair", "parent pairs"),
+        power = pal.power,
+    ))
+}
+
+fn combo_page_title(parent_a: &str, parent_b: &str, child: &str) -> String {
+    let full = format!("{parent_a} + {parent_b} = {child} | Palworld");
+    if full.chars().count() <= 60 {
+        full
+    } else {
+        format!("{parent_a} + {parent_b} = {child}")
+    }
+}
+
+fn combo_page_meta_description(parent_a: &str, parent_b: &str, child: &str, method: &str) -> String {
+    let kind = if method.contains("Special") {
+        "special combo"
+    } else {
+        "power average"
+    };
+    fit_meta_description(&format!(
+        "{parent_a} + {parent_b} breeds {child} in Palworld ({kind})"
+    ))
+}
+
+fn pal_directory_description(count: usize) -> String {
+    fit_meta_description(&format!(
+        "Browse {count} Palworld Pal breeding pages with power, pairs, and map notes"
+    ))
+}
+
+fn combo_directory_description(count: usize) -> String {
+    fit_meta_description(&format!(
+        "Browse {count} Palworld combo pages with child results and breeding methods"
+    ))
 }
 
 fn build_combo_page_html(
@@ -2114,19 +2198,16 @@ fn build_combo_page_html(
     result: &CalculateResponse,
     alternatives: &[(String, String, String)],
 ) -> String {
-    let parent_a_slug = parent_a.name.to_lowercase().replace(' ', "-");
-    let parent_b_slug = parent_b.name.to_lowercase().replace(' ', "-");
-    let page_url = format!("{base_url}/combo/{parent_a_slug}/{parent_b_slug}");
-    let title = format!(
-        "{} + {} Breeding Result – {} | Palworld Calculator",
-        parent_a.name, parent_b.name, result.child.name
-    );
-    let description = format!(
-        "What does {a} + {b} breed in Palworld? Child result: {child}. Method: {method}. This combo page explains the outcome, lists alternative parent routes for the same child, and links our free reverse breeding calculator so you can verify special combinations versus power-average logic before spending cake. Use egg chain tips, related combo URLs, and Pal profiles for {a}, {b}, and {child} when planning longer projects. Ideal for bookmarking Discord advice or co-op notes instead of screenshots. Mobile-friendly reference for Breeding Farm sessions. Re-check after patches when new Pals change viable pairs. Free unofficial fan tool with live calculator data.",
-        a = parent_a.name,
-        b = parent_b.name,
-        child = result.child.name,
-        method = result.method
+    let parent_a_slug = pal_slug(&parent_a.name);
+    let parent_b_slug = pal_slug(&parent_b.name);
+    let (canon_a, canon_b) = canonical_combo_slugs(&parent_a.name, &parent_b.name);
+    let page_url = format!("{base_url}/combo/{canon_a}/{canon_b}");
+    let title = combo_page_title(&parent_a.name, &parent_b.name, &result.child.name);
+    let description = combo_page_meta_description(
+        &parent_a.name,
+        &parent_b.name,
+        &result.child.name,
+        &result.method,
     );
     let alt_rows = alternatives
         .iter()
@@ -2144,9 +2225,8 @@ fn build_combo_page_html(
         .take(8)
         .map(|(a, b, _)| {
             format!(
-                "<a href=\"/combo/{}/{}\">{} + {}</a>",
-                a.to_lowercase().replace(' ', "-"),
-                b.to_lowercase().replace(' ', "-"),
+                "<a href=\"{}\">{} + {}</a>",
+                combo_href(a, b),
                 a,
                 b
             )
@@ -2253,7 +2333,7 @@ fn build_combo_page_html(
         <p>{related_combo_links}</p>
         <h3>Related Guides</h3>
         <p>{related_guides}</p>
-        <p><a href="/pal/{parent_a_slug}">Open {parent_a_name} page</a> • <a href="/pal/{parent_b_slug}">Open {parent_b_name} page</a> • <a href="/pal/{child_slug}">Open {child_name} page</a> • <a href="{calc_path}">Breeding calculator</a></p>
+        <p><a href="/how-to-breed/{child_slug}">How to breed {child_name}</a> • <a href="/combos/{child_slug}">All {child_name} combos</a> • <a href="/pal/{parent_a_slug}">Open {parent_a_name} page</a> • <a href="/pal/{parent_b_slug}">Open {parent_b_name} page</a> • <a href="/pal/{child_slug}">Open {child_name} page</a> • <a href="{calc_path}">Breeding calculator</a></p>
       </div>
     </main>
     {site_footer}
@@ -2339,10 +2419,9 @@ fn combinations_section_html(state: &AppState, target: &str) -> String {
         for second in state.pals.iter().skip(i) {
             if let Some(calc) = calculate_child(state, &first.name, &second.name) {
                 if calc.child.name == target {
-                    let a_slug = first.name.to_lowercase().replace(' ', "-");
-                    let b_slug = second.name.to_lowercase().replace(' ', "-");
                     rows.push_str(&format!(
-                        "<tr><td><a href=\"/combo/{a_slug}/{b_slug}\">{} + {}</a></td><td>{}</td></tr>",
+                        "<tr><td><a href=\"{}\">{} + {}</a></td><td>{}</td></tr>",
+                        combo_href(&first.name, &second.name),
                         first.name,
                         second.name,
                         calc.method
@@ -2410,4 +2489,86 @@ fn build_technologies() -> Vec<TechnologyData> {
         TechnologyData { level: 35, name: "Legendary Sphere".to_string(), cost: "4 Tech Points".to_string() },
         TechnologyData { level: 42, name: "Advanced Production Line".to_string(), cost: "4 Tech Points".to_string() },
     ]
+}
+
+#[cfg(test)]
+mod seo_meta_tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    fn assert_meta(label: &str, text: &str, seen: &mut HashSet<String>) {
+        let len = text.chars().count();
+        assert!(
+            (150..=160).contains(&len),
+            "{label} meta len {len}: {text}"
+        );
+        assert!(
+            seen.insert(text.to_string()),
+            "{label} duplicate meta: {text}"
+        );
+    }
+
+    #[test]
+    fn meta_descriptions_stay_unique_and_in_serp_window() {
+        let mut seen = HashSet::new();
+        for page in SEO_PAGES {
+            assert_meta(page.path, page.meta_description, &mut seen);
+            let title_len = page.title.chars().count();
+            assert!(
+                title_len <= 60,
+                "{} title len {title_len}: {}",
+                page.path,
+                page.title
+            );
+        }
+        for page in GUIDE_PAGES {
+            assert_meta(page.path, page.description, &mut seen);
+            let title_len = page.title.chars().count();
+            assert!(
+                title_len <= 60,
+                "{} title len {title_len}: {}",
+                page.path,
+                page.title
+            );
+        }
+        for pal in data::load_pals() {
+            for n in [1usize, 2, 12, 25, 99, 205, 400] {
+                assert_meta("pal", &pal_page_meta_description(&pal, n), &mut seen);
+                assert_meta("how", &how_to_breed_meta_description(&pal, n), &mut seen);
+                assert_meta("hub", &combos_hub_meta_description(&pal, n), &mut seen);
+            }
+            let title = format!("{} Breeding Calculator | Palworld", pal.name);
+            assert!(title.chars().count() <= 60, "{title}");
+            let how = format!("How to Breed {} in Palworld", pal.name);
+            assert!(how.chars().count() <= 60, "{how}");
+            let hub = format!("{} Breeding Combinations | Palworld", pal.name);
+            assert!(hub.chars().count() <= 60, "{hub}");
+        }
+        for n in [1usize, 12, 36, 46, 198, 204, 400] {
+            assert_meta("pal-dir", &pal_directory_description(n), &mut seen);
+            assert_meta("combo-dir", &combo_directory_description(n), &mut seen);
+        }
+        let parsed: serde_json::Value =
+            serde_json::from_str(include_str!("../data/special_combos.json")).unwrap();
+        for combo in parsed["combos"].as_array().unwrap() {
+            let a = combo["parent_a"].as_str().unwrap();
+            let b = combo["parent_b"].as_str().unwrap();
+            let child = combo["child"].as_str().unwrap();
+            for method in ["Special combination", "Power average (100)"] {
+                assert_meta(
+                    "combo",
+                    &combo_page_meta_description(a, b, child, method),
+                    &mut seen,
+                );
+                assert_meta(
+                    "combo-rev",
+                    &combo_page_meta_description(b, a, child, method),
+                    &mut seen,
+                );
+            }
+            let title = combo_page_title(a, b, child);
+            assert!(title.chars().count() <= 60, "{title}");
+            assert_eq!(canonical_combo_slugs(a, b), canonical_combo_slugs(b, a));
+        }
+    }
 }
