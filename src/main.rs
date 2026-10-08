@@ -15,7 +15,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use axum::http::{header, HeaderValue};
-use tower_http::services::ServeDir;
+use tower_http::services::{ServeDir, ServeFile};
 use tower_http::set_header::SetResponseHeaderLayer;
 
 #[derive(Clone)]
@@ -379,6 +379,27 @@ async fn main() {
         header::CACHE_CONTROL,
         HeaderValue::from_static("public, max-age=604800"),
     );
+    let root_static_cache = SetResponseHeaderLayer::if_not_present(
+        header::CACHE_CONTROL,
+        HeaderValue::from_static("public, max-age=604800, immutable"),
+    );
+    let root_static = Router::new()
+        .route_service("/favicon.svg", ServeFile::new("favicon.svg"))
+        .route_service("/styles.css", ServeFile::new("styles.css"))
+        .route_service("/app.js", ServeFile::new("app.js"))
+        .route_service(
+            "/manifest.webmanifest",
+            ServeFile::new("manifest.webmanifest"),
+        )
+        .route_service(
+            "/google0261c5c69eda848e.html",
+            ServeFile::new("google0261c5c69eda848e.html"),
+        )
+        .route_service(
+            "/22f4f9e126a34930a0810a0d85f0b755.txt",
+            ServeFile::new("22f4f9e126a34930a0810a0d85f0b755.txt"),
+        )
+        .layer(root_static_cache);
 
     let app = Router::new()
         .route("/", get(index_page))
@@ -429,15 +450,9 @@ async fn main() {
                 .nest_service("/", ServeDir::new("assets"))
                 .layer(assets_cache),
         )
+        .merge(root_static)
         .with_state(state)
-        .fallback_service(
-            Router::new()
-                .nest_service("/", ServeDir::new("."))
-                .layer(SetResponseHeaderLayer::if_not_present(
-                    header::CACHE_CONTROL,
-                    HeaderValue::from_static("public, max-age=604800, immutable"),
-                )),
-        );
+        .fallback(not_found_handler);
 
     // Render and other hosts require 0.0.0.0 so the port is reachable externally.
     let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
@@ -1182,8 +1197,15 @@ fn visible_breadcrumb_html(page: SeoPage) -> String {
     )
 }
 
+async fn not_found_handler() -> StatusCode {
+    StatusCode::NOT_FOUND
+}
+
 async fn robots_txt(State(state): State<AppState>) -> impl IntoResponse {
-    let body = format!("User-agent: *\nAllow: /\n\nSitemap: {}/sitemap.xml\n", state.base_url);
+    let body = format!(
+        "User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: {}/sitemap.xml\n",
+        state.base_url
+    );
     ([(axum::http::header::CONTENT_TYPE, "text/plain; charset=utf-8")], body)
 }
 
@@ -1282,24 +1304,41 @@ async fn sitemap_pals(State(state): State<AppState>) -> impl IntoResponse {
 async fn sitemap_combos(State(state): State<AppState>) -> impl IntoResponse {
     let lastmod = chrono_like_today();
     let mut urls = String::new();
-    for (i, first) in state.pals.iter().enumerate() {
-        for second in state.pals.iter().skip(i) {
-            if !should_index_combo(&state, first, second) {
-                continue;
-            }
-            let loc = format!(
-                "{}/combo/{}/{}",
-                state.base_url,
-                first.name.to_lowercase().replace(' ', "-"),
-                second.name.to_lowercase().replace(' ', "-")
-            );
-            push_url(&mut urls, &loc, &lastmod, "0.7");
-        }
+    let mut keys: Vec<_> = state.special_combos.keys().cloned().collect();
+    keys.sort();
+    for key in keys {
+        let Some((parent_a, parent_b)) = key.split_once('|') else {
+            continue;
+        };
+        let (a_slug, b_slug) = canonical_combo_slugs(parent_a, parent_b);
+        let loc = format!("{}/combo/{a_slug}/{b_slug}", state.base_url);
+        push_url(&mut urls, &loc, &lastmod, "0.7");
     }
     xml_response(urlset_body(&urls))
 }
 
+fn canonical_combo_slugs(parent_a: &str, parent_b: &str) -> (String, String) {
+    let a_slug = pal_slug(parent_a);
+    let b_slug = pal_slug(parent_b);
+    if a_slug <= b_slug {
+        (a_slug, b_slug)
+    } else {
+        (b_slug, a_slug)
+    }
+}
+
+fn xml_escape_text(value: &str) -> String {
+    value
+        .replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&apos;")
+}
+
 fn push_url(urls: &mut String, loc: &str, lastmod: &str, priority: &str) {
+    let loc = xml_escape_text(loc);
+    let lastmod = xml_escape_text(lastmod);
     urls.push_str(&format!(
         "  <url>\n    <loc>{loc}</loc>\n    <lastmod>{lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>{priority}</priority>\n  </url>\n"
     ));
@@ -1313,12 +1352,19 @@ fn urlset_body(urls: &str) -> String {
 }
 
 fn xml_response(body: String) -> impl IntoResponse {
-    ([(axum::http::header::CONTENT_TYPE, "application/xml; charset=utf-8")], body)
-}
-
-fn should_index_combo(state: &AppState, first: &Pal, second: &Pal) -> bool {
-    calculate_child(state, &first.name, &second.name)
-        .is_some_and(|result| result.method.contains("Special"))
+    (
+        [
+            (
+                axum::http::header::CONTENT_TYPE,
+                "application/xml; charset=utf-8",
+            ),
+            (
+                axum::http::header::CACHE_CONTROL,
+                "public, max-age=3600",
+            ),
+        ],
+        body,
+    )
 }
 
 fn chrono_like_today() -> String {
