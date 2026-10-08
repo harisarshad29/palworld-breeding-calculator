@@ -1189,14 +1189,15 @@ async fn robots_txt(State(state): State<AppState>) -> impl IntoResponse {
 
 async fn sitemap_index(State(state): State<AppState>) -> impl IntoResponse {
     let base = &state.base_url;
+    let lastmod = chrono_like_today();
     let body = format!(
         r#"<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap><loc>{base}/sitemap-pages.xml</loc></sitemap>
-  <sitemap><loc>{base}/sitemap-pals.xml</loc></sitemap>
-  <sitemap><loc>{base}/sitemap-guides.xml</loc></sitemap>
-  <sitemap><loc>{base}/sitemap-combos.xml</loc></sitemap>
-  <sitemap><loc>{base}/sitemap-hubs.xml</loc></sitemap>
+  <sitemap><loc>{base}/sitemap-pages.xml</loc><lastmod>{lastmod}</lastmod></sitemap>
+  <sitemap><loc>{base}/sitemap-pals.xml</loc><lastmod>{lastmod}</lastmod></sitemap>
+  <sitemap><loc>{base}/sitemap-guides.xml</loc><lastmod>{lastmod}</lastmod></sitemap>
+  <sitemap><loc>{base}/sitemap-combos.xml</loc><lastmod>{lastmod}</lastmod></sitemap>
+  <sitemap><loc>{base}/sitemap-hubs.xml</loc><lastmod>{lastmod}</lastmod></sitemap>
 </sitemapindex>
 "#
     );
@@ -1316,13 +1317,8 @@ fn xml_response(body: String) -> impl IntoResponse {
 }
 
 fn should_index_combo(state: &AppState, first: &Pal, second: &Pal) -> bool {
-    let Some(result) = calculate_child(state, &first.name, &second.name) else {
-        return false;
-    };
-    if result.method.contains("Special") {
-        return true;
-    }
-    result.child.power <= 350 || first.power <= 350 || second.power <= 350
+    calculate_child(state, &first.name, &second.name)
+        .is_some_and(|result| result.method.contains("Special"))
 }
 
 fn chrono_like_today() -> String {
@@ -2124,6 +2120,11 @@ fn build_combo_page_html(
         .distance
         .map(|d| d.to_string())
         .unwrap_or_else(|| "N/A".to_string());
+    let robots = if result.method.contains("Special") {
+        "index,follow,max-image-preview:large"
+    } else {
+        "noindex,follow"
+    };
 
     format!(
         r#"<!doctype html>
@@ -2133,7 +2134,7 @@ fn build_combo_page_html(
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content="{description}" />
-    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="robots" content="{robots}" />
     <link rel="canonical" href="{page_url}" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="{title}" />
