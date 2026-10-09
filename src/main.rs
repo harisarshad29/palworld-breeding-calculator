@@ -383,10 +383,16 @@ async fn main() {
         header::CACHE_CONTROL,
         HeaderValue::from_static("public, max-age=604800, immutable"),
     );
+    let app_js_cache = SetResponseHeaderLayer::if_not_present(
+        header::CACHE_CONTROL,
+        HeaderValue::from_static("public, max-age=300"),
+    );
+    let app_js = Router::new()
+        .route_service("/app.js", ServeFile::new("app.js"))
+        .layer(app_js_cache);
     let root_static = Router::new()
         .route_service("/favicon.svg", ServeFile::new("favicon.svg"))
         .route_service("/styles.css", ServeFile::new("styles.css"))
-        .route_service("/app.js", ServeFile::new("app.js"))
         .route_service(
             "/manifest.webmanifest",
             ServeFile::new("manifest.webmanifest"),
@@ -451,6 +457,7 @@ async fn main() {
                 .layer(assets_cache),
         )
         .merge(root_static)
+        .merge(app_js)
         .with_state(state)
         .fallback(not_found_handler);
 

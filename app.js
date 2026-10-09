@@ -134,13 +134,13 @@ function palSlug(palName) {
     .replace(/^-+|-+$/g, "");
 }
 
-// Relative Path for better local/static hosting compatibility
+// Root-absolute paths. Relative "assets/..." breaks on /pal/, /combo/, and /how-to-breed/.
 function getPalImageUrl(palName) {
-  return `assets/pals/thumbs/${palSlug(resolvePalDisplayName(palName))}.webp`;
+  return `/assets/pals/thumbs/${palSlug(resolvePalDisplayName(palName))}.webp`;
 }
 
 function getPalFullImageUrl(palName) {
-  return `assets/pals/${palSlug(resolvePalDisplayName(palName))}.webp`;
+  return `/assets/pals/${palSlug(resolvePalDisplayName(palName))}.webp`;
 }
 
 function buildPalIndexes() {
@@ -216,7 +216,7 @@ function getPalCdnUrl(palName) {
   return `https://ggservers.com/images/palworld/${encodeURIComponent(name)}.webp`;
 }
 
-const PAL_PLACEHOLDER = "assets/pals/placeholder.svg";
+const PAL_PLACEHOLDER = "/assets/pals/placeholder.svg";
 
 globalThis.__palImgFallback = (img) => {
   if (!img?.dataset) return;
@@ -897,4 +897,225 @@ function quickPickPal(palName) {
     scheduleRenderResult();
     return;
   }
-  targetChildSelect.value
+  targetChildSelect.value = palName;
+  combosDiv.innerHTML = `<span class="muted">Target set to <strong>${escapeHtml(palName)}</strong>. Click <strong>Find Combinations</strong>.</span>`;
+}
+
+function renderKidBackground() {
+  if (!kidBg) return;
+  // Mobile PSI: skip decorative stickers (fixed/in-viewport → always download).
+  if (window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)").matches) {
+    kidBg.replaceChildren();
+    return;
+  }
+  const pals = ["Anubis", "Jetragon", "Frostallion", "Lamball", "Foxparks", "Blazamut"];
+  const slots = [
+    { l: 2, t: 8, s: 56, r: -10 },
+    { l: 90, t: 6, s: 52, r: 12 },
+    { l: 4, t: 72, s: 48, r: 8 },
+    { l: 88, t: 70, s: 50, r: -8 },
+    { l: 8, t: 40, s: 44, r: -6 },
+    { l: 86, t: 38, s: 44, r: 7 }
+  ];
+  const frag = document.createDocumentFragment();
+  slots.forEach((sl, i) => {
+    const img = document.createElement("img");
+    img.className = "bg-pal-sticker";
+    img.src = getPalImageUrl(pals[i % pals.length]);
+    img.alt = "";
+    img.width = sl.s;
+    img.height = sl.s;
+    img.decoding = "async";
+    img.fetchPriority = "low";
+    img.loading = "lazy";
+    img.style.cssText = `left:${sl.l}%;top:${sl.t}%;width:${sl.s}px;height:${sl.s}px;transform:rotate(${sl.r}deg);animation-delay:${(i % 8) * 0.22}s;animation-duration:${7 + (i % 6)}s;`;
+    img.onerror = () => {
+      img.onerror = null;
+      img.src = PAL_PLACEHOLDER;
+    };
+    frag.appendChild(img);
+  });
+  kidBg.replaceChildren(frag);
+}
+
+function resolvePalName(raw, palNames) {
+  if (!raw) {
+    return null;
+  }
+  if (palNames.has(raw)) {
+    return raw;
+  }
+  const query = raw.toLowerCase();
+  for (const name of palNames) {
+    if (name.toLowerCase() === query) {
+      return name;
+    }
+  }
+  return null;
+}
+
+function applyQueryFromUrl() {
+  const params = new URLSearchParams(globalThis.location.search);
+  const parentA = params.get("parentA") || params.get("parent_a");
+  const parentB = params.get("parentB") || params.get("parent_b");
+  const target = params.get("target") || params.get("child");
+  const owned = params.get("owned");
+  const goal = params.get("goal");
+  const palNames = new Set(appData.pals.map((p) => p.name));
+
+  const matchedA = resolvePalName(parentA, palNames);
+  const matchedB = resolvePalName(parentB, palNames);
+  const matchedTarget = resolvePalName(target, palNames);
+  const matchedOwned = resolvePalName(owned, palNames);
+  const matchedGoal = resolvePalName(goal, palNames);
+  if (matchedA) {
+    parentASelect.value = matchedA;
+  }
+  if (matchedB) {
+    parentBSelect.value = matchedB;
+  }
+  if (matchedTarget) {
+    targetChildSelect.value = matchedTarget;
+  }
+  if (chainOwnedSelect && matchedOwned) {
+    chainOwnedSelect.value = matchedOwned;
+  }
+  if (chainGoalSelect && matchedGoal) {
+    chainGoalSelect.value = matchedGoal;
+  }
+  return {
+    hasTarget: Boolean(matchedTarget),
+    hasChain: Boolean(matchedOwned && matchedGoal)
+  };
+}
+
+async function bootstrap() {
+  appData = await apiFetch("/api/bootstrap");
+  buildPalIndexes();
+  lastHeroView = "";
+  populateSelect(parentASelect);
+  populateSelect(parentBSelect);
+  populateSelect(targetChildSelect);
+  if (chainOwnedSelect) {
+    populateSelect(chainOwnedSelect);
+  }
+  if (chainGoalSelect) {
+    populateSelect(chainGoalSelect);
+  }
+
+  const { hasTarget, hasChain } = applyQueryFromUrl();
+  if (!parentASelect.value) {
+    parentASelect.value = "Anubis";
+  }
+  if (!parentBSelect.value) {
+    parentBSelect.value = "Jetragon";
+  }
+  if (!targetChildSelect.value) {
+    targetChildSelect.value = "Frostallion";
+  }
+
+  const savedTheme = localStorage.getItem("palworldTheme");
+  setTheme(savedTheme === "light" ? "light" : "dark");
+
+  renderStatsBar();
+  renderPalGrid(false);
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(() => renderKidBackground(), { timeout: 2000 });
+  } else {
+    setTimeout(renderKidBackground, 300);
+  }
+  const initialView = resolveViewFromPath(globalThis.location.pathname);
+  const panelPromise = renderDatabasePanel(initialView);
+  if (initialView === "map") {
+    await panelPromise;
+  } else {
+    void panelPromise;
+  }
+
+  const runDeferred = () => {
+    void renderResult();
+    if (hasTarget) {
+      void renderCombinations();
+    } else if (combosDiv) {
+      combosDiv.innerHTML =
+        '<span class="muted">Select a target Pal and click <strong>Find Combinations</strong>.</span>';
+    }
+    if (hasChain || initialView === "chain") {
+      void renderChainBreeding();
+    } else if (chainResultDiv) {
+      chainResultDiv.innerHTML =
+        '<span class="muted">Pick the Pal you own and your goal, then click <strong>Find Breeding Chain</strong>.</span>';
+    }
+  };
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(runDeferred, { timeout: 600 });
+  } else {
+    setTimeout(runDeferred, 50);
+  }
+  setTimeout(() => focusViewCard(initialView), 120);
+}
+
+calculateBtn.addEventListener("click", () => renderResult({ celebrate: true }));
+swapBtn.addEventListener("click", () => {
+  const currentA = parentASelect.value;
+  parentASelect.value = parentBSelect.value;
+  parentBSelect.value = currentA;
+  renderResult({ celebrate: true });
+});
+findCombosBtn.addEventListener("click", () => renderCombinations());
+findChainBtn?.addEventListener("click", () => renderChainBreeding());
+themeToggleBtn.addEventListener("click", () => {
+  const nextTheme = document.body.dataset.theme === "light" ? "dark" : "light";
+  setTheme(nextTheme);
+});
+navButtons.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    const view = button.dataset.view;
+    if (button instanceof HTMLAnchorElement) {
+      event.preventDefault();
+      const href = button.getAttribute("href");
+      if (href) {
+        globalThis.history.pushState({}, "", href);
+      }
+    }
+    renderDatabasePanel(view);
+    focusViewCard(view);
+  });
+});
+globalThis.addEventListener("popstate", () => {
+  const view = resolveViewFromPath(globalThis.location.pathname);
+  renderDatabasePanel(view);
+  focusViewCard(view);
+});
+function onParentSelectUpdate() {
+  scheduleRenderResult();
+}
+
+parentASelect.addEventListener("change", onParentSelectUpdate);
+parentBSelect.addEventListener("change", onParentSelectUpdate);
+parentASelect.addEventListener("input", onParentSelectUpdate);
+parentBSelect.addEventListener("input", onParentSelectUpdate);
+palSearch.addEventListener("input", renderPalGrid);
+palGrid.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-pal-name]");
+  if (!button) {
+    return;
+  }
+  quickPickPal(button.dataset.palName);
+});
+
+try {
+  await bootstrap();
+} catch (error) {
+  console.error(error);
+  renderKidBackground();
+  if (databasePanelTitle && databasePanelBody) {
+    databasePanelTitle.textContent = "Rust API Required";
+    databasePanelBody.innerHTML =
+      "Start the server with <code>cargo run</code> or <strong>START-SERVER.bat</strong>, then refresh this page.";
+  }
+  if (resultDiv) {
+    resultDiv.innerHTML =
+      '<span class="muted">Server not running. Double-click <strong>START-SERVER.bat</strong> in the project folder.</span>';
+  }
+}
