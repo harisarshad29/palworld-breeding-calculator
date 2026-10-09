@@ -1003,16 +1003,13 @@ async function bootstrap() {
     populateSelect(chainGoalSelect);
   }
 
+  // A filled <select> always reports the first option, so an empty-value
+  // check never applied these defaults and both parents stayed the same Pal.
+  parentASelect.value = "Anubis";
+  parentBSelect.value = "Jetragon";
+  targetChildSelect.value = "Frostallion";
+
   const { hasTarget, hasChain } = applyQueryFromUrl();
-  if (!parentASelect.value) {
-    parentASelect.value = "Anubis";
-  }
-  if (!parentBSelect.value) {
-    parentBSelect.value = "Jetragon";
-  }
-  if (!targetChildSelect.value) {
-    targetChildSelect.value = "Frostallion";
-  }
 
   const savedTheme = localStorage.getItem("palworldTheme");
   setTheme(savedTheme === "light" ? "light" : "dark");
