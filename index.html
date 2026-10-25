@@ -16,7 +16,7 @@
     </style>
     <link rel="preload" href="/styles.css" as="style" />
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="preload" href="/app.js?v=20261009c" as="script" />
+    <link rel="preload" href="/app.js?v=20261025a" as="script" />
   </head>
   <body>
     <div id="kidBg" class="kid-bg"></div>
@@ -102,19 +102,24 @@
 
       <section id="chainCard" class="card">
         <h2>Chain Breeding Path</h2>
-        <p>Find the shortest egg route from a Pal you already own to any target Pal (up to 15 steps).</p>
+        <p>Select the Pal species you own and a target (up to 15 steps). The planner assumes you can supply suitable male and female parents; it does not model gender or passive traits.</p>
         <div class="grid">
           <label>
             Pal You Own
             <select id="chainOwned"></select>
           </label>
           <label>
+            Additional Owned Species (optional; select multiple)
+            <select id="chainAdditional" multiple size="6" aria-describedby="chainRosterHelp"></select>
+          </label>
+          <label>
             Goal Pal
             <select id="chainGoal"></select>
           </label>
         </div>
+        <p id="chainRosterHelp" class="muted">Choose any other species already in your Pal Box. On a keyboard, hold Ctrl (Windows) or Command (Mac) to select multiple.</p>
         <button id="findChainBtn" type="button">Find Breeding Chain</button>
-        <p class="muted chain-hint">Each step uses live combo data. Verify parents in the reverse calculator before spending cake.</p>
+        <p class="muted chain-hint">The search is bounded and may not find every route. Both parent species must be available before a step can be completed.</p>
         <div id="chainResult" class="chain-result"></div>
       </section>
 
@@ -141,7 +146,7 @@
           <li>Calculate child results from two selected parents.</li>
           <li>Find all parent combinations for a chosen target Pal.</li>
           <li>Check map locations, item sources, and technology milestones.</li>
-          <li>Estimate capture-rate difficulty by Pal power ranking.</li>
+          <li>Compare a breeding-power difficulty heuristic, not an in-game capture probability.</li>
         </ul>
         <h3>People Also Ask</h3>
         <p><strong>How do I breed Anubis?</strong> Use the reverse calculator and <a href="/fastest-anubis-breed">fastest Anubis breed guide</a> to compare parent pairs.</p>
@@ -187,6 +192,7 @@
 
     <!--SITE_FOOTER-->
 
-    <script type="module" src="/app.js?v=20261009c"></script>
+    <script type="module" src="/app.js?v=20261025a"></script>
   </body>
 </html>
+
