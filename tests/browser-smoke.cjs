@@ -40,6 +40,8 @@ const base = process.env.BROWSER_BASE_URL || 'http://127.0.0.1:3000';
       await page.locator('#chainGoal').selectOption('Anubis');
       await page.getByRole('button', { name: 'Find Breeding Chain', exact: true }).click();
       await page.locator('#chainResult .chain-step').filter({ hasText: 'Anubis' }).waitFor();
+      assert.equal(await page.locator('#confettiLayer .confetti-piece').count(), 0, 'Reduced-motion mode should not create confetti');
+      assert.ok(await page.getByRole('navigation', { name: 'Primary', exact: true }).isVisible());
       await page.locator('#arenaCard').scrollIntoViewIfNeeded();
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), `${name}: horizontal overflow`);
       await page.screenshot({ path: `test-results/${name}.png`, fullPage: false });

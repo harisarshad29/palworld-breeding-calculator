@@ -440,6 +440,7 @@ function renderStatsBar() {
 }
 
 function celebrateConfetti() {
+  if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
   const colors = ["#ff4fd8", "#53e8ff", "#fff15f", "#7dff7a", "#ff8c42"];
   const pieces = 36;
   const rect = resultDiv.getBoundingClientRect();
