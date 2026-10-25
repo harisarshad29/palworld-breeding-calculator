@@ -1,69 +1,34 @@
 {
   "combos": [
     {
-      "parent_a": "Relaxaurus",
-      "parent_b": "Sparkit",
-      "child": "Relaxaurus Lux"
+      "parent_a": "Arsox",
+      "parent_b": "Chillet",
+      "child": "Chillet Ignis"
     },
     {
-      "parent_a": "Incineram",
-      "parent_b": "Maraith",
-      "child": "Incineram Noct"
+      "parent_a": "Azurmane",
+      "parent_b": "Fenglope",
+      "child": "Fenglope Lux"
     },
     {
-      "parent_a": "Mau",
-      "parent_b": "Pengullet",
-      "child": "Mau Cryst"
+      "parent_a": "Azurobe",
+      "parent_b": "Frostplume",
+      "child": "Azurobe Cryst"
     },
     {
-      "parent_a": "Vanwyrm",
-      "parent_b": "Foxcicle",
-      "child": "Vanwyrm Cryst"
+      "parent_a": "Beakon",
+      "parent_b": "Frostplume",
+      "child": "Beakon Cryst"
     },
     {
-      "parent_a": "Eikthyrdeer",
-      "parent_b": "Hangyu",
-      "child": "Eikthyrdeer Terra"
-    },
-    {
-      "parent_a": "Elphidran",
-      "parent_b": "Surfent",
-      "child": "Elphidran Aqua"
-    },
-    {
-      "parent_a": "Pyrin",
-      "parent_b": "Katress",
-      "child": "Pyrin Noct"
-    },
-    {
-      "parent_a": "Mossanda",
-      "parent_b": "Grizzbolt",
-      "child": "Mossanda Lux"
-    },
-    {
-      "parent_a": "Dinossom",
-      "parent_b": "Rayhound",
-      "child": "Dinossom Lux"
-    },
-    {
-      "parent_a": "Jolthog",
-      "parent_b": "Pengullet",
-      "child": "Jolthog Cryst"
-    },
-    {
-      "parent_a": "Frostallion",
+      "parent_a": "Beakon",
       "parent_b": "Helzephyr",
-      "child": "Frostallion Noct"
+      "child": "Helzephyr Lux"
     },
     {
-      "parent_a": "Kingpaca",
-      "parent_b": "Reindrix",
-      "child": "Kingpaca Cryst"
-    },
-    {
-      "parent_a": "Lyleen",
-      "parent_b": "Menasting",
-      "child": "Lyleen Noct"
+      "parent_a": "Bellanoir",
+      "parent_b": "Bellanoir Libero",
+      "child": "Bellanoir"
     },
     {
       "parent_a": "Blazehowl",
@@ -71,9 +36,19 @@
       "child": "Blazehowl Noct"
     },
     {
-      "parent_a": "Robinquill",
-      "parent_b": "Fuddler",
-      "child": "Robinquill Terra"
+      "parent_a": "Blazehowl",
+      "parent_b": "Jormuntide",
+      "child": "Jormuntide Ignis"
+    },
+    {
+      "parent_a": "Blue Slime",
+      "parent_b": "Green Slime",
+      "child": "Blue Slime"
+    },
+    {
+      "parent_a": "Bristla",
+      "parent_b": "Ribbuny",
+      "child": "Ribbuny Botan"
     },
     {
       "parent_a": "Broncherry",
@@ -81,19 +56,209 @@
       "child": "Broncherry Aqua"
     },
     {
-      "parent_a": "Surfent",
-      "parent_b": "Dumud",
+      "parent_a": "Bushi",
+      "parent_b": "Petallia",
+      "child": "Petallia Ignis"
+    },
+    {
+      "parent_a": "Bushi",
+      "parent_b": "Sootseer",
+      "child": "Bushi Noct"
+    },
+    {
+      "parent_a": "Bushi Noct",
+      "parent_b": "Croajiro",
+      "child": "Croajiro Noct"
+    },
+    {
+      "parent_a": "Caprity",
+      "parent_b": "Tarantriss",
+      "child": "Caprity Noct"
+    },
+    {
+      "parent_a": "Celaray",
+      "parent_b": "Univolt",
+      "child": "Celaray Lux"
+    },
+    {
+      "parent_a": "Celesdir",
+      "parent_b": "Kitsun Noct",
+      "child": "Celesdir Noct"
+    },
+    {
+      "parent_a": "Celesdir",
+      "parent_b": "Starryon",
+      "child": "Starryon Primo"
+    },
+    {
+      "parent_a": "Celesdir",
+      "parent_b": "Tetroise",
+      "child": "Tetroise Primo"
+    },
+    {
+      "parent_a": "Chillet Ignis",
+      "parent_b": "Whalaska",
+      "child": "Whalaska Ignis"
+    },
+    {
+      "parent_a": "Cryolinx",
+      "parent_b": "Dazemu",
+      "child": "Cryolinx Terra"
+    },
+    {
+      "parent_a": "Dazzi",
+      "parent_b": "Omascul",
+      "child": "Dazzi Noct"
+    },
+    {
+      "parent_a": "Digtoise",
+      "parent_b": "Turtacle",
+      "child": "Turtacle Terra"
+    },
+    {
+      "parent_a": "Digtoise",
+      "parent_b": "Warsect",
+      "child": "Warsect Terra"
+    },
+    {
+      "parent_a": "Dinossom",
+      "parent_b": "Rayhound",
+      "child": "Dinossom Lux"
+    },
+    {
+      "parent_a": "Dualith",
+      "parent_b": "Sootseer",
+      "child": "Dualith Noct"
+    },
+    {
+      "parent_a": "Dumud",
+      "parent_b": "Eikthyrdeer Terra",
+      "child": "Dumud Gild"
+    },
+    {
+      "parent_a": "Dumud",
+      "parent_b": "Surfent",
       "child": "Surfent Terra"
     },
     {
-      "parent_a": "Suzaku",
-      "parent_b": "Jormuntide",
-      "child": "Suzaku Aqua"
+      "parent_a": "Eidrolon",
+      "parent_b": "Suzaku",
+      "child": "Eidrolon Ignis"
     },
     {
-      "parent_a": "Reptyro",
-      "parent_b": "Foxcicle",
+      "parent_a": "Eikthyrdeer",
+      "parent_b": "Hangyu",
+      "child": "Eikthyrdeer Terra"
+    },
+    {
+      "parent_a": "Eikthyrdeer Terra",
+      "parent_b": "Gildane",
+      "child": "Celesdir"
+    },
+    {
+      "parent_a": "Elgrove",
+      "parent_b": "Pierdon Cryst",
+      "child": "Elgrove Cryst"
+    },
+    {
+      "parent_a": "Elphidran",
+      "parent_b": "Surfent",
+      "child": "Elphidran Aqua"
+    },
+    {
+      "parent_a": "Faleris",
+      "parent_b": "Jormuntide",
+      "child": "Faleris Aqua"
+    },
+    {
+      "parent_a": "Finsider",
+      "parent_b": "Gobfin Ignis",
+      "child": "Finsider Ignis"
+    },
+    {
+      "parent_a": "Flambelle",
+      "parent_b": "Fuack",
+      "child": "Fuack Ignis"
+    },
+    {
+      "parent_a": "Flambelle",
+      "parent_b": "Leezpunk",
+      "child": "Leezpunk Ignis"
+    },
+    {
+      "parent_a": "Flambelle",
+      "parent_b": "Tanzee",
+      "child": "Tanzee Ignis"
+    },
+    {
+      "parent_a": "Foxcicle",
+      "parent_b": "Foxparks",
+      "child": "Foxparks Cryst"
+    },
+    {
+      "parent_a": "Foxcicle",
+      "parent_b": "Rayhound",
+      "child": "Rayhound Cryst"
+    },
+    {
+      "parent_a": "Foxcicle",
+      "parent_b": "Reptyro",
       "child": "Reptyro Cryst"
+    },
+    {
+      "parent_a": "Foxcicle",
+      "parent_b": "Vanwyrm",
+      "child": "Vanwyrm Cryst"
+    },
+    {
+      "parent_a": "Frostallion",
+      "parent_b": "Helzephyr",
+      "child": "Frostallion Noct"
+    },
+    {
+      "parent_a": "Frostplume",
+      "parent_b": "Univolt",
+      "child": "Univolt Cryst"
+    },
+    {
+      "parent_a": "Fuddler",
+      "parent_b": "Robinquill",
+      "child": "Robinquill Terra"
+    },
+    {
+      "parent_a": "Ghangler",
+      "parent_b": "Sootseer",
+      "child": "Ghangler Ignis"
+    },
+    {
+      "parent_a": "Gloopie",
+      "parent_b": "Valentail",
+      "child": "Gloopie Primo"
+    },
+    {
+      "parent_a": "Gobfin",
+      "parent_b": "Rooby",
+      "child": "Gobfin Ignis"
+    },
+    {
+      "parent_a": "Gobfin Ignis",
+      "parent_b": "Skutlass",
+      "child": "Skutlass Ignis"
+    },
+    {
+      "parent_a": "Gorirat",
+      "parent_b": "Kikit",
+      "child": "Gorirat Terra"
+    },
+    {
+      "parent_a": "Green Slime",
+      "parent_b": "Red Slime",
+      "child": "Red Slime"
+    },
+    {
+      "parent_a": "Grizzbolt",
+      "parent_b": "Mossanda",
+      "child": "Mossanda Lux"
     },
     {
       "parent_a": "Hangyu",
@@ -101,84 +266,144 @@
       "child": "Hangyu Cryst"
     },
     {
-      "parent_a": "Mossanda",
-      "parent_b": "Petallia",
-      "child": "Lyleen"
+      "parent_a": "Helzephyr Lux",
+      "parent_b": "Prixter",
+      "child": "Prixter Lux"
     },
     {
-      "parent_a": "Vanwyrm",
-      "parent_b": "Anubis",
-      "child": "Faleris"
+      "parent_a": "Incineram",
+      "parent_b": "Maraith",
+      "child": "Incineram Noct"
     },
     {
-      "parent_a": "Mossanda",
-      "parent_b": "Rayhound",
-      "child": "Grizzbolt"
+      "parent_a": "Jolthog",
+      "parent_b": "Pengullet",
+      "child": "Jolthog Cryst"
     },
     {
-      "parent_a": "Grizzbolt",
-      "parent_b": "Relaxaurus",
-      "child": "Orserk"
+      "parent_a": "Jormuntide",
+      "parent_b": "Suzaku",
+      "child": "Suzaku Aqua"
+    },
+    {
+      "parent_a": "Katress",
+      "parent_b": "Pyrin",
+      "child": "Pyrin Noct"
+    },
+    {
+      "parent_a": "Kikit",
+      "parent_b": "Woolipop",
+      "child": "Woolipop Terra"
+    },
+    {
+      "parent_a": "Killamari",
+      "parent_b": "Ribbuny",
+      "child": "Killamari Primo"
+    },
+    {
+      "parent_a": "Kingpaca",
+      "parent_b": "Reindrix",
+      "child": "Kingpaca Cryst"
     },
     {
       "parent_a": "Kitsun",
-      "parent_b": "Astegon",
-      "child": "Shadowbeak"
+      "parent_b": "Nyafia",
+      "child": "Kitsun Noct"
     },
     {
-      "parent_a": "Lamball",
-      "parent_b": "Cattiva",
-      "child": "Foxparks"
+      "parent_a": "Knocklem",
+      "parent_b": "Menasting",
+      "child": "Menasting Terra"
     },
     {
-      "parent_a": "Foxparks",
-      "parent_b": "Rooby",
-      "child": "Daedream"
+      "parent_a": "Knocklem",
+      "parent_b": "Ragnahawk",
+      "child": "Knocklem Ignis"
+    },
+    {
+      "parent_a": "Lapure",
+      "parent_b": "Sibelyx",
+      "child": "Sibelyx Primo"
+    },
+    {
+      "parent_a": "Loupmoon",
+      "parent_b": "Sweepa",
+      "child": "Loupmoon Cryst"
+    },
+    {
+      "parent_a": "Lullu",
+      "parent_b": "Quivern",
+      "child": "Quivern Botan"
+    },
+    {
+      "parent_a": "Lyleen",
+      "parent_b": "Menasting",
+      "child": "Lyleen Noct"
+    },
+    {
+      "parent_a": "Mammorest",
+      "parent_b": "Wumpo",
+      "child": "Mammorest Cryst"
+    },
+    {
+      "parent_a": "Mau",
+      "parent_b": "Pengullet",
+      "child": "Mau Cryst"
+    },
+    {
+      "parent_a": "Moldron",
+      "parent_b": "Reptyro Cryst",
+      "child": "Moldron Cryst"
+    },
+    {
+      "parent_a": "Munchill",
+      "parent_b": "Smokie",
+      "child": "Smokie Cryst"
+    },
+    {
+      "parent_a": "Needoll",
+      "parent_b": "Prunelia",
+      "child": "Needoll Noct"
+    },
+    {
+      "parent_a": "Nitemary",
+      "parent_b": "Petallia",
+      "child": "Nitemary Botan"
+    },
+    {
+      "parent_a": "Pengullet",
+      "parent_b": "Sparkit",
+      "child": "Pengullet Lux"
     },
     {
       "parent_a": "Penking",
-      "parent_b": "Bushi",
-      "child": "Anubis"
+      "parent_b": "Rayhound",
+      "child": "Penking Lux"
     },
     {
-      "parent_a": "Blazamut",
-      "parent_b": "Suzaku",
-      "child": "Jormuntide"
+      "parent_a": "Pierdon",
+      "parent_b": "Wumpo",
+      "child": "Pierdon Cryst"
     },
     {
-      "parent_a": "Blazamut",
-      "parent_b": "Suzaku Aqua",
-      "child": "Jormuntide Ignis"
-    },
-    {
-      "parent_a": "Frostallion",
-      "parent_b": "Frostallion Noct",
-      "child": "Frostallion"
-    },
-    {
-      "parent_a": "Anubis",
-      "parent_b": "Jetragon",
-      "child": "Frostallion"
-    },
-    {
-      "parent_a": "Necromus",
-      "parent_b": "Paladius",
-      "child": "Jetragon"
-    },
-    {
-      "parent_a": "Grizzbolt",
-      "parent_b": "Lyleen",
-      "child": "Jetragon"
+      "parent_a": "Polapup",
+      "parent_b": "Surfent Terra",
+      "child": "Polapup Terra"
     },
     {
       "parent_a": "Relaxaurus",
-      "parent_b": "Mammorest",
-      "child": "Jetragon"
+      "parent_b": "Sparkit",
+      "child": "Relaxaurus Lux"
     },
     {
-      "parent_a": "Suzaku",
-      "parent_b": "Grizzbolt",
-      "child": "Jetragon"
+      "parent_a": "Slowatt",
+      "parent_b": "Solmora",
+      "child": "Solmora Lux"
+    },
+    {
+      "parent_a": "Snock",
+      "parent_b": "Turtacle Terra",
+      "child": "Snock Terra"
     }
   ]
 }

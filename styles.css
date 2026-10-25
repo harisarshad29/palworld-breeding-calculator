@@ -18,7 +18,7 @@
 }
 
 body[data-theme="light"] {
-  --bg-gradient: linear-gradient(180deg, #1a1a1a, #000000);
+  --bg-gradient: linear-gradient(180deg, #f3f7fc, #e3edf6);
   --text-main: #0f172a;
   --subtitle: #334155;
   --card-bg: rgba(255, 255, 255, 0.75);
@@ -877,4 +877,35 @@ body[data-route-view="chain"] #chainCard {
   .card {
     padding: 0.85rem;
   }
+}
+
+
+/* Usable keyboard focus and narrow-screen calculator controls. */
+.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; padding: .8rem 1rem; background: #fff; color: #111; }
+.skip-link:focus { top: 1rem; }
+:focus-visible { outline: 3px solid #45c7ff; outline-offset: 3px; }
+.grid > label { min-width: 0; }
+select, input, button { max-width: 100%; }
+select[multiple] { min-height: 9rem; }
+@media (max-width: 600px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  .actions { flex-wrap: wrap; }
+  .actions > button, .actions > select { flex: 1 1 100%; min-height: 44px; }
+  .nav-links, .tool-links { flex-wrap: wrap; }
+  .nav-link-btn, .tool-link-btn { min-height: 44px; }
+  .arena { flex-wrap: wrap; }
+  .arena-card { min-width: 0; max-width: 100%; }
+}
+
+.card a { color: #9bd6ff; }
+body[data-theme="light"] .card a { color: #165db5; }
+#arenaCard, #reverseCard, #databaseCard, #palBoxCard { scroll-margin-top: 5rem; }
+@media (max-width: 900px) {
+  .nav-inner { flex-direction: column; align-items: stretch; gap: 0; }
+  .brand { padding: .4rem 0; }
+  .nav-links { display: flex; min-width: 0; max-width: 100%; overflow-x: auto; flex-wrap: nowrap; white-space: nowrap; gap: .7rem; }
+  .nav-links .nav-link-btn { flex-shrink: 0; min-height: 44px; display: inline-flex; align-items: center; }
+  .container { margin-top: 7.5rem; }
+  .card { scroll-margin-top: 7.5rem; }
+  #arenaCard, #reverseCard, #databaseCard, #palBoxCard { scroll-margin-top: 7.5rem; }
 }
