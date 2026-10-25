@@ -1,13 +1,5 @@
-# If palworld-breeding-calculator.us still uses Netlify, redeploy this site from the repo
-# (Netlify dashboard: publish directory = netlify-redirect-site, or leave defaults — this file sets it).
-# Render deploy is unchanged (uses render.yaml).
-
+# Netlify serves the pre-built static export (see .github/workflows/netlify-site.yml,
+# which publishes it to the `netlify-site` branch). No build runs on Netlify.
 [build]
-  publish = "netlify-redirect-site"
-  command = "echo Netlify redirect-only deploy"
-
-[[redirects]]
-  from = "/*"
-  to = "https://palworld-breeding-calculator.onrender.com/:splat"
-  status = 302
-  force = true
+  publish = "."
+  command = "echo static site"
