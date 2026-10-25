@@ -32,3 +32,29 @@ The existing map notes, item references, technology notes, and illustration asse
 have separate coverage and were not imported or verified by this breeding-data
 refresh. Missing images use the bundled placeholder. Mutations, passive traits,
 individual stats, and gender inventory constraints are outside the planner model.
+
+## Game-version cross-check (25 October 2026)
+
+The pinned snapshot was compared with the independent PalSphere extract
+(https://github.com/palsphere/palsphere-data, revision 2026-10-13, labelled
+Palworld 1.0.5, "Palworld client data tables"):
+
+- All 287 Paldeck species present in both sources have identical breeding power.
+  PalSphere's only extra species, Astralym, is the World Tree final boss and cannot
+  be caught (PC Gamer, Palworld 1.0 new Pal locations).
+- Replaying the in-game rule (same species → itself; fixed pair → its child;
+  otherwise `floor((A + B + 1) / 2)` to the nearest Pal not produced by a fixed pair,
+  ties to higher priority then base form) with PalSphere's fixed pairs reproduces
+  every one of the 41,328 Paldeck parent pairs in this snapshot. The one fixed pair
+  PalSphere omits, Celesdir + Tetroise → Tetroise Primo, is present here and
+  confirmed by palpedia.com.
+
+On that basis the site describes its breeding data as cross-checked against
+Palworld 1.0.5 (latest patch: 15 September 2026). Re-run the comparison after the
+next patch before changing that statement.
+
+Location notes for the 1.0 species come from PC Gamer's "Every new Pal in Palworld
+1.0 and where to catch them" and pindrop.gg; 25 species without a verified source
+say so. Icons for species without bundled art were converted from PalCalc's
+`PalCalc.UI/Resources/Pals` (100 px). Technology levels were cross-checked on
+paldb.gg (game files, 15 September 2026) and palworldcalc.com.

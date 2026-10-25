@@ -19,8 +19,11 @@ compact source table. Same-species pairs are supported. Katress + Wixen requires
 both parent genders because the outcome changes with orientation.
 
 See [data/SOURCES.md](data/SOURCES.md), [data/provenance.json](data/provenance.json),
-and the retained [MIT notice](licenses/PalCalc-MIT.txt). The source snapshot does
-not declare a game build; no latest-version claim is made. Refresh with
+and the retained [MIT notice](licenses/PalCalc-MIT.txt). The snapshot does not
+declare a game build itself, but it was cross-checked against PalSphere's
+Palworld 1.0.5 extract with no differences (details in SOURCES.md). After each
+game patch, bump `GAME_VERSION` / `DATA_UPDATED` in `src/main.rs` only once the
+comparison has been re-run. Refresh with
 `python scripts/import_palcalc.py` after reviewing the pinned source commit.
 
 The route planner uses the selected owned species, assumes suitable genders are

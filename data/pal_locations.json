@@ -791,6 +791,410 @@
     "Chikipi": {
       "area": "Sea Breeze Archipelago",
       "coords": "(12, -221)"
+    },
+    "Aegidron": {
+      "area": "The World Tree (boss)",
+      "coords": "See in-game map"
+    },
+    "Amione": {
+      "area": "Windswept Hills (over water); Sunreach",
+      "coords": "See in-game map"
+    },
+    "Bakemi": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Beakon Cryst": {
+      "area": "Boreal Summit",
+      "coords": "See in-game map"
+    },
+    "Beegarde": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Blue Slime": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Bulldosu": {
+      "area": "Sakurajima (island centre)",
+      "coords": "See in-game map"
+    },
+    "Carnibora": {
+      "area": "No. 3 Wildlife Sanctuary; Islet of Circular Ruins",
+      "coords": "See in-game map"
+    },
+    "Cave Bat": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Celaray Lux": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Celesdir Noct": {
+      "area": "The World Tree (boss)",
+      "coords": "See in-game map"
+    },
+    "Cinnamoth": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Clovee": {
+      "area": "Windswept Hills",
+      "coords": "See in-game map"
+    },
+    "Croajiro Noct": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Dandilord": {
+      "area": "The World Tree (Dusty Ravine, Rotmist Root, boss)",
+      "coords": "See in-game map"
+    },
+    "Demon Eye": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Dualith": {
+      "area": "Foot of the Astral Mountains; The World Tree",
+      "coords": "See in-game map"
+    },
+    "Dualith Noct": {
+      "area": "Boreal Summit",
+      "coords": "See in-game map"
+    },
+    "Dumud Gild": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Dupin": {
+      "area": "Rare on every island; most common in The World Tree",
+      "coords": "See in-game map"
+    },
+    "Dynamoff": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Eidrolon": {
+      "area": "Sunreach Sky Islands (boss)",
+      "coords": "See in-game map"
+    },
+    "Eidrolon Ignis": {
+      "area": "The World Tree (Dusty Ravine, Rotmist Root)",
+      "coords": "See in-game map"
+    },
+    "Elgrove": {
+      "area": "Bamboo Groves; No. 1 Wildlife Sanctuary",
+      "coords": "See in-game map"
+    },
+    "Elgrove Cryst": {
+      "area": "Boreal Summit",
+      "coords": "See in-game map"
+    },
+    "Enchanted Sword": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Eye of Cthulhu": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Finsider Ignis": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Flaracle": {
+      "area": "The World Tree (Dusty Ravine, Rotmist Root)",
+      "coords": "See in-game map"
+    },
+    "Fuack Ignis": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Ghangler Ignis": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Gildra": {
+      "area": "Desiccated Dunes (rare)",
+      "coords": "See in-game map"
+    },
+    "Gloopie Primo": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Gobfin Ignis": {
+      "area": "Mount Obsidian (near Ruined Fortress City)",
+      "coords": "See in-game map"
+    },
+    "Green Slime": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Gumoss (Flower)": {
+      "area": "Verdant Brook",
+      "coords": "(72, -18)"
+    },
+    "Hartalis": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Hoodle": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Illuminant Bat": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Illuminant Slime": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Katress Ignis": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Kelpsea Ignis": {
+      "area": "Mount Obsidian; Sunreach",
+      "coords": "See in-game map"
+    },
+    "Killamari Primo": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Knocklem Ignis": {
+      "area": "Feybreak islets (Sandstone Gate, Glacial Memento, Bicornis); The World Tree",
+      "coords": "See in-game map"
+    },
+    "Lapiron": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Lapure": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Leafan": {
+      "area": "Verdant Brook; Sunreach",
+      "coords": "See in-game map"
+    },
+    "Leezpunk Ignis": {
+      "area": "Mount Obsidian (around Foot of the Volcano)",
+      "coords": "See in-game map"
+    },
+    "Loomen": {
+      "area": "The World Tree",
+      "coords": "See in-game map"
+    },
+    "Lunaris": {
+      "area": "Wild spawn (Alpha, Lv 35) — see in-game Paldeck map",
+      "coords": "See in-game map"
+    },
+    "Majex": {
+      "area": "The World Tree (Dusty Ravine, Rotmist Root)",
+      "coords": "See in-game map"
+    },
+    "Moldron": {
+      "area": "Mount Obsidian; Bicornis Islet",
+      "coords": "See in-game map"
+    },
+    "Moldron Cryst": {
+      "area": "Boreal Summit (boss)",
+      "coords": "See in-game map"
+    },
+    "Muffly": {
+      "area": "Moonless Shore; Sunreach",
+      "coords": "See in-game map"
+    },
+    "Mycora": {
+      "area": "The World Tree (boss)",
+      "coords": "See in-game map"
+    },
+    "Needoll": {
+      "area": "Desiccated Dunes; Scouring Islet",
+      "coords": "See in-game map"
+    },
+    "Needoll Noct": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Nitemary Botan": {
+      "area": "No. 3 Wildlife Sanctuary; Islet of Circular Ruins",
+      "coords": "See in-game map"
+    },
+    "Ophydia": {
+      "area": "Sunreach Sky Islands (boss)",
+      "coords": "See in-game map"
+    },
+    "Panthalus": {
+      "area": "Boss you must capture to enter The World Tree",
+      "coords": "See in-game map"
+    },
+    "Petallia Ignis": {
+      "area": "The World Tree (Verdant Rootpath, Alluvion Lakefront)",
+      "coords": "See in-game map"
+    },
+    "Pierdon": {
+      "area": "No. 3 Wildlife Sanctuary; Islet of Circular Ruins (Alpha)",
+      "coords": "See in-game map"
+    },
+    "Pierdon Cryst": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Polapup Terra": {
+      "area": "Suncrest Islet",
+      "coords": "See in-game map"
+    },
+    "Prixter Lux": {
+      "area": "Feybreak islets (Sandstone Gate, Glacial Memento, Bicornis)",
+      "coords": "See in-game map"
+    },
+    "Puffolt": {
+      "area": "Bamboo Groves; Sunreach",
+      "coords": "See in-game map"
+    },
+    "Pupperai": {
+      "area": "Windswept Hills (north of Plateau of Beginnings)",
+      "coords": "See in-game map"
+    },
+    "Purple Slime": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Rainbow Slime": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Rayhound Cryst": {
+      "area": "Astral Mountains summit (packs); The World Tree",
+      "coords": "See in-game map"
+    },
+    "Red Slime": {
+      "area": "Tides of Terraria crossover creature — check the in-game Paldeck map",
+      "coords": "—"
+    },
+    "Renjishi": {
+      "area": "The World Tree (Dusty Ravine, Rotmist Root, boss)",
+      "coords": "See in-game map"
+    },
+    "Roujay": {
+      "area": "The World Tree (Dusty Ravine, Rotmist Root); Lacrymal Shoal",
+      "coords": "See in-game map"
+    },
+    "Sekhmet": {
+      "area": "Desiccated Dunes (rare); Sandstone Gate Islet",
+      "coords": "See in-game map"
+    },
+    "Shaolong": {
+      "area": "The World Tree (Verdant Rootpath, Alluvion Lakefront)",
+      "coords": "See in-game map"
+    },
+    "Sibelyx Primo": {
+      "area": "The World Tree (Gilded City Ruins, Lacrymal Shoal, Shinespore Root)",
+      "coords": "See in-game map"
+    },
+    "Silvance": {
+      "area": "The World Tree (boss)",
+      "coords": "See in-game map"
+    },
+    "Skutlass": {
+      "area": "Twilight Dunes beaches; Sunreach",
+      "coords": "See in-game map"
+    },
+    "Skutlass Ignis": {
+      "area": "Desiccated Dunes and islets; The World Tree",
+      "coords": "See in-game map"
+    },
+    "Slowatt": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Smokie Cryst": {
+      "area": "Feybreak islets (Sandstone Gate, Glacial Memento, Bicornis)",
+      "coords": "See in-game map"
+    },
+    "Snock": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Snock Terra": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Snugloo": {
+      "area": "Frostbound Mountains",
+      "coords": "See in-game map"
+    },
+    "Solenne": {
+      "area": "The World Tree",
+      "coords": "See in-game map"
+    },
+    "Solmora": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Solmora Lux": {
+      "area": "Sunreach Sky Islands; The World Tree",
+      "coords": "See in-game map"
+    },
+    "Souffline": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Starryon Primo": {
+      "area": "The World Tree (Verdant Rootpath, Alluvion Lakefront)",
+      "coords": "See in-game map"
+    },
+    "Tanzee Ignis": {
+      "area": "Windswept Hills, near Autumn Rocks",
+      "coords": "See in-game map"
+    },
+    "Tetroise": {
+      "area": "Desiccated Dunes",
+      "coords": "See in-game map"
+    },
+    "Tetroise Primo": {
+      "area": "The World Tree (Gilded City Ruins, Lacrymal Shoal, Shinespore Root)",
+      "coords": "See in-game map"
+    },
+    "Tropicaw": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Univolt Cryst": {
+      "area": "Boreal Summit",
+      "coords": "See in-game map"
+    },
+    "Valentail": {
+      "area": "Sunreach Sky Islands",
+      "coords": "See in-game map"
+    },
+    "Venusa": {
+      "area": "The World Tree (Dusty Ravine, Rotmist Root)",
+      "coords": "See in-game map"
+    },
+    "Vixy": {
+      "area": "Location not yet verified for 1.0 — check the in-game Paldeck map or breed it",
+      "coords": "—"
+    },
+    "Wispaw": {
+      "area": "Windswept Hills near Autumn Rocks (night); Marsh Island; The World Tree",
+      "coords": "See in-game map"
+    },
+    "Wistella": {
+      "area": "The World Tree",
+      "coords": "See in-game map"
+    },
+    "Wixen Noct": {
+      "area": "Night-only wild spawn — see in-game Paldeck map",
+      "coords": "See in-game map"
+    },
+    "Woolipop Terra": {
+      "area": "Suncrest Islet",
+      "coords": "See in-game map"
     }
   }
 }
