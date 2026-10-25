@@ -1,56 +1,56 @@
-//! SEO copy: H1 characteristics = 50–60 words; visible page copy stays long.
+//! Concise route headings and visitor-facing introductions.
 //! Meta descriptions live on each page and stay about 150–160 characters.
 
-pub const HOME_H1: &str = "Our Palworld Breeding Calculator is a complete toolkit for parent pair testing, reverse target lookups, Pal database browsing, map references, item sources, technology milestones, and capture estimates. It helps you build structured breeding plans instead of random egg cycles, with routes for rare targets like Anubis, Jetragon, and Frostallion in one responsive interface.";
+pub const HOME_H1: &str = "Palworld Breeding Calculator";
 
-pub const HOME_DESC: &str = "Palworld Breeding Calculator is a free online database and breeding planner for players who want faster routes to rare Pals and fewer wasted eggs. Select any two parents to predict the child, including special combination outcomes and breeding-power fallbacks. The reverse calculator lists every parent pair that can produce your target Pal so you can compare methods side by side. Browse Pal profiles with breeding power, map coordinates, item sources, and technology milestones in one responsive interface. Capture-rate estimates help you farm easier parents before expensive breeding chains. Dedicated pages for popular Pals, parent combos, and step-by-step guides support beginners and endgame breeders alike. With quick-pick grids, theme toggle, and server-rendered pages for search indexing, the tool turns breeding guesswork into repeatable decisions. Whether you are chasing Anubis, Jetragon, or efficient base workers, plan every session with structured data instead of trial and error. Free to use with no login required.";
+pub const HOME_DESC: &str = "Choose two parents or search for a target species. Results use a pinned PalCalc community dataset with 299 species and gender-specific outcomes. Check your game version before committing resources.";
 
-pub const BREEDING_H1: &str = "This parent combo calculator focuses on forward breeding tests and reverse discovery in Palworld. Pick Parent A and Parent B to predict the child, then use reverse lookup for your target Pal. Special combinations are flagged when they override breeding power rules so you compare methods before long egg cycles.";
+pub const BREEDING_H1: &str = "Choose parents. Find their child.";
 
-pub const BREEDING_DESC: &str = "This Palworld breeding calculator page focuses on parent pair logic and child prediction accuracy. You can test two parents, swap them quickly, and read whether the outcome uses a special combination or breeding power average. The reverse calculator on the same page lists every valid parent route for a chosen child, which is essential when planning legendary targets. Players use this view to compare Anubis routes, Jetragon chains, and mid-game power parents without leaving the browser. The interface loads fast, works on mobile, and links to dedicated Pal and combo pages for deeper research. Whether you are optimizing for rarity, work skills, or combat utility, start here to validate pairs before placing Pals in the Breeding Farm. Use cake management and incubator timing alongside these results for smoother egg cycles. Bookmark this route when you need a reliable online Palworld breeding calculator with reverse finder support and shareable combo links.";
+pub const BREEDING_DESC: &str = "Select parent species and calculate their offspring. Same-species parents are supported. Katress + Wixen requires both parent genders because reversing them changes the child.";
 
-pub const PALS_H1: &str = "The Pals database lists breeding power for the full roster so you compare rarity and plan parents quickly. Filter by name, use quick picks, and send any Pal to the breeding arena without extra typing. Ideal for team planning, capture priority, and stepping-stone parents in long legendary chains across your save.";
+pub const PALS_H1: &str = "Pal breeding database";
 
-pub const PALS_DESC: &str = "Browse every Pal in this database with breeding power rankings that help you understand capture difficulty and breeding chain length. Each Pal links to a dedicated profile page with parent combination tables, related guides, and calculator shortcuts. Use the grid search to find names like Anubis, Lyleen, Jetragon, or Frostallion in seconds. Breeding power is a practical proxy for planning: lower values usually mean rarer targets that require more setup time. Compare neighbors in the list to identify accessible parents you can farm early. The Pals view connects to map data, capture estimates, and combo routes so you do not jump between disconnected tools. Players preparing batch breeding sessions should sort mentally by power tiers before spending resources. This page supports roster review for PvE bases, PvP teams, and work-Pal optimization. Return here whenever you add new captures to your Palbox and need updated planning references for your next egg cycle.";
+pub const PALS_DESC: &str = "Browse the species in the imported dataset. Open a profile to inspect parent combinations and linked tools. Breeding power is a breeding statistic, not combat strength or capture probability.";
 
-pub const MAP_H1: &str = "The map reference shows spawn areas and coordinates for key Pals so you spend less time wandering and more time breeding. Chain capture routes with your parent list when preparing legendary projects. Map planning reduces failed trips, saves travel time, and helps pair sphere upgrades with the right biome visits before incubation.";
+pub const MAP_H1: &str = "Pal location references";
 
-pub const MAP_DESC: &str = "Map references in this Palworld database highlight where specific Pals appear across the island, including common early-game zones and late-game sanctuaries. Knowing coordinates before you leave base saves hours when farming parents for complex breeding chains. Pair this tab with capture-rate estimates to decide whether a target is worth attempting now or later. Players chasing Anubis, Jetragon, or tower bosses can align travel routes with fast travel points and night-only spawns where applicable. The map panel is designed as a companion to the breeding calculator, not a replacement for exploration, so always verify spawns in-game after major patches. Use it to plan team composition for cold, hot, or neutral biomes depending on Pal elements. When multiple parents are needed, route captures from easiest to hardest power tiers. This reduces inventory clutter and stabilizes egg production at the Breeding Farm. Save this tab when co-op teammates need shared farming routes.";
+pub const MAP_DESC: &str = "Use these location notes as a starting point and verify them in your game. The location dataset has separate coverage from the breeding table; an absent location does not mean a Pal cannot be obtained.";
 
-pub const ITEMS_H1: &str = "The items database explains where materials drop and how crafting resources support breeding, incubation, and base upgrades in Palworld. Review sources before long farming sessions so you are not missing cake ingredients, spheres, or technology components required for smooth egg cycles. This view connects item knowledge to practical breeding progression for mid and late game players.";
+pub const ITEMS_H1: &str = "Breeding item references";
 
-pub const ITEMS_DESC: &str = "Items in Palworld gate breeding efficiency more than many players expect. Cake for the Breeding Farm, spheres for captures, and advanced crafting parts for incubators all depend on reliable material routes. This database tab summarizes sources and notes for common drops tied to early and late Pals. Use it when you are preparing a legendary project and need to stock resources in advance. Link item farming with Pal capture plans so one expedition feeds multiple goals. Players optimizing bases should cross-check work-Pal materials here before assigning production lines. The items panel is intentionally concise so you can scan quickly between calculator tests. Combine this data with technology milestones to unlock breeding structures on schedule. When patches add new materials, revisit this section while updating your combo plans. Strong item preparation reduces downtime between eggs and keeps parent Pals fed during long chains. Review this tab before every legendary attempt to avoid stalled progress.";
+pub const ITEMS_DESC: &str = "Review the included item notes while planning a breeding session. Item availability and unlock requirements can change with game updates and world settings.";
 
-pub const TECH_H1: &str = "The technology milestones panel tracks unlock levels for breeding farms, incubators, spheres, and production tools that affect how fast you can run Palworld egg cycles. Align tech progression with your capture plan so structures exist before you import high-value parents. This prevents bottlenecks where combos are ready but infrastructure lags behind your roster goals.";
+pub const TECH_H1: &str = "Technology references";
 
-pub const TECH_DESC: &str = "Technology unlocks shape the pace of every breeding project in Palworld. Early points deliver Pal Spheres and basic base tools, while mid-level unlocks introduce the Egg Incubator and Breeding Farm that make systematic combo testing possible. Later tiers improve crafting, storage, and combat gear needed for legendary captures. This guide tab lists milestone levels and costs so you can plan point spending without guesswork. Players rushing a Jetragon or Anubis chain should verify breeding structures are online before farming parents. Production lines for cake and materials also depend on tech depth, so coordinate with the items database. If co-op teammates share progress, compare unlock timing to avoid duplicated research. Post-update planning should revisit this tab because balance changes can shift costs or prerequisites. Use milestones as checkpoints: capture parents only after incubation capacity matches your target egg count. Strong tech discipline shortens total project time more than random pair testing alone.";
+pub const TECH_DESC: &str = "Use these progression notes alongside the technology menu in your current game. The breeding table does not verify technology levels or material requirements.";
 
-pub const CAPTURE_H1: &str = "Capture-rate estimates use breeding power as a practical difficulty guide so you can farm easier parents before expensive legendary chains in Palworld. Compare your target with suggested alternatives, then send promising Pals to the calculator for pair validation. This view helps beginners avoid frustration and helps veterans optimize setup time before multi-day breeding projects.";
+pub const CAPTURE_H1: &str = "Breeding-power difficulty heuristic";
 
-pub const CAPTURE_DESC: &str = "Capture planning is half of successful breeding in Palworld because unreachable parents stall entire combo trees. This page translates breeding power into estimated catch difficulty and lists easier targets that may work as stepping stones. Use the data to decide when to upgrade spheres, adjust team levels, or wait for better gear. Legendary projects often fail when players skip capture prep and jump straight to rare children. Pair these estimates with map locations to build same-day routes. The capture tab links back to reverse calculator workflows so you can test whether alternative parents produce the same child with less farming time. Update your plan after each successful capture because new parents unlock fresh pair options. Night-only, alpha, and dungeon spawns still require in-game verification, but power tiers provide a reliable starting filter. Serious breeders review this page before every long session and update targets after each successful capture.";
+pub const CAPTURE_DESC: &str = "This score uses breeding power only. It is not an in-game capture probability and does not model sphere type, health, level, status effects, or world settings.";
 
-pub const KEYWORD_BREED_H1: &str = "This online Palworld breeding calculator route is optimized for players searching for a browser-based combo tool with instant parent tests and reverse combination lists. No install is required: open the page, pick parents, and read child outcomes plus method type in seconds. It mirrors the main calculator experience while targeting breeding calculator keyword searches directly.";
+pub const KEYWORD_BREED_H1: &str = "Palworld parent-pair calculator";
 
-pub const KEYWORD_BREED_DESC: &str = "Search intent for an online Palworld breeding calculator usually means speed, accuracy, and reverse lookup in one place. This route delivers exactly that with server-rendered SEO pages, structured data, and mobile-friendly controls. Test Parent A and Parent B to see predicted children, including special combinations when fixed pairs override power averages. Switch to reverse mode to list every route for a target like Anubis or Jetragon before you commit resources. The database includes a broad Pal roster, combo pages, and guides for legendary breeding. Players comparing tools should note transparent method labels and links to deeper Pal profiles. Use quick pick grids to reduce typing and theme toggle for comfortable sessions. This page is ideal to bookmark on phone or desktop when you need fast answers between gameplay sessions. It stays free with no login, supports indexing for search engines, and connects to capture and map tabs for full planning.";
+pub const KEYWORD_BREED_DESC: &str = "Test a parent pair, including same-species and gender-specific combinations. Reverse lookup lists the pairs in the pinned source snapshot for your chosen child.";
 
-pub const KEYWORD_COMBOS_H1: &str = "The Palworld breeding combinations page helps you explore parent pairing options, compare special outcomes against power-average fallbacks, and jump into dedicated combo URLs for documentation. It is built for players who think in pairs first and want method clarity before placing Pals in the Breeding Farm for long egg cycles.";
+pub const KEYWORD_COMBOS_H1: &str = "Find parent combinations";
 
-pub const KEYWORD_COMBOS_DESC: &str = "Breeding combinations are the core language of Palworld endgame planning. This route explains how special pairs differ from standard power-average predictions and why both matter when farming legendaries. Use the calculator to validate pairs, then open combo pages for shareable URLs you can reference later. Combination tables on Pal profiles list multiple routes for the same child so you can choose easier parents. Understanding method labels prevents false expectations when eggs hatch. Players building guides or Discord advice can link combo pages directly instead of screenshots. The combinations view also connects to capture and technology planning so materials and structures keep pace with your pair list. After patches, re-test favorite pairs because new Pals shift viable routes. Whether you are chasing combat, flying mounts, or work specialists, start from combinations and narrow to the cheapest valid parents. This page is your hub for systematic pair exploration and long-term roster planning.";
+pub const KEYWORD_COMBOS_DESC: &str = "Select a target species to list supported parent pairs. Gender requirements appear beside the affected pairs. Same-species-only targets require acquiring that species first.";
 
-pub const KEYWORD_CAPTURE_H1: &str = "This capture rate calculator pairs difficulty estimates with easier parent suggestions so you shorten breeding setup before advanced chains. Use it when legendary targets feel out of reach and you need stepping-stone Pals that still satisfy reverse calculator outcomes for your end goal in Palworld with fewer wasted capture attempts.";
+pub const KEYWORD_CAPTURE_H1: &str = "Capture planning: know the limits";
 
-pub const KEYWORD_CAPTURE_DESC: &str = "Capture rate planning deserves its own route because breeding math is useless if parents never enter your Palbox. This calculator page estimates difficulty using breeding power tiers and highlights alternative targets that may reduce grind. Combine results with map references to build efficient same-day routes. Players often underestimate sphere quality, status effects, and level gaps; this page encourages preparation before egg investment. Link capture decisions to reverse lookup so you know whether substitutes exist for expensive parents. The capture calculator complements combo pages and Pal profiles for full-project planning. Use it at the start of every legendary attempt to avoid stalled incubators. Update strategy after each capture because new parents change available pairs instantly. Long-term breeders revisit this tab when co-op friends join and roster power spikes. Treat capture estimates as planning guidance, then confirm in-game because event spawns and mods can shift reality. Use it when mentoring new players on safer legendary projects.";
+pub const KEYWORD_CAPTURE_DESC: &str = "Use the breeding-power score as an explicitly limited comparison. Check actual capture chances in the game; this tool does not calculate them.";
 
-pub const CHAIN_H1: &str = "The chain breeding finder shows the shortest Palworld egg route from a Pal you own to any target. Pick owned and goal Pals, then read each step with parent pairs, methods, and combo links. Uses the same live data as the main calculator so special pairs and power averages stay accurate.";
+pub const CHAIN_H1: &str = "Plan an executable breeding route";
 
-pub const CHAIN_DESC: &str = "Palworld chain breeding is how players turn common captures into legendaries without guessing every intermediate egg. This chain breeder searches backward from your target Pal, picks easier parent pairs at each step, and stops when the only Pals left to obtain are ones you already own. Each step links to our combo pages and reverse calculator so you can verify methods before spending cake in the Breeding Farm. Use it when planning Jetragon, Anubis, Frostallion, or any rare target from a starter like Lamball or Cattiva. Chains are limited to ten eggs for performance but cover most practical routes. Combine this tool with Pal profile pages, how-to-breed guides, and capture estimates for a full project plan. Mobile-friendly and free with no login, it helps beginners and veterans reduce wasted incubation time. Bookmark this page when restructuring your roster or preparing a co-op breeding session and share chain URLs with teammates.";
+pub const CHAIN_DESC: &str = "Select the species you own and your goal. The bounded planner uses only available parents, assumes suitable genders, and may not find every route. Acquire missing partners through reverse lookup first.";
 
 /// Sitewide footer: internal links for crawl paths and user navigation (injected on all page types).
 pub const SITE_FOOTER_HTML: &str = r#"<footer class="site-footer" role="contentinfo">
   <div class="site-footer-inner">
     <div class="site-footer-col">
       <p class="site-footer-title">Palworld Breeding Calculator</p>
-      <p class="site-footer-muted">Free combo tool, reverse lookup, chain paths, and Pal database.</p>
+      <p class="site-footer-muted">Species predictions, reverse lookup, and owned-roster route planning.</p>
     </div>
     <nav class="site-footer-col" aria-label="Tools">
       <p class="site-footer-heading">Tools</p>
@@ -86,7 +86,7 @@ pub const SITE_FOOTER_HTML: &str = r#"<footer class="site-footer" role="contenti
       </ul>
     </nav>
   </div>
-  <p class="site-footer-copy">Palworld Breeding Calculator — unofficial fan tool. Not affiliated with Pocketpair.</p>
+  <p class="site-footer-copy">Palworld Breeding Calculator — unofficial fan tool. Not affiliated with Pocketpair. Data derived from <a href="https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb">PalCalc</a>, MIT license; imported 25 October 2026. Game build not declared by the source snapshot.</p>
 </footer>"#;
 
 /// Guide meta descriptions, about 150–160 characters, unique per page.
@@ -98,7 +98,7 @@ pub const GUIDE_CAPTURE_RATE: &str = "Plan Palworld captures for breeding with p
 
 pub const GUIDE_FASTEST_ANUBIS: &str = "Get Anubis faster in Palworld by choosing parent pairs with fewer catches and fewer eggs, then confirm that route in the breeding calculator on your save.";
 
-pub const GUIDE_LEGENDARY: &str = "Plan legendary Pal breeding in Palworld for Jetragon, Frostallion, and Necromus using chain steps, capture prep, and a calculator check first on your save.";
+pub const GUIDE_LEGENDARY: &str = "Check legendary Pal breeding restrictions for Jetragon, Frostallion, and Necromus. Use reverse lookup to confirm same-species pairs before planning any eggs.";
 
 pub const GUIDE_EARLY_GAME: &str = "Best early-game Palworld breeding combos use easy parents like Lamball, Cattiva, and Foxparks. Test every pair in the calculator before any legendary.";
 
@@ -106,9 +106,10 @@ pub const GUIDE_EGG_INCUBATION: &str = "Palworld egg incubation guide for the in
 
 pub const GUIDE_MINING: &str = "Breed mining Pals such as Digtoise in Palworld by listing parent pairs, catching the easier parent first, and checking the calculator result on your save.";
 
-pub const GUIDE_FLYING_MOUNT: &str = "Breed a flying mount in Palworld by planning Jetragon parent routes, the captures those routes need, and the chain steps before you spend cake on your save.";
+pub const GUIDE_FLYING_MOUNT: &str = "Plan flying mount breeding with supported parent pairs. Check Jetragon same-species restrictions and choose an available target before spending cake in game.";
 
 pub const GUIDE_ANUBIS_VS_LYLEEN: &str = "Compare Anubis and Lyleen in Palworld by breeding time, parent difficulty, and base role so you know which of the two to breed first on your current save.";
 
-pub const GUIDE_BREEDING_NOT_WORKING: &str = "If Palworld breeding is not working, check the Breeding Farm, cake in the feed box, both parent slots, and the calculator before changing pairs on your save.";
+pub const GUIDE_BREEDING_NOT_WORKING: &str = "If Palworld breeding fails, check the Breeding Farm chest for cake, suitable male and female parents, and supported pairs before changing your setup in game.";
+
 

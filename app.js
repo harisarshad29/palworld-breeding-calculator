@@ -1,4 +1,6 @@
 const parentASelect = document.getElementById("parentA");
+const parentAGenderSelect = document.getElementById("parentAGender");
+const parentBGenderSelect = document.getElementById("parentBGender");
 const parentBSelect = document.getElementById("parentB");
 const targetChildSelect = document.getElementById("targetChild");
 const calculateBtn = document.getElementById("calculateBtn");
@@ -109,7 +111,7 @@ const PAL_GRID_SEARCH_ALL = 9999;
 
 let palByNameLower = new Map();
 let palBySlugMap = new Map();
-let palsByPower = [];
+
 const combinationsCache = new Map();
 let locationsLoaded = false;
 let locationsLoading = null;
@@ -137,11 +139,13 @@ function palSlug(palName) {
 
 // Root-absolute paths. Relative "assets/..." breaks on /pal/, /combo/, and /how-to-breed/.
 function getPalImageUrl(palName) {
-  return `/assets/pals/thumbs/${palSlug(resolvePalDisplayName(palName))}.webp`;
+  const slug = palSlug(resolvePalDisplayName(palName));
+  return appData.available_icons?.includes(slug) ? `/assets/pals/thumbs/${slug}.webp` : PAL_PLACEHOLDER;
 }
 
 function getPalFullImageUrl(palName) {
-  return `/assets/pals/${palSlug(resolvePalDisplayName(palName))}.webp`;
+  const slug = palSlug(resolvePalDisplayName(palName));
+  return appData.available_icons?.includes(slug) ? `/assets/pals/${slug}.webp` : PAL_PLACEHOLDER;
 }
 
 function buildPalIndexes() {
@@ -151,7 +155,7 @@ function buildPalIndexes() {
     palByNameLower.set(pal.name.toLowerCase(), pal);
     palBySlugMap.set(palSlug(pal.name), pal);
   }
-  palsByPower = [...appData.pals].sort((a, b) => a.power - b.power);
+  appData.pals.forEach((pal, index) => pal.tableIndex = index);
 }
 
 function resolvePalDisplayName(palName) {
@@ -166,50 +170,27 @@ function comboKey(a, b) {
   return a <= b ? `${a}|${b}` : `${b}|${a}`;
 }
 
-function nearestPalByPower(targetPower) {
-  if (!palsByPower.length) return null;
-  let lo = 0;
-  let hi = palsByPower.length;
-  while (lo < hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (palsByPower[mid].power < targetPower) {
-      lo = mid + 1;
-    } else {
-      hi = mid;
-    }
+function calculateChildLocal(parentA, parentB, genderA = null, genderB = null) {
+  const first = palByNameLower.get(parentA?.toLowerCase());
+  const second = palByNameLower.get(parentB?.toLowerCase());
+  const table = appData.breeding_table;
+  if (!first || !second || !table) return null;
+  let a = first.tableIndex, b = second.tableIndex;
+  if (a > b) [a, b, genderA, genderB] = [b, a, genderB, genderA];
+  const offset = a * appData.pals.length - a * (a - 1) / 2 + b - a;
+  let childIndex = table.children[offset];
+  let method = first.name === second.name ? "Same species" : "PalCalc source table";
+  if (childIndex < 0) {
+    const row = table.gender_outcomes.find((row) => row.a === a && row.b === b &&
+      row.a_gender === genderA && row.b_gender === genderB);
+    if (!row) return { error: "This pair has gender-specific outcomes. Choose one male and one female parent." };
+    childIndex = row.child;
+    method = `Gender-specific: ${appData.pals[a].name} ${genderA} + ${appData.pals[b].name} ${genderB}`;
+  } else if (appData.special_combos?.[comboKey(first.name, second.name)]) {
+    method = "Special combination";
   }
-  const right = Math.min(lo, palsByPower.length - 1);
-  const left = Math.max(right - 1, 0);
-  const r = palsByPower[right];
-  const l = palsByPower[left];
-  if (Math.abs(l.power - targetPower) <= Math.abs(r.power - targetPower)) {
-    return l;
-  }
-  return r;
-}
-
-function calculateChildLocal(parentA, parentB) {
-  const first = palByNameLower.get(parentA) || palByNameLower.get(parentA?.toLowerCase());
-  const second = palByNameLower.get(parentB) || palByNameLower.get(parentB?.toLowerCase());
-  if (!first || !second) return null;
-
-  const key = comboKey(first.name, second.name);
-  const specialChild = appData.special_combos?.[key];
-  if (specialChild) {
-    const child = palByNameLower.get(specialChild) || palByNameLower.get(specialChild.toLowerCase());
-    if (child) {
-      return { child, method: "Special combination", distance: null };
-    }
-  }
-  const targetPower = Math.floor((first.power + second.power) / 2);
-  const child = nearestPalByPower(targetPower);
-  if (!child) return null;
-
-  return {
-    child,
-    method: `Power average (${targetPower})`,
-    distance: Math.abs(child.power - targetPower)
-  };
+  const child = appData.pals[childIndex];
+  return child ? { child, method, distance: null } : null;
 }
 
 function getPalCdnUrl(palName) {
@@ -241,7 +222,7 @@ globalThis.__palImgFallback = (img) => {
 function buildPalImage(palName, className = "pal-image") {
   const localThumb = getPalImageUrl(palName);
   const localFull = getPalFullImageUrl(palName);
-  const cdn = getPalCdnUrl(palName);
+  const cdn = "";
   const size = className.includes("grid") ? 100 : className.includes("hero") ? 42 : 36;
   
   return `<img class="${escapeHtml(className)}" src="${localThumb}" alt="${getPalAltText(palName)}" width="${size}" height="${size}" loading="lazy" decoding="async"
@@ -249,7 +230,7 @@ function buildPalImage(palName, className = "pal-image") {
     onerror="window.__palImgFallback&&window.__palImgFallback(this)" />`;
 }
 
-const HERO_ICON_EAGER = 20;
+const HERO_ICON_EAGER = 6;
 const HERO_STRIP_MAX_PARALLEL = 8;
 const heroStripLoadQueue = [];
 let heroStripLoadsActive = 0;
@@ -453,8 +434,8 @@ function renderStatsBar() {
   const totalPairs = (appData.pals.length * (appData.pals.length + 1)) / 2;
   statsBar.innerHTML = `
     <span class="stat-pill">Pals: <strong>${appData.pals.length}</strong></span>
-    <span class="stat-pill">Special combos: <strong>${appData.special_combos_count}</strong></span>
-    <span class="stat-pill">Parent pair checks: <strong>${totalPairs}</strong></span>
+    <span class="stat-pill">Fixed cross-species pairs: <strong>${appData.special_combos_count}</strong></span>
+    <span class="stat-pill">Parent pairs: <strong>${totalPairs}</strong></span>
   `;
 }
 
@@ -690,17 +671,20 @@ function renderResult(options = {}) {
     return;
   }
 
-  if (parentA === parentB) {
-    showResultError("Parent A and Parent B must be different Pals.");
+  const genderA = parentAGenderSelect?.value || null;
+  const genderB = parentBGenderSelect?.value || null;
+  if (genderA && genderA === genderB) {
+    showResultError("Choose one male and one female parent.");
     return;
   }
 
   const requestId = ++calculateRequestId;
-  const calc = calculateChildLocal(parentA, parentB);
+  const calc = calculateChildLocal(parentA, parentB, genderA, genderB);
   if (!calc) {
     showResultError("Could not find those Pals. Refresh the page or pick names from the list.");
     return;
   }
+  if (calc.error) { showResultError(calc.error); return; }
   if (requestId !== calculateRequestId) return;
   paintResult(calc, parentA, parentB, celebrate);
 }
@@ -996,6 +980,11 @@ function applyQueryFromUrl() {
 async function bootstrap() {
   appData = await apiFetch("/api/bootstrap");
   buildPalIndexes();
+  const dataNote = document.getElementById("dataNote");
+  if (dataNote && appData.data_provenance) {
+    const metadata = appData.data_provenance;
+    dataNote.textContent = `${appData.pals.length} species · ${metadata.outcome_count.toLocaleString()} source outcomes · Data imported ${metadata.imported_on}. Species predictions use a pinned PalCalc community snapshot; mutations and passive traits are not modeled.`;
+  }
   lastHeroView = "";
   populateSelect(parentASelect);
   populateSelect(parentBSelect);
@@ -1067,6 +1056,11 @@ swapBtn.addEventListener("click", () => {
   const currentA = parentASelect.value;
   parentASelect.value = parentBSelect.value;
   parentBSelect.value = currentA;
+  if (parentAGenderSelect && parentBGenderSelect) {
+    const genderA = parentAGenderSelect.value;
+    parentAGenderSelect.value = parentBGenderSelect.value;
+    parentBGenderSelect.value = genderA;
+  }
   renderResult({ celebrate: true });
 });
 findCombosBtn.addEventListener("click", () => renderCombinations());
@@ -1098,6 +1092,8 @@ function onParentSelectUpdate() {
   scheduleRenderResult();
 }
 
+parentAGenderSelect?.addEventListener("change", onParentSelectUpdate);
+parentBGenderSelect?.addEventListener("change", onParentSelectUpdate);
 parentASelect.addEventListener("change", onParentSelectUpdate);
 parentBSelect.addEventListener("change", onParentSelectUpdate);
 parentASelect.addEventListener("input", onParentSelectUpdate);

@@ -8,3 +8,8 @@ Thumbs.db
 .cursor/
 static-site/
 wordpress-plugin/
+
+# Browser regression checks
+node_modules/
+test-results/
+

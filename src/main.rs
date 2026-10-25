@@ -15,6 +15,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use axum::http::{header, HeaderValue};
+use tower_http::compression::CompressionLayer;
 use tower_http::services::{ServeDir, ServeFile};
 use tower_http::set_header::SetResponseHeaderLayer;
 
@@ -22,7 +23,7 @@ use tower_http::set_header::SetResponseHeaderLayer;
 struct AppState {
     pals: Vec<Pal>,
     pals_by_name: HashMap<String, usize>,
-    power_order: Vec<usize>,
+    breeding_table: data::BreedingTable,
     pal_locations: HashMap<String, data::PalLocation>,
     items: Vec<ItemData>,
     technologies: Vec<TechnologyData>,
@@ -57,6 +58,9 @@ struct BootstrapResponse {
     pals: Vec<Pal>,
     items: Vec<ItemData>,
     technologies: Vec<TechnologyData>,
+    breeding_table: data::BreedingTable,
+    available_icons: Vec<String>,
+    data_provenance: serde_json::Value,
     special_combos_count: usize,
     special_combos: HashMap<String, String>,
 }
@@ -65,6 +69,8 @@ struct BootstrapResponse {
 struct CalculateRequest {
     parent_a: String,
     parent_b: String,
+    parent_a_gender: Option<String>,
+    parent_b_gender: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -79,6 +85,8 @@ struct PairResult {
     a: String,
     b: String,
     method: String,
+    parent_a_gender: Option<String>,
+    parent_b_gender: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -262,77 +270,77 @@ const GUIDE_PAGES: [GuidePage; 11] = [
         title: "How to Breed Anubis in Palworld - Fast Parent Paths",
         description: seo_copy::GUIDE_HOW_TO_BREED_ANUBIS,
         heading: "How to Breed Anubis in Palworld",
-        body_html: "<p>Anubis is one of the most valuable mid-to-late game Pals because of handiwork and combat utility. This guide walks you through the fastest routes using our <a href=\"/palworld-breeding-calculator\">breeding calculator</a> and live combo tables.</p><h2>Step 1: Unlock breeding</h2><p>Research the Breeding Farm and Egg Incubator, build both at your base, and keep cake in the feed box before you start.</p><h2>Step 2: Use reverse lookup</h2><p>Open the calculator, set <strong>Anubis</strong> as the target child, and compare every listed parent pair. Special combinations are listed first when they exist.</p><h2>Step 3: Farm easier parents first</h2><p>Capture lower breeding-power parents before rare legendaries. Check the <a href=\"/pal/anubis\">Anubis Pal page</a> and <a href=\"/combos/anubis\">combo hub</a> for direct links.</p><h2>Step 4: Run the egg loop</h2><p>Place parents in the Breeding Farm, incubate the egg, and repeat the chain until you hatch Anubis with your desired traits.</p><p><strong>Tip:</strong> Gender does not change the predicted child in standard breeding math—focus on valid parent pairs.</p>",
+        body_html: "<p>Start with <a href=\"/combos/anubis\">Anubis reverse lookup</a> and choose parents already available in your save. The imported snapshot includes Kitsun Noct + Eidrolon Ignis → Anubis; Anubis + Anubis also preserves the species.</p><h2>Choose a practical pair</h2><p>Confirm both parent species in the calculator, supply suitable male and female parents, and compare the resources needed to obtain them. A valid pair is not automatically the fastest route.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/guides/best-breeding-combos",
         title: "Best Palworld Breeding Combos - Practical Combo Guide",
         description: seo_copy::GUIDE_BEST_COMBOS,
         heading: "Best Breeding Combos Strategy",
-        body_html: "<p>The best Palworld breeding combo is not always the rarest pair—it is the route that gets your target child with the least farming, cake, and failed eggs. This guide explains how to rank combos using our <a href=\"/palworld-breeding-calculator\">breeding calculator</a> and combo pages.</p><h2>1. Check special combinations first</h2><p>Some parent pairs override breeding power and always produce a fixed child. These are listed as <strong>Special combination</strong> in results. Always verify these before long power-average experiments.</p><h2>2. Compare power-average fallbacks</h2><p>When no special pair exists, the child is chosen by breeding power average. Pick parent pairs with smaller distance values and easier captures.</p><h2>3. Use reverse lookup for target-first planning</h2><p>Select your goal Pal (Anubis, Jetragon, Lyleen) in the reverse calculator and compare every valid route. Open <a href=\"/combos/anubis\">Anubis combo hub</a> or the <a href=\"/pal/jetragon\">Jetragon Pal page</a> for quick links.</p><h2>4. Stack capture + map + tech</h2><p>Pair combo planning with <a href=\"/map\">map locations</a>, <a href=\"/palworld-capture-rate-calculator\">capture estimates</a>, and <a href=\"/technology\">technology milestones</a> so incubators and cake keep up with your chain.</p><h2>5. Chain breeding for legendaries</h2><p>Endgame targets often need multiple eggs. Use the <a href=\"/palworld-chain-breeding\">chain breeding tool</a> to check executable routes from your selected owned species.</p><p><strong>Pro tip:</strong> Bookmark combo URLs you reuse and share them with co-op teammates instead of re-testing pairs every session.</p>",
+        body_html: "<p>The best pair depends on your owned roster and goal. Start with reverse lookup, choose a pair you can supply, and verify any displayed gender requirement.</p><h2>Plan from owned species</h2><p>Add your available species to the chain planner. Each returned step requires both parents to be available first. If the bounded search finds no route, use reverse lookup to identify a partner to acquire.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/guides/capture-rate-explained",
         title: "Palworld Capture Rate Explained - Better Catch Planning",
         description: seo_copy::GUIDE_CAPTURE_RATE,
         heading: "Capture Rate Planning for Breeding",
-        body_html: "<p>Capture rate planning is half of successful Palworld breeding. If you cannot catch parents reliably, every combo spreadsheet fails. This guide explains how our <a href=\"/palworld-capture-rate-calculator\">capture rate calculator</a> estimates difficulty and how to act on it.</p><h2>How estimates work</h2><p>We use breeding power as a practical difficulty proxy: higher power usually means rarer spawns and tougher catches. Estimates are planning guidance—always confirm in-game after patches.</p><h2>Step-by-step capture workflow</h2><ol><li>Pick your target child in the reverse calculator.</li><li>List all parent pairs and sort by easiest parent power.</li><li>Upgrade spheres and team levels before alpha or legendary routes.</li><li>Use <a href=\"/map\">map coordinates</a> to plan one efficient farming trip.</li><li>After each capture, re-run reverse lookup—new parents unlock better pairs.</li></ol><h2>When to delay a legendary</h2><p>If capture estimates stay low and substitutes exist, breed stepping-stone children first. The <a href=\"/legendary-breeding\">legendary breeding guide</a> covers multi-step chains for Jetragon, Frostallion, and Necromus.</p><p>Combine this page with <a href=\"/guides/breeding-not-working\">breeding troubleshooting</a> if eggs stall after captures succeed.</p>",
+        body_html: "<p>This website does not calculate actual capture probability. Its score is a breeding-power heuristic, which omits sphere type, health, levels, status effects, and world settings.</p><h2>Check in the game</h2><p>Use the capture information shown in your current game. Breeding power is not a substitute for a capture formula or a reliable combat ranking.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/fastest-anubis-breed",
         title: "Fastest Anubis Breed Route in Palworld - Parent Combos",
         description: seo_copy::GUIDE_FASTEST_ANUBIS,
         heading: "Fastest Anubis Breed Routes",
-        body_html: "<p>Anubis is one of the best Palworld breeding investments for handiwork and combat. This page focuses on speed: the fewest captures and eggs to hatch Anubis on your save.</p><h2>Step 1: Reverse lookup</h2><p>Open the <a href=\"/palworld-breeding-calculator\">breeding calculator</a>, set Anubis as target child, and export every parent pair. Open <a href=\"/combos/anubis\">Anubis combo hub</a> for bookmarkable URLs.</p><h2>Step 2: Sort by capture difficulty</h2><p>Using <a href=\"/palworld-capture-rate-calculator\">capture estimates</a>, farm the easiest parents first—even if the chain has one extra egg.</p><h2>Step 3: Special pairs win</h2><p>If any pair shows <strong>Special combination</strong>, test it before power-average alternatives. Open specific <a href=\"/combo-pages\">combo pages</a> to document results.</p><h2>Step 4: Chain tool check</h2><p>Run <a href=\"/palworld-chain-breeding?goal=Anubis\">chain breeding to Anubis</a> from Lamball or your most common Pal to check whether an executable multi-step path exists.</p><p>Full walkthrough: <a href=\"/guides/how-to-breed-anubis\">how to breed Anubis guide</a>. Compare roles in <a href=\"/anubis-vs-lyleen\">Anubis vs Lyleen</a>.</p>",
+        body_html: "<p>No single Anubis route is fastest for every save. Use <a href=\"/combos/anubis\">the current imported Anubis pairs</a>, choose parents you already own, and account for capture and incubation time.</p><h2>A source-backed example</h2><p>Kitsun Noct + Eidrolon Ignis produces Anubis in the pinned PalCalc snapshot. Confirm the pair in the calculator and check compatibility with your game version before breeding.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/legendary-breeding",
         title: "Legendary Pal Breeding Guide - Palworld Routes",
         description: seo_copy::GUIDE_LEGENDARY,
         heading: "Legendary Pal Breeding Guide",
-        body_html: "<p>Legendary Pal breeding in Palworld is a chain project: you rarely breed Jetragon or Frostallion from two random captures in one egg. This guide outlines a repeatable legendary workflow using our calculator, chain tool, and Pal pages.</p><h2>Phase 1: Infrastructure</h2><p>Unlock Breeding Farm, Egg Incubator, and steady cake production. See the <a href=\"/egg-incubation-guide\">egg incubation guide</a> and <a href=\"/technology\">technology list</a>.</p><h2>Phase 2: Stepping-stone parents</h2><p>Farm mid-tier parents first (Anubis-tier, Penking-tier) before ultra-rare legendaries. Use <a href=\"/palworld-capture-rate-calculator\">capture planning</a> to avoid wasted trips.</p><h2>Phase 3: Chain or reverse planning</h2><p>For each legendary target, open its <a href=\"/pal/jetragon\">Pal page</a>, <a href=\"/how-to-breed/jetragon\">how-to-breed hub</a>, and run the <a href=\"/palworld-chain-breeding\">chain breeder</a> from a Pal you already own.</p><h2>Popular legendary targets</h2><ul><li><a href=\"/pal/jetragon\">Jetragon</a> — flying mount endgame</li><li><a href=\"/pal/frostallion\">Frostallion</a> — ice legendary</li><li><a href=\"/pal/necromus\">Necromus</a> / <a href=\"/pal/paladius\">Paladius</a> — duo bosses</li><li><a href=\"/pal/lyleen\">Lyleen</a> — late support breeder</li></ul><p>Verify every step on combo pages before spending cake. Legendary projects often take multiple real-world days—track pairs in notes or bookmarks.</p>",
+        body_html: "<p>Do not assume a legendary can be reached by crossing ordinary parents. The source snapshot restricts Jetragon, Frostallion, Paladius, and Necromus to same-species pairs.</p><h2>Acquire the species first</h2><p>For example, Jetragon + Jetragon produces Jetragon. Reverse lookup lists only supported pairs. The owned-roster planner will not invent a route when prerequisite species are unavailable.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/best-early-game-breeding-combo",
         title: "Best Early Game Breeding Combos in Palworld",
         description: seo_copy::GUIDE_EARLY_GAME,
         heading: "Best Early Game Breeding Combos",
-        body_html: "<p>Early game Palworld breeding should optimize for fast eggs and useful workers—not legendaries. This guide lists practical early combos and habits before you chase Anubis or Jetragon.</p><h2>Best starter parents</h2><p>Lamball, Cattiva, Chikipi, Foxparks, and Pengullet are common, easy to catch, and useful in power-average chains. Browse their <a href=\"/pal/lamball\">Pal pages</a> and test pairs in the <a href=\"/palworld-breeding-calculator\">calculator</a>.</p><h2>Early combos to try</h2><ul><li>Lamball + Cattiva — often routes toward Foxparks-tier children (verify in calculator).</li><li>Foxparks + Rooby — check special combination flags in results.</li><li>Any easy pair with low breeding power distance for quick hatch cycles.</li></ul><h2>What to avoid early</h2><p>Do not start legendary chains until you have Hyper Spheres, strong levels, and multiple incubators. Use <a href=\"/best-early-game-breeding-combo\">this page</a> with <a href=\"/guides/capture-rate-explained\">capture planning</a> when tempted to rush.</p><p>Unlock technology for Breeding Farm + incubator before batch breeding. Cake supply matters more than perfect pair theory in the first ten hours.</p>",
+        body_html: "<p>Choose an early route from the species you already own. Select your target in reverse lookup and compare the listed parents with your Pal Box.</p><h2>Avoid outdated pair lists</h2><p>Breeding data can change between game versions. This tool identifies its source snapshot and import date; check the displayed outcome rather than assuming an older guide still applies.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/egg-incubation-guide",
         title: "Palworld Egg Incubation Guide - Hatch Time & Breeding Setup",
         description: seo_copy::GUIDE_EGG_INCUBATION,
         heading: "Egg Incubation Guide",
-        body_html: "<p>Egg incubation is the bottleneck between choosing a valid parent pair and hatching your target Pal. This Palworld egg guide covers unlock order, timing habits, and how incubation fits combo planning.</p><h2>Unlock order</h2><ol><li>Pal Spheres and basic base tech.</li><li>Egg Incubator (technology tree).</li><li>Breeding Farm — required before eggs appear from assigned parents.</li></ol><p>See exact levels on our <a href=\"/technology\">technology milestones</a> page.</p><h2>Workflow tips</h2><ul><li>Keep cake in the Breeding Farm feed box at all times.</li><li>Collect eggs immediately so parents can cycle again.</li><li>Run multiple incubators in parallel for legendary chains.</li><li>Match incubator warmth to egg type when the game requires it.</li></ul><h2>Link incubation to combos</h2><p>Before incubating, confirm the pair in the <a href=\"/palworld-breeding-calculator\">breeding calculator</a> or on a <a href=\"/combo-pages\">combo page</a>. If hatches do not match predictions, read <a href=\"/guides/breeding-not-working\">breeding not working</a>.</p><p>For long projects, use <a href=\"/palworld-chain-breeding\">chain breeding</a> so you know every intermediate egg in advance.</p>",
+        body_html: "<p>Confirm a supported male/female parent pair and keep the required cake in the Breeding Farm chest. Once an egg is produced, use the incubator available in your current game.</p><h2>Check your settings</h2><p>Incubation time and requirements depend on the current game and world configuration. This calculator predicts species; it does not calculate egg timers or inherit passive traits.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/best-mining-pal-breeding",
         title: "Best Mining Pal Breeding - Palworld Work Pal Routes",
         description: seo_copy::GUIDE_MINING,
         heading: "Best Mining Pal Breeding",
-        body_html: "<p>Mining Pals power ore bases in Palworld. Breeding them is often indirect—you breed toward breeding power tiers that trend into Digtoise, Tombat, or other work specialists. This guide connects mining goals to calculator workflows.</p><h2>Define your mining target</h2><p>Pick a end worker (Digtoise is a common goal). Open its <a href=\"/pal/digtoise\">Pal page</a> and run reverse lookup in the <a href=\"/palworld-breeding-calculator\">calculator</a>.</p><h2>Prefer easier parent routes</h2><p>Mining projects fail when players chase perfect IVs before basic capture routes work. Use <a href=\"/palworld-capture-rate-calculator\">capture estimates</a> and farm mid-tier parents first.</p><h2>Work suitability vs breeding math</h2><p>Breeding power predicts the child species—not passive skills. You may need multiple hatches to roll Mining Level upgrades. Pair breeding with item farming from our <a href=\"/items\">items database</a>.</p><p>For base-wide planning, compare <a href=\"/anubis-vs-lyleen\">Anubis vs Lyleen</a> if you split combat and support roles.</p>",
+        body_html: "<p>Choose a mining species suited to your base, then open its reverse lookup. <a href=\"/combos/anubis\">Anubis</a> and <a href=\"/combos/digtoise\">Digtoise</a> have dedicated combination pages.</p><h2>Separate species from traits</h2><p>The calculator predicts the child species, not work suitability changes, passive inheritance, or individual stats. Inspect those properties in your game before choosing a long-term worker.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/fastest-flying-mount-breeding",
         title: "Fastest Flying Mount Breeding - Jetragon & Legendary Routes",
         description: seo_copy::GUIDE_FLYING_MOUNT,
         heading: "Fastest Flying Mount Breeding",
-        body_html: "<p>Flying mount breeding in Palworld usually means Jetragon or other late-game legendaries. Speed comes from planning captures and chains—not lucky single eggs. Use this guide with our <a href=\"/pal/jetragon\">Jetragon page</a> and <a href=\"/how-to-breed/jetragon\">how-to-breed hub</a>.</p><h2>Fastest route principles</h2><ol><li>Reverse-list every parent pair for Jetragon.</li><li>Identify special combinations vs power-average paths.</li><li>Farm the easiest high-power parents on your map first.</li><li>Run the <a href=\"/palworld-chain-breeding\">chain breeder</a> from Pals you already own.</li></ol><h2>Capture before breed</h2><p>Jetragon capture itself is endgame content. Many players breed stepping-stone Pals first. Read <a href=\"/legendary-breeding\">legendary breeding</a> and <a href=\"/guides/capture-rate-explained\">capture rate planning</a> before committing cake.</p><p>Compare alternative flying-adjacent Pals on <a href=\"/pal-pages\">all Pal pages</a> if Jetragon is months away for your save.</p>",
+        body_html: "<p>Choose a flying species you can acquire and use reverse lookup to inspect its pairs. Do not treat Jetragon as a target reachable from arbitrary starting species: the snapshot supports Jetragon + Jetragon.</p><h2>Compare available parents</h2><p>The route planner uses your selected roster and does not estimate travel speed, capture time, or incubation time. A short breeding chain is not a guaranteed fastest mount unlock.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/anubis-vs-lyleen",
         title: "Anubis vs Lyleen in Palworld - Breeding & Role Comparison",
         description: seo_copy::GUIDE_ANUBIS_VS_LYLEEN,
         heading: "Anubis vs Lyleen",
-        body_html: "<p><strong>Anubis</strong> and <strong>Lyleen</strong> are two of the most searched Palworld breeding targets. They serve different roster roles and breeding timelines. This comparison helps you choose which to chase first.</p><h2>Anubis overview</h2><p>Anubis offers strong handiwork and combat utility with mid-game accessibility. Breeding power is higher (easier tier) than ultra-late Pals. Start with <a href=\"/how-to-breed/anubis\">how to breed Anubis</a> and <a href=\"/fastest-anubis-breed\">fastest Anubis routes</a>.</p><h2>Lyleen overview</h2><p>Lyleen is a late support breeder with lower breeding power (rarer). Chains take longer but pay off for advanced bases. See <a href=\"/pal/lyleen\">Lyleen Pal page</a> and reverse lookup results.</p><h2>Which to breed first?</h2><p>Most players should complete Anubis routes before Lyleen unless you specifically need Lyleen passives for endgame production. Use the calculator side-by-side: set each as target child and compare parent difficulty.</p><h2>Shared tips</h2><ul><li>Both benefit from cake stock and multiple incubators.</li><li>Special combinations beat random power-average tests.</li><li>Link to <a href=\"/guides/best-breeding-combos\">best combos guide</a> for ranking methods.</li></ul>",
+        body_html: "<p>Choose your target according to your base needs and the species already available in your save. Compare <a href=\"/combos/anubis\">Anubis pairs</a> with <a href=\"/combos/lyleen\">Lyleen pairs</a>.</p><h2>Check restrictions first</h2><p>The pinned snapshot has several Anubis routes, while Lyleen requires Lyleen + Lyleen. These are species outcomes; the tool does not compare passive traits, combat performance, or individual stats.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
     },
     GuidePage {
         path: "/guides/breeding-not-working",
         title: "Palworld Breeding Not Working – Fixes & Checklist",
         description: seo_copy::GUIDE_BREEDING_NOT_WORKING,
         heading: "Breeding Not Working? Fix Checklist",
-        body_html: "<p>If breeding fails in Palworld, check these items in order before changing parent pairs.</p><h2>1. Breeding Farm setup</h2><p>Confirm the Breeding Farm is built, powered, and both parent slots are filled with compatible Pals.</p><h2>2. Cake supply</h2><p>The feed box must have cake. Empty cake stops the breeding process even when parents are assigned.</p><h2>3. Valid parent pair</h2><p>Use our <a href=\"/palworld-breeding-calculator\">calculator</a> to verify the pair can produce your target child. Invalid pairs waste time.</p><h2>4. Incubator space</h2><p>Collect eggs and place them in an incubator. Full inventory or missing incubator delays progress.</p><h2>5. Pal conditions</h2><p>Sick, starving, or depressed Pals may block breeding—heal and feed parents first.</p><p>Still stuck? Compare routes on the <a href=\"/how-to-breed/anubis\">Anubis guide</a> or your target <a href=\"/pals\">Pal page</a>.</p>",
+        body_html: "<p>If breeding fails in Palworld, check these items in order before changing parent pairs.</p><h2>1. Breeding Farm setup</h2><p>Confirm the Breeding Farm is built and suitable male and female parents are assigned.</p><h2>2. Cake supply</h2><p>The Breeding Farm chest must have cake. Empty cake stops the breeding process even when parents are assigned.</p><h2>3. Valid parent pair</h2><p>Use our <a href=\"/palworld-breeding-calculator\">calculator</a> to verify the pair can produce your target child. Invalid pairs waste time.</p><h2>4. Incubator space</h2><p>Collect eggs and place them in an incubator. Full inventory or missing incubator delays progress.</p><h2>5. Pal conditions</h2><p>Sick, starving, or depressed Pals may block breeding—heal and feed parents first.</p><p>Still stuck? Compare routes on the <a href=\"/how-to-breed/anubis\">Anubis guide</a> or your target <a href=\"/pals\">Pal page</a>.</p>",
     },
 ];
 
@@ -410,6 +418,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(index_page))
+        .route("/health", get(health))
         .route("/breeding-calculator", get(redirect_to_primary_calculator))
         .route("/how-to-breed/:name", get(how_to_breed_page))
         .route("/combos/:name", get(combos_hub_page))
@@ -460,7 +469,8 @@ async fn main() {
         .merge(root_static)
         .merge(app_js)
         .with_state(state)
-        .fallback(not_found_handler);
+        .fallback(not_found_handler)
+        .layer(CompressionLayer::new());
 
     // Render and other hosts require 0.0.0.0 so the port is reachable externally.
     let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
@@ -477,11 +487,23 @@ async fn main() {
     axum::serve(listener, app).await.expect("server error");
 }
 
+async fn health(State(state): State<AppState>) -> Json<serde_json::Value> {
+    Json(serde_json::json!({
+        "status": "ok",
+        "pal_count": state.pals.len(),
+        "source_commit": "66f18a000e2107640b219562437357ced5aff7eb",
+        "app_commit": std::env::var("RENDER_GIT_COMMIT").ok(),
+    }))
+}
+
 async fn api_bootstrap(State(state): State<AppState>) -> impl IntoResponse {
     Json(BootstrapResponse {
         pals: state.pals.clone(),
         items: state.items.clone(),
         technologies: state.technologies.clone(),
+        breeding_table: state.breeding_table.clone(),
+        available_icons: serde_json::from_str(include_str!("../data/icon_names.json")).expect("Invalid icon manifest"),
+        data_provenance: serde_json::from_str(include_str!("../data/provenance.json")).expect("Invalid provenance"),
         special_combos_count: state.special_combos.len(),
         special_combos: state.special_combos.clone(),
     })
@@ -495,9 +517,19 @@ async fn api_calculate(
     State(state): State<AppState>,
     Json(body): Json<CalculateRequest>,
 ) -> Result<Json<CalculateResponse>, (StatusCode, String)> {
-    calculate_child(&state, &body.parent_a, &body.parent_b)
+    let gender_a = body.parent_a_gender.as_deref();
+    let gender_b = body.parent_b_gender.as_deref();
+    for gender in [gender_a, gender_b].into_iter().flatten() {
+        if !matches!(gender, "male" | "female") {
+            return Err((StatusCode::BAD_REQUEST, "Gender must be male or female".into()));
+        }
+    }
+    if gender_a.is_some() && gender_a == gender_b {
+        return Err((StatusCode::BAD_REQUEST, "Choose one male and one female parent".into()));
+    }
+    calculate_child_with_genders(&state, &body.parent_a, &body.parent_b, gender_a, gender_b)
         .map(Json)
-        .ok_or_else(|| (StatusCode::BAD_REQUEST, "Invalid parent names".to_string()))
+        .ok_or_else(|| (StatusCode::BAD_REQUEST, "Unknown parent or gender-specific pair: choose the required male and female parents".to_string()))
 }
 
 pub(crate) fn combinations_for_target(state: &AppState, target: &str) -> Vec<PairResult> {
@@ -526,11 +558,10 @@ fn build_app_state(index_template: String, base_url: String) -> AppState {
         pals_by_name.insert(normalize_pal_name(&pal.name), i);
     }
 
-    let mut power_order: Vec<usize> = (0..pals.len()).collect();
-    power_order.sort_by_key(|&i| pals[i].power);
+    let breeding_table = data::load_breeding_table(&pals);
 
     let reverse_combos =
-        build_reverse_index(&pals, &pals_by_name, &power_order, &special_combos);
+        build_reverse_index(&pals, &breeding_table, &special_combos);
     eprintln!(
         "Breeding index ready: {} pals, {} targets, {} ms",
         pals.len(),
@@ -541,7 +572,7 @@ fn build_app_state(index_template: String, base_url: String) -> AppState {
     let mut state = AppState {
         pals,
         pals_by_name,
-        power_order,
+        breeding_table,
         pal_locations: data::load_pal_locations(),
         items: build_items(),
         technologies: build_technologies(),
@@ -651,85 +682,38 @@ fn find_pal_in_state<'a>(state: &'a AppState, name: &str) -> Option<&'a Pal> {
     state.pals_by_name.get(&key).map(|&i| &state.pals[i])
 }
 
-fn nearest_pal_index(pals: &[Pal], power_order: &[usize], target_power: i32) -> usize {
-    if power_order.is_empty() {
-        return 0;
+fn outcome_method(pals: &[Pal], special: &HashMap<String, String>, row: &data::TableOutcome) -> String {
+    if row.a_gender != "wildcard" {
+        return format!("Gender-specific: {} {} + {} {}", pals[row.a].name, row.a_gender, pals[row.b].name, row.b_gender);
     }
-    let mut lo = 0usize;
-    let mut hi = power_order.len();
-    while lo < hi {
-        let mid = lo + (hi - lo) / 2;
-        if pals[power_order[mid]].power < target_power {
-            lo = mid + 1;
-        } else {
-            hi = mid;
-        }
-    }
-    let right = lo.min(power_order.len() - 1);
-    let left = right.saturating_sub(1);
-    let r_idx = power_order[right];
-    if left == right {
-        return r_idx;
-    }
-    let l_idx = power_order[left];
-    if (pals[l_idx].power - target_power).abs() <= (pals[r_idx].power - target_power).abs() {
-        l_idx
+    if row.a == row.b {
+        "Same species".into()
+    } else if special.contains_key(&combo_key(&pals[row.a].name, &pals[row.b].name)) {
+        "Special combination".into()
     } else {
-        r_idx
+        "PalCalc source table".into()
     }
 }
 
 fn build_reverse_index(
     pals: &[Pal],
-    pals_by_name: &HashMap<String, usize>,
-    power_order: &[usize],
-    special_combos: &HashMap<String, String>,
+    table: &data::BreedingTable,
+    special: &HashMap<String, String>,
 ) -> HashMap<String, Vec<PairResult>> {
     let mut reverse: HashMap<String, Vec<PairResult>> = HashMap::new();
     for i in 0..pals.len() {
         for j in i..pals.len() {
-            let Some((child_idx, method)) =
-                child_for_pair(pals, pals_by_name, power_order, special_combos, i, j)
-            else {
-                continue;
-            };
-            let child_name = pals[child_idx].name.clone();
-            reverse
-                .entry(child_name)
-                .or_default()
-                .push(PairResult {
-                    a: pals[i].name.clone(),
-                    b: pals[j].name.clone(),
-                    method,
+            for row in table.outcomes(i, j) {
+                reverse.entry(pals[row.child].name.clone()).or_default().push(PairResult {
+                    a: pals[i].name.clone(), b: pals[j].name.clone(),
+                    method: outcome_method(pals, special, &row),
+                    parent_a_gender: (row.a_gender != "wildcard").then_some(row.a_gender),
+                    parent_b_gender: (row.b_gender != "wildcard").then_some(row.b_gender),
                 });
+            }
         }
     }
     reverse
-}
-
-fn child_for_pair(
-    pals: &[Pal],
-    pals_by_name: &HashMap<String, usize>,
-    power_order: &[usize],
-    special_combos: &HashMap<String, String>,
-    i: usize,
-    j: usize,
-) -> Option<(usize, String)> {
-    let key = combo_key(&pals[i].name, &pals[j].name);
-    if let Some(child_name) = special_combos.get(&key) {
-        let child_key = normalize_pal_name(child_name);
-        let child_idx = *pals_by_name.get(&child_key)?;
-        return Some((child_idx, "Special combination".to_string()));
-    }
-    if i == j {
-        return Some((i, "Same species".to_string()));
-    }
-    let target_power = (pals[i].power + pals[j].power) / 2;
-    let child_idx = nearest_pal_index(pals, power_order, target_power);
-    Some((
-        child_idx,
-        format!("Power average ({target_power})"),
-    ))
 }
 
 async fn api_combinations(
@@ -991,7 +975,7 @@ async fn breed_alias_redirect(Path(name): Path<String>) -> axum::response::Redir
 }
 
 fn pal_slug(name: &str) -> String {
-    name.to_lowercase().replace(' ', "-")
+    name.to_lowercase().chars().map(|ch| if ch.is_ascii_alphanumeric() { ch } else { '-' }).collect::<String>().split('-').filter(|part| !part.is_empty()).collect::<Vec<_>>().join("-")
 }
 
 fn combos_producing_target(state: &AppState, target_name: &str) -> Vec<(String, String, String)> {
@@ -1180,8 +1164,12 @@ async fn combo_detail_page(
         .into_response());
     }
 
-    let result = calculate_child(&state, &parent_a.name, &parent_b.name)
-        .ok_or_else(|| (StatusCode::BAD_REQUEST, "Could not calculate combo".to_string()))?;
+    let Some(result) = calculate_child(&state, &parent_a.name, &parent_b.name) else {
+        return Ok(axum::response::Redirect::temporary(&format!(
+            "{PRIMARY_CALCULATOR_PATH}?parentA={}&parentB={}",
+            parent_a.name.replace(' ', "%20"), parent_b.name.replace(' ', "%20")
+        )).into_response());
+    };
 
     let alternative_pairs: Vec<(String, String, String)> = combinations_for_target(&state, &result.child.name)
         .into_iter()
@@ -1338,7 +1326,7 @@ async fn sitemap_pals(State(state): State<AppState>) -> impl IntoResponse {
     let lastmod = chrono_like_today();
     let mut urls = String::new();
     for pal in &state.pals {
-        let slug = pal.name.to_lowercase().replace(' ', "-");
+        let slug = pal_slug(&pal.name);
         push_url(
             &mut urls,
             &format!("{}/pal/{slug}", state.base_url),
@@ -1537,7 +1525,7 @@ fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
             "name": "Can legendary pals breed?",
             "acceptedAnswer": {{
               "@type": "Answer",
-              "text": "Yes. Legendary Pals can breed when placed in a Breeding Farm, but they often require long parent chains and special combinations."
+              "text": "Many legendary species require same-species parents. Jetragon + Jetragon produces Jetragon in the imported source snapshot; use reverse lookup to check restrictions."
             }}
           }},
           {{
@@ -1545,7 +1533,7 @@ fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
             "name": "Does gender matter in Palworld breeding?",
             "acceptedAnswer": {{
               "@type": "Answer",
-              "text": "Gender does not change the predicted child outcome in standard breeding calculations. Focus on parent pair combinations and breeding power."
+              "text": "Use suitable male and female parents. Katress + Wixen has two source outcomes depending on which parent is male; choose both genders for that pair."
             }}
           }},
           {{
@@ -1553,7 +1541,7 @@ fn build_seo_tags(base_url: &str, page: SeoPage) -> String {
             "name": "Why is breeding not working?",
             "acceptedAnswer": {{
               "@type": "Answer",
-              "text": "Check that your Breeding Farm is built, both parents are assigned, and you have cake in the feed box. Also verify you are using a valid parent pair for your target child."
+              "text": "Check that your Breeding Farm is built, both parents are assigned, and you have cake in the farm chest. Also verify you are using a valid parent pair for your target child."
             }}
           }},
           {{
@@ -1659,12 +1647,12 @@ fn seo_kid_background_html() -> String {
 }
 
 fn pal_img_tag(name: &str, class: &str) -> String {
+    static ICONS: std::sync::OnceLock<HashSet<String>> = std::sync::OnceLock::new();
+    let icons = ICONS.get_or_init(|| serde_json::from_str(include_str!("../data/icon_names.json")).expect("Invalid icon manifest"));
     let slug = pal_slug(name);
+    let src = if icons.contains(&slug) { format!("/assets/pals/thumbs/{slug}.webp") } else { "/assets/pals/placeholder.svg".into() };
     let esc = html_escape(name);
-    let cdn = query_escape(name);
-    format!(
-        r#"<img class="{class}" src="/assets/pals/thumbs/{slug}.webp" alt="{esc}" width="36" height="36" loading="lazy" decoding="async" onerror="if(!this.dataset.f){{this.dataset.f='cdn';this.src='https://ggservers.com/images/palworld/{cdn}.webp';}}else{{this.onerror=null;this.src='/assets/pals/placeholder.svg';}}" />"#
-    )
+    format!(r#"<img class="{class}" src="{src}" alt="{esc}" width="36" height="36" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/assets/pals/placeholder.svg';" />"#)
 }
 
 fn combo_parent_cell(name: &str, combo_a: &str, combo_b: &str) -> String {
@@ -1755,7 +1743,7 @@ fn build_how_to_breed_html(
       {SEO_FOOTER_STYLES}
     </style>
     <script type="application/ld+json">
-      {{"@context":"https://schema.org","@type":"HowTo","name":"How to breed {pal_name} in Palworld","description":"{description}","step":[{{"@type":"HowToStep","name":"Unlock Breeding Farm","text":"Research and build a Breeding Farm and Egg Incubator with cake in the feed box."}},{{"@type":"HowToStep","name":"Find parent pairs","text":"Use the reverse calculator to list valid parents for {pal_name}."}},{{"@type":"HowToStep","name":"Breed and incubate","text":"Assign parents, collect the egg, and incubate until {pal_name} hatches."}}]}}
+      {{"@context":"https://schema.org","@type":"HowTo","name":"How to breed {pal_name} in Palworld","description":"{description}","step":[{{"@type":"HowToStep","name":"Unlock Breeding Farm","text":"Research and build a Breeding Farm and Egg Incubator with cake in the farm chest."}},{{"@type":"HowToStep","name":"Find parent pairs","text":"Use the reverse calculator to list valid parents for {pal_name}."}},{{"@type":"HowToStep","name":"Breed and incubate","text":"Assign parents, collect the egg, and incubate until {pal_name} hatches."}}]}}
     </script>
     <script type="application/ld+json">
       {{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{{"@type":"Question","name":"How do you breed {pal_name}?","acceptedAnswer":{{"@type":"Answer","text":"Use valid parent pairs listed on this page or the reverse calculator. Special combinations override power averages when available."}}}},{{"@type":"Question","name":"How many combos produce {pal_name}?","acceptedAnswer":{{"@type":"Answer","text":"This database lists {combo_count} parent pair routes that can produce {pal_name}."}}}}]}}
@@ -1773,7 +1761,7 @@ fn build_how_to_breed_html(
         <ol>
           <li>Build <strong>Breeding Farm</strong> + <strong>Egg Incubator</strong> and keep cake stocked.</li>
           <li>Open the <a href="/combos/{slug}">all combos for {pal_name}</a> page or table below.</li>
-          <li>Farm the easiest parents first (higher breeding power = usually easier captures).</li>
+          <li>Choose parents already available in your save. Breeding power is not a capture probability.</li>
           <li>Place parents, hatch the child, repeat if you need better passives.</li>
         </ol>
         <p><a href="/pal/{slug}">{pal_name} Pal profile</a> • <a href="/palworld-breeding-calculator">Full calculator</a></p>
@@ -1971,7 +1959,7 @@ fn build_pal_page_html(
     combos: &[(String, String, String)],
     related: &[&Pal],
 ) -> String {
-    let slug = target.name.to_lowercase().replace(' ', "-");
+    let slug = pal_slug(&target.name);
     let page_url = format!("{base_url}/pal/{slug}");
     let title = format!("{} Breeding Calculator | Palworld", target.name);
     let description = pal_page_meta_description(target, combos.len());
@@ -1983,7 +1971,7 @@ fn build_pal_page_html(
     let related_links = related
         .iter()
         .map(|pal| {
-            let s = pal.name.to_lowercase().replace(' ', "-");
+            let s = pal_slug(&pal.name);
             format!("<a href=\"/pal/{s}\">{}</a>", pal.name)
         })
         .collect::<Vec<_>>()
@@ -2373,7 +2361,7 @@ fn build_combo_page_html(
         title = title,
         description = description,
         page_url = page_url,
-        child_slug = result.child.name.to_lowercase().replace(' ', "-"),
+        child_slug = pal_slug(&result.child.name),
         parent_a_slug = parent_a_slug,
         parent_b_slug = parent_b_slug,
         parent_a_name = parent_a.name,
@@ -2396,7 +2384,7 @@ fn build_combo_page_html(
 
 fn find_pal_by_slug<'a>(pals: &'a [Pal], slug: &str) -> Option<&'a Pal> {
     pals.iter()
-        .find(|pal| pal.name.to_lowercase().replace(' ', "-") == slug.to_lowercase())
+        .find(|pal| pal_slug(&pal.name) == slug.to_lowercase())
 }
 
 pub(crate) fn find_pal_by_name<'a>(pals: &'a [Pal], name: &str) -> Option<&'a Pal> {
@@ -2407,31 +2395,24 @@ pub(crate) fn find_pal_by_name<'a>(pals: &'a [Pal], name: &str) -> Option<&'a Pa
 }
 
 fn calculate_child(state: &AppState, parent_a: &str, parent_b: &str) -> Option<CalculateResponse> {
+    calculate_child_with_genders(state, parent_a, parent_b, None, None)
+}
+
+fn calculate_child_with_genders(
+    state: &AppState, parent_a: &str, parent_b: &str,
+    gender_a: Option<&str>, gender_b: Option<&str>,
+) -> Option<CalculateResponse> {
     let first = find_pal_in_state(state, parent_a)?;
     let second = find_pal_in_state(state, parent_b)?;
-    let fi = state.pals_by_name.get(&normalize_pal_name(&first.name))?;
-    let si = state.pals_by_name.get(&normalize_pal_name(&second.name))?;
-
-    let (child_idx, method) = child_for_pair(
-        &state.pals,
-        &state.pals_by_name,
-        &state.power_order,
-        &state.special_combos,
-        *fi,
-        *si,
-    )?;
-    let child = state.pals[child_idx].clone();
-    let distance = if method.starts_with("Power average") {
-        let target_power = (first.power + second.power) / 2;
-        Some((child.power - target_power).abs())
-    } else {
-        None
-    };
-
+    let fi = *state.pals_by_name.get(&normalize_pal_name(&first.name))?;
+    let si = *state.pals_by_name.get(&normalize_pal_name(&second.name))?;
+    let outcomes = state.breeding_table.outcomes(fi, si);
+    let row = outcomes.iter().find(|row| row.a_gender == "wildcard" ||
+        (Some(row.a_gender.as_str()) == gender_a && Some(row.b_gender.as_str()) == gender_b))?;
     Some(CalculateResponse {
-        child,
-        method,
-        distance,
+        child: state.pals[row.child].clone(),
+        method: outcome_method(&state.pals, &state.special_combos, row),
+        distance: None,
     })
 }
 
@@ -2486,7 +2467,7 @@ fn legendary_pal_links_html(state: &AppState) -> String {
     let links = legends
         .iter()
         .map(|p| {
-            let slug = p.name.to_lowercase().replace(' ', "-");
+            let slug = pal_slug(&p.name);
             format!("<a href=\"/pal/{slug}\">{}</a> (power {})", p.name, p.power)
         })
         .collect::<Vec<_>>()
@@ -2628,8 +2609,8 @@ mod breeding_regression_tests {
         let state = fixture();
         for (child, pairs) in state.reverse_combos.iter() {
             for pair in pairs {
-                assert_eq!(calculate_child(&state, &pair.a, &pair.b).unwrap().child.name, *child);
-                assert_eq!(calculate_child(&state, &pair.b, &pair.a).unwrap().child.name, *child);
+                assert_eq!(calculate_child_with_genders(&state, &pair.a, &pair.b, pair.parent_a_gender.as_deref(), pair.parent_b_gender.as_deref()).unwrap().child.name, *child);
+                assert_eq!(calculate_child_with_genders(&state, &pair.b, &pair.a, pair.parent_b_gender.as_deref(), pair.parent_a_gender.as_deref()).unwrap().child.name, *child);
             }
         }
     }
@@ -2660,5 +2641,63 @@ mod breeding_regression_tests {
             owned: "Unknown".into(), goal: "Lamball".into(), also_owned: None,
         })).await;
         assert_eq!(result.unwrap_err().0, StatusCode::BAD_REQUEST);
+    }
+}
+
+#[cfg(test)]
+mod source_table_regression_tests {
+    use super::*;
+
+    fn state() -> AppState {
+        build_app_state(include_str!("../index.html").into(), "https://example.com".into())
+    }
+
+    #[test]
+    fn gender_specific_results_follow_parent_orientation() {
+        let state = state();
+        assert!(calculate_child(&state, "Katress", "Wixen").is_none());
+        for (a,b,ga,gb,child) in [
+            ("Katress","Wixen","female","male","Katress Ignis"),
+            ("Katress","Wixen","male","female","Wixen Noct"),
+            ("Wixen","Katress","male","female","Katress Ignis"),
+            ("Wixen","Katress","female","male","Wixen Noct"),
+        ] {
+            assert_eq!(calculate_child_with_genders(&state,a,b,Some(ga),Some(gb)).unwrap().child.name, child);
+        }
+    }
+
+    #[test]
+    fn same_species_only_targets_do_not_gain_fabricated_crosses() {
+        let state = state();
+        for name in ["Jetragon", "Frostallion", "Paladius", "Necromus", "Lyleen"] {
+            let pairs = combinations_for_target(&state,name);
+            assert_eq!(pairs.len(),1,"{name}");
+            assert_eq!(pairs[0].a,name);
+            assert_eq!(pairs[0].b,name);
+        }
+        assert_eq!(calculate_child(&state,"Kitsun Noct","Eidrolon Ignis").unwrap().child.name,"Anubis");
+        assert_eq!(calculate_child(&state,"Penking","Bushi").unwrap().child.name,"Sibelyx");
+    }
+
+    #[test]
+    fn every_imported_outcome_is_indexed_in_reverse_lookup() {
+        let state = state();
+        assert_eq!(state.pals.len(),299);
+        assert_eq!(state.breeding_table.children.len(),44_850);
+        assert_eq!(state.reverse_combos.values().map(Vec::len).sum::<usize>(),44_851);
+        assert_eq!(pal_slug("Gumoss (Flower)"),"gumoss-flower");
+        assert_ne!(pal_slug("Gumoss"),pal_slug("Gumoss (Flower)"));
+    }
+
+    #[tokio::test]
+    async fn api_rejects_invalid_genders_and_requires_specific_pair_genders() {
+        let state = state();
+        for (ga,gb) in [(Some("other"),None),(Some("male"),Some("male")),(None,None)] {
+            let response = api_calculate(State(state.clone()), Json(CalculateRequest {
+                parent_a: "Katress".into(), parent_b: "Wixen".into(),
+                parent_a_gender: ga.map(str::to_string), parent_b_gender: gb.map(str::to_string),
+            })).await;
+            assert_eq!(response.unwrap_err().0,StatusCode::BAD_REQUEST);
+        }
     }
 }

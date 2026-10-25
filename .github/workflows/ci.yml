@@ -18,8 +18,30 @@ jobs:
         with:
           node-version: '22'
       - name: Check frontend syntax
-        run: node --check app.js
+        run: |
+          node --check app.js
+          node tests/frontend-calculator.cjs
       - name: Run regression tests
         run: cargo test --locked
       - name: Check release build
         run: cargo build --release --locked
+      - name: Install browser test dependencies
+        run: |
+          npm ci --ignore-scripts
+      - name: Exercise desktop and mobile calculator flows
+        run: |
+          HOST=127.0.0.1 PORT=3000 BASE_URL=http://127.0.0.1:3000 ./target/release/palworld-breeding-calculator > /tmp/palworld-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/api/bootstrap > /dev/null; then break; fi
+            sleep 1
+          done
+          export BROWSER_EXECUTABLE_PATH="$(command -v google-chrome)"
+          npm run test:browser
+      - name: Save browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-checks
+          path: test-results/

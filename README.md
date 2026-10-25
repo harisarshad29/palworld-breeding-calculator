@@ -1,53 +1,68 @@
-# Palworld Breeding Calculator (Rust)
+# Palworld Breeding Calculator
 
-Rust server + web UI. **No Netlify static site.**
+Rust server and browser tools for species prediction, reverse lookup, and breeding
+routes from an owned roster. No account or game-save upload is required.
 
 ## Run
 
-Double-click **START-SERVER.bat** or:
-
-```bash
-cargo run
+```sh
+cargo run --locked
 ```
 
-http://127.0.0.1:3000/palworld-breeding-calculator
+Open http://127.0.0.1:3000/palworld-breeding-calculator.
 
-## Deploy
+## Data and calculation rules
 
-See **DEPLOY-RUST.txt** and **render.yaml**.
+The pinned PalCalc community snapshot contains 299 species, 44,850 unordered
+parent pairs, and 44,851 outcomes. Browser and server calculations use the same
+compact source table. Same-species pairs are supported. Katress + Wixen requires
+both parent genders because the outcome changes with orientation.
 
-## Reset to Rust-only
+See [data/SOURCES.md](data/SOURCES.md), [data/provenance.json](data/provenance.json),
+and the retained [MIT notice](licenses/PalCalc-MIT.txt). The source snapshot does
+not declare a game build; no latest-version claim is made. Refresh with
+`python scripts/import_palcalc.py` after reviewing the pinned source commit.
 
-Double-click **RESET.bat** (removes static-site / wordpress folders).
+The route planner uses the selected owned species, assumes suitable genders are
+available, and searches up to 15 steps and 8,000 inventories. A failed bounded
+search is not proof that no route exists. Every returned step requires both
+parents to be available first. The capture score is a breeding-power heuristic,
+not an actual capture probability.
 
-## Layout
+## Validate
 
-- `src/` — Rust server + SEO
-- `index.html`, `app.js`, `styles.css` — frontend
-- `data/`, `assets/pals/` — game data + images
-- `seo/` — off-page playbook, outreach, backlink tracker
-
-## SEO (on-page + off-page)
-
-### On-page (built into Rust)
-
-- Per-route titles, meta descriptions (~150 words), canonicals, Open Graph
-- JSON-LD: FAQ, Article, Breadcrumb, HowTo, WebSite
-- Sitemap index: `/sitemap.xml` (+ pals, guides, combos, hubs)
-- Programmatic pages: `/pal/:name`, `/combo/:a/:b`, guides, how-to-breed hubs
-- Sitewide footer with internal links (`src/seo_copy.rs`)
-
-### Off-page (you run daily)
-
-1. Deploy live with `BASE_URL` — see `DEPLOY-ALL.txt`
-2. Google Search Console — see `seo/SEARCH-CONSOLE-SETUP.md`
-3. Daily routine — `powershell -File scripts\daily-seo.ps1`
-4. Full plan (Urdu/English) — `seo/KAM-KARO-ON-OFF-PAGE.md`
-5. Log backlinks — `seo/backlink-tracker.csv`
-
-### Verify live SEO
-
-```powershell
-$env:LIVE_SITE_URL="https://www.palworld-breeding-calculator.us"
-powershell -File scripts\verify-live-seo.ps1
+```sh
+cargo test --locked
+cargo build --release --locked
+node --check app.js
+node tests/frontend-calculator.cjs
+npm ci --ignore-scripts
+npx playwright install chromium
+# Run the Rust server in another terminal, then:
+npm run test:browser
 ```
+
+Browser checks exercise desktop and 390px mobile layouts, same-species results,
+gender-specific outcomes, swapping, reverse lookup, owned-roster chains, theme
+switching, and horizontal overflow. Screenshots are saved to `test-results/` and
+uploaded by CI. `BROWSER_BASE_URL` overrides the test server origin.
+
+## Hosting and health
+
+`render.yaml` builds the locked release, declares the preferred `www` domain,
+waits for CI checks, and uses `/health` for readiness. Apply or sync the Blueprint
+in the existing Render service; repository settings alone do not prove that the
+service configuration was applied. Keep `BASE_URL` equal to the public HTTPS
+origin for canonical and sitemap consistency.
+
+`GET /health` reports readiness, species count, the source commit, and the Render
+application commit when available. `GET /api/bootstrap` includes data provenance.
+The legacy Netlify redirect configuration is retained until the existing hosting
+and domain bindings can be checked; do not attach the production domain to both
+providers or enable a redirect loop.
+
+On 25 October 2026 the public site displayed "This service has been suspended by
+its owner." Resume the existing Render service and deploy the tested `main`
+commit before treating repository changes as live. Confirm `/health`, both
+custom-domain forms, canonical tags, sitemap URLs, and primary tool flows after
+deployment. No paid plan change is required or authorized by this repository.

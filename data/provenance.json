@@ -1,0 +1,15 @@
+{
+  "source": "PalCalc",
+  "source_url": "https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb",
+  "source_commit": "66f18a000e2107640b219562437357ced5aff7eb",
+  "imported_on": "2026-10-25",
+  "pal_count": 299,
+  "parent_pair_count": 44850,
+  "outcome_count": 44851,
+  "gender_specific_outcome_count": 2,
+  "sha256": {
+    "db.json": "93a5c0e2e48281a7c3fdbecd537989eaaf70e28f9dcca029f6e3834807d052fc",
+    "breeding.json": "e0f3a3eeca656ff506f4c1307397cad1bf156680d8c90ca6250ea790f11b38bb"
+  },
+  "scope": "Species outcomes from the pinned community dataset; game build is not declared by this snapshot. Mutations and trait inheritance are not modeled."
+}

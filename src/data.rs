@@ -119,3 +119,62 @@ mod tests {
         assert!(parse_special_combos(include_str!("../data/special_combos.json")).is_ok());
     }
 }
+
+#[derive(Debug, Clone, Deserialize, serde::Serialize)]
+pub struct BreedingTable {
+    pub pal_names: Vec<String>,
+    pub children: Vec<i32>,
+    pub gender_outcomes: Vec<TableOutcome>,
+}
+
+#[derive(Debug, Clone, Deserialize, serde::Serialize)]
+pub struct TableOutcome {
+    pub a: usize,
+    pub b: usize,
+    pub child: usize,
+    pub a_gender: String,
+    pub b_gender: String,
+}
+
+impl BreedingTable {
+    pub fn offset(&self, a: usize, b: usize) -> usize {
+        let (a, b) = if a <= b { (a, b) } else { (b, a) };
+        a * self.pal_names.len() - a * a.saturating_sub(1) / 2 + b - a
+    }
+
+    pub fn outcomes(&self, a: usize, b: usize) -> Vec<TableOutcome> {
+        let child = self.children[self.offset(a, b)];
+        if child >= 0 {
+            return vec![TableOutcome { a, b, child: child as usize, a_gender: "wildcard".into(), b_gender: "wildcard".into() }];
+        }
+        let swapped = a > b;
+        let (low, high) = if swapped { (b, a) } else { (a, b) };
+        self.gender_outcomes.iter().filter(|row| row.a == low && row.b == high).map(|row| {
+            let mut outcome = row.clone();
+            if swapped {
+                std::mem::swap(&mut outcome.a, &mut outcome.b);
+                std::mem::swap(&mut outcome.a_gender, &mut outcome.b_gender);
+            }
+            outcome
+        }).collect()
+    }
+}
+
+pub fn load_breeding_table(pals: &[Pal]) -> BreedingTable {
+    let raw = read_data("data/breeding_table.json", include_str!("../data/breeding_table.json"));
+    let table: BreedingTable = serde_json::from_str(&raw).expect("Invalid data/breeding_table.json");
+    let n = pals.len();
+    assert_eq!(table.pal_names, pals.iter().map(|pal| pal.name.clone()).collect::<Vec<_>>(), "Breeding table and roster must use the same ordered names");
+    assert_eq!(table.children.len(), n * (n + 1) / 2, "Incomplete breeding table");
+    assert!(table.children.iter().all(|child| *child == -1 || (0..n as i32).contains(child)), "Invalid child index");
+    for a in 0..n {
+        for b in a..n {
+            assert!(!table.outcomes(a, b).is_empty(), "Missing parent pair outcome");
+        }
+    }
+    for row in &table.gender_outcomes {
+        assert!(row.a < n && row.b < n && row.child < n && row.a <= row.b, "Invalid gendered outcome index");
+        assert!(matches!(row.a_gender.as_str(), "male" | "female") && matches!(row.b_gender.as_str(), "male" | "female") && row.a_gender != row.b_gender, "Invalid required genders");
+    }
+    table
+}
