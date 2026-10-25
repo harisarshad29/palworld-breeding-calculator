@@ -84,7 +84,8 @@ struct PairResult {
 #[derive(Debug, Serialize)]
 struct CaptureResponse {
     target: String,
-    estimate_percent: i32,
+    difficulty_score: i32,
+    basis: &'static str,
     easier_targets: Vec<Pal>,
 }
 
@@ -245,8 +246,8 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
     SeoPage {
         path: "/palworld-chain-breeding",
-        title: "Palworld Chain Breeding Calculator – Shortest Path",
-        meta_description: "Find the shortest Palworld breeding chain from a Pal you already own to any target. Each step lists a parent pair to verify before you spend any cake.",
+        title: "Palworld Chain Breeding Route Planner",
+        meta_description: "Explore Palworld breeding routes with a bounded planner. Both parent species must be available for each step; use reverse lookup to acquire missing partners.",
         h1: "Palworld Chain Breeding Path Finder",
         badge: "Chain Breeder",
         h1_characteristics: seo_copy::CHAIN_H1,
@@ -268,7 +269,7 @@ const GUIDE_PAGES: [GuidePage; 11] = [
         title: "Best Palworld Breeding Combos - Practical Combo Guide",
         description: seo_copy::GUIDE_BEST_COMBOS,
         heading: "Best Breeding Combos Strategy",
-        body_html: "<p>The best Palworld breeding combo is not always the rarest pair—it is the route that gets your target child with the least farming, cake, and failed eggs. This guide explains how to rank combos using our <a href=\"/palworld-breeding-calculator\">breeding calculator</a> and combo pages.</p><h2>1. Check special combinations first</h2><p>Some parent pairs override breeding power and always produce a fixed child. These are listed as <strong>Special combination</strong> in results. Always verify these before long power-average experiments.</p><h2>2. Compare power-average fallbacks</h2><p>When no special pair exists, the child is chosen by breeding power average. Pick parent pairs with smaller distance values and easier captures.</p><h2>3. Use reverse lookup for target-first planning</h2><p>Select your goal Pal (Anubis, Jetragon, Lyleen) in the reverse calculator and compare every valid route. Open <a href=\"/combos/anubis\">Anubis combo hub</a> or the <a href=\"/pal/jetragon\">Jetragon Pal page</a> for quick links.</p><h2>4. Stack capture + map + tech</h2><p>Pair combo planning with <a href=\"/map\">map locations</a>, <a href=\"/palworld-capture-rate-calculator\">capture estimates</a>, and <a href=\"/technology\">technology milestones</a> so incubators and cake keep up with your chain.</p><h2>5. Chain breeding for legendaries</h2><p>Endgame targets often need multiple eggs. Use the <a href=\"/palworld-chain-breeding\">chain breeding tool</a> to see shortest paths from Pals you already own.</p><p><strong>Pro tip:</strong> Bookmark combo URLs you reuse and share them with co-op teammates instead of re-testing pairs every session.</p>",
+        body_html: "<p>The best Palworld breeding combo is not always the rarest pair—it is the route that gets your target child with the least farming, cake, and failed eggs. This guide explains how to rank combos using our <a href=\"/palworld-breeding-calculator\">breeding calculator</a> and combo pages.</p><h2>1. Check special combinations first</h2><p>Some parent pairs override breeding power and always produce a fixed child. These are listed as <strong>Special combination</strong> in results. Always verify these before long power-average experiments.</p><h2>2. Compare power-average fallbacks</h2><p>When no special pair exists, the child is chosen by breeding power average. Pick parent pairs with smaller distance values and easier captures.</p><h2>3. Use reverse lookup for target-first planning</h2><p>Select your goal Pal (Anubis, Jetragon, Lyleen) in the reverse calculator and compare every valid route. Open <a href=\"/combos/anubis\">Anubis combo hub</a> or the <a href=\"/pal/jetragon\">Jetragon Pal page</a> for quick links.</p><h2>4. Stack capture + map + tech</h2><p>Pair combo planning with <a href=\"/map\">map locations</a>, <a href=\"/palworld-capture-rate-calculator\">capture estimates</a>, and <a href=\"/technology\">technology milestones</a> so incubators and cake keep up with your chain.</p><h2>5. Chain breeding for legendaries</h2><p>Endgame targets often need multiple eggs. Use the <a href=\"/palworld-chain-breeding\">chain breeding tool</a> to check executable routes from your selected owned species.</p><p><strong>Pro tip:</strong> Bookmark combo URLs you reuse and share them with co-op teammates instead of re-testing pairs every session.</p>",
     },
     GuidePage {
         path: "/guides/capture-rate-explained",
@@ -282,7 +283,7 @@ const GUIDE_PAGES: [GuidePage; 11] = [
         title: "Fastest Anubis Breed Route in Palworld - Parent Combos",
         description: seo_copy::GUIDE_FASTEST_ANUBIS,
         heading: "Fastest Anubis Breed Routes",
-        body_html: "<p>Anubis is one of the best Palworld breeding investments for handiwork and combat. This page focuses on speed: the fewest captures and eggs to hatch Anubis on your save.</p><h2>Step 1: Reverse lookup</h2><p>Open the <a href=\"/palworld-breeding-calculator\">breeding calculator</a>, set Anubis as target child, and export every parent pair. Open <a href=\"/combos/anubis\">Anubis combo hub</a> for bookmarkable URLs.</p><h2>Step 2: Sort by capture difficulty</h2><p>Using <a href=\"/palworld-capture-rate-calculator\">capture estimates</a>, farm the easiest parents first—even if the chain has one extra egg.</p><h2>Step 3: Special pairs win</h2><p>If any pair shows <strong>Special combination</strong>, test it before power-average alternatives. Open specific <a href=\"/combo-pages\">combo pages</a> to document results.</p><h2>Step 4: Chain tool check</h2><p>Run <a href=\"/palworld-chain-breeding?goal=Anubis\">chain breeding to Anubis</a> from Lamball or your most common Pal to see if a shorter multi-step path exists.</p><p>Full walkthrough: <a href=\"/guides/how-to-breed-anubis\">how to breed Anubis guide</a>. Compare roles in <a href=\"/anubis-vs-lyleen\">Anubis vs Lyleen</a>.</p>",
+        body_html: "<p>Anubis is one of the best Palworld breeding investments for handiwork and combat. This page focuses on speed: the fewest captures and eggs to hatch Anubis on your save.</p><h2>Step 1: Reverse lookup</h2><p>Open the <a href=\"/palworld-breeding-calculator\">breeding calculator</a>, set Anubis as target child, and export every parent pair. Open <a href=\"/combos/anubis\">Anubis combo hub</a> for bookmarkable URLs.</p><h2>Step 2: Sort by capture difficulty</h2><p>Using <a href=\"/palworld-capture-rate-calculator\">capture estimates</a>, farm the easiest parents first—even if the chain has one extra egg.</p><h2>Step 3: Special pairs win</h2><p>If any pair shows <strong>Special combination</strong>, test it before power-average alternatives. Open specific <a href=\"/combo-pages\">combo pages</a> to document results.</p><h2>Step 4: Chain tool check</h2><p>Run <a href=\"/palworld-chain-breeding?goal=Anubis\">chain breeding to Anubis</a> from Lamball or your most common Pal to check whether an executable multi-step path exists.</p><p>Full walkthrough: <a href=\"/guides/how-to-breed-anubis\">how to breed Anubis guide</a>. Compare roles in <a href=\"/anubis-vs-lyleen\">Anubis vs Lyleen</a>.</p>",
     },
     GuidePage {
         path: "/legendary-breeding",
@@ -381,7 +382,7 @@ async fn main() {
     );
     let root_static_cache = SetResponseHeaderLayer::if_not_present(
         header::CACHE_CONTROL,
-        HeaderValue::from_static("public, max-age=604800, immutable"),
+        HeaderValue::from_static("public, max-age=0, must-revalidate"),
     );
     let app_js_cache = SetResponseHeaderLayer::if_not_present(
         header::CACHE_CONTROL,
@@ -513,6 +514,11 @@ pub(crate) fn combinations_for_target(state: &AppState, target: &str) -> Vec<Pai
 fn build_app_state(index_template: String, base_url: String) -> AppState {
     let pals = data::load_pals();
     let special_combos = data::load_special_combos();
+    for (parents, child) in &special_combos {
+        for name in parents.split('|').chain(std::iter::once(child.as_str())) {
+            assert!(pals.iter().any(|pal| pal.name == name), "Unknown Pal in special combination: {name}");
+        }
+    }
     let started = Instant::now();
 
     let mut pals_by_name = HashMap::with_capacity(pals.len());
@@ -681,7 +687,7 @@ fn build_reverse_index(
 ) -> HashMap<String, Vec<PairResult>> {
     let mut reverse: HashMap<String, Vec<PairResult>> = HashMap::new();
     for i in 0..pals.len() {
-        for j in (i + 1)..pals.len() {
+        for j in i..pals.len() {
             let Some((child_idx, method)) =
                 child_for_pair(pals, pals_by_name, power_order, special_combos, i, j)
             else {
@@ -715,6 +721,9 @@ fn child_for_pair(
         let child_idx = *pals_by_name.get(&child_key)?;
         return Some((child_idx, "Special combination".to_string()));
     }
+    if i == j {
+        return Some((i, "Same species".to_string()));
+    }
     let target_power = (pals[i].power + pals[j].power) / 2;
     let child_idx = nearest_pal_index(pals, power_order, target_power);
     Some((
@@ -738,6 +747,7 @@ async fn api_combinations(
 struct ChainQuery {
     owned: String,
     goal: String,
+    also_owned: Option<String>,
 }
 
 async fn api_chain(
@@ -750,14 +760,28 @@ async fn api_chain(
         return Err((StatusCode::BAD_REQUEST, "owned and goal are required".to_string()));
     }
 
+    if find_pal_by_name(&state.pals, &owned).is_none()
+        || find_pal_by_name(&state.pals, &goal).is_none()
+    {
+        return Err((StatusCode::BAD_REQUEST, "Unknown owned or goal Pal".to_string()));
+    }
+    let mut additional_owned = Vec::new();
+    for name in query.also_owned.as_deref().unwrap_or("").split(',').map(str::trim).filter(|s| !s.is_empty()) {
+        let pal = find_pal_by_name(&state.pals, name)
+            .ok_or_else(|| (StatusCode::BAD_REQUEST, format!("Unknown owned Pal: {name}")))?;
+        if !additional_owned.contains(&pal.name) {
+            additional_owned.push(pal.name.clone());
+        }
+    }
+    let roster = additional_owned.clone();
     let owned_check = owned.clone();
     let goal_check = goal.clone();
     let work = tokio::task::spawn_blocking(move || {
-        let steps = chain::find_breeding_chain(&state, &owned_check, &goal_check, 15);
+        let steps = chain::find_breeding_chain(&state, &owned_check, &goal_check, 15, &additional_owned);
         let hint = steps
             .as_ref()
             .is_none()
-            .then(|| chain_failure_hint(&state, &owned_check, &goal_check))
+            .then(|| if additional_owned.is_empty() { chain_failure_hint(&state, &owned_check, &goal_check) } else { None })
             .flatten();
         let partial = steps.as_ref().is_none().then(|| {
             chain::direct_parent_combo_for_owned(&state, &owned_check, &goal_check).map(|pair| {
@@ -799,6 +823,7 @@ async fn api_chain(
     match steps {
         Some(steps) => Ok(Json(serde_json::json!({
             "owned": owned,
+            "also_owned": roster,
             "goal": goal,
             "found": true,
             "steps": steps,
@@ -806,6 +831,7 @@ async fn api_chain(
         }))),
         None => Ok(Json(serde_json::json!({
             "owned": owned,
+            "also_owned": roster,
             "goal": goal,
             "found": false,
             "steps": [],
@@ -813,7 +839,7 @@ async fn api_chain(
             "hint": hint,
             "partial": partial,
             "message": hint.clone().unwrap_or_else(|| format!(
-                "No breeding chain found from {owned} to {goal} within 15 steps. Try a different owned Pal or use reverse lookup."
+                "No executable breeding chain found from {owned} to {goal} within planner limits (15 steps and 8,000 inventories). Only selected species are treated as owned. Add owned partners or acquire a partner from reverse lookup first."
             ))
         }))),
     }
@@ -854,23 +880,21 @@ async fn api_capture(
     State(state): State<AppState>,
     Path(target): Path<String>,
 ) -> Result<Json<CaptureResponse>, (StatusCode, String)> {
-    let target_pal = state
-        .pals
-        .iter()
-        .find(|pal| pal.name == target)
+    let target_pal = find_pal_by_name(&state.pals, &target)
         .cloned()
         .ok_or_else(|| (StatusCode::BAD_REQUEST, "Unknown target pal".to_string()))?;
 
-    let estimate_percent = ((1600 - target_pal.power) as f32 / 16.0).round() as i32;
-    let estimate_percent = estimate_percent.clamp(4, 95);
+    let difficulty_score = ((1600 - target_pal.power) as f32 / 16.0).round() as i32;
+    let difficulty_score = difficulty_score.clamp(4, 95);
 
     let mut easier_targets = state.pals.clone();
-    easier_targets.sort_by_key(|pal| pal.power);
+    easier_targets.sort_by_key(|pal| std::cmp::Reverse(pal.power));
     easier_targets.truncate(5);
 
     Ok(Json(CaptureResponse {
         target: target_pal.name,
-        estimate_percent,
+        difficulty_score,
+        basis: "Breeding-power heuristic only; not an in-game capture probability",
         easier_targets,
     }))
 }
@@ -2577,5 +2601,64 @@ mod seo_meta_tests {
             assert!(title.chars().count() <= 60, "{title}");
             assert_eq!(canonical_combo_slugs(a, b), canonical_combo_slugs(b, a));
         }
+    }
+}
+
+
+#[cfg(test)]
+mod breeding_regression_tests {
+    use super::*;
+
+    fn fixture() -> AppState {
+        build_app_state(include_str!("../index.html").to_string(), "https://example.com".into())
+    }
+
+    #[test]
+    fn same_species_pairs_are_preserved_in_forward_and_reverse_lookup() {
+        let state = fixture();
+        for pal in &state.pals {
+            let result = calculate_child(&state, &pal.name, &pal.name).unwrap();
+            assert_eq!(result.child.name, pal.name);
+            assert!(combinations_for_target(&state, &pal.name).iter().any(|pair| pair.a == pal.name && pair.b == pal.name));
+        }
+    }
+
+    #[test]
+    fn reverse_pairs_match_forward_results_in_either_parent_order() {
+        let state = fixture();
+        for (child, pairs) in state.reverse_combos.iter() {
+            for pair in pairs {
+                assert_eq!(calculate_child(&state, &pair.a, &pair.b).unwrap().child.name, *child);
+                assert_eq!(calculate_child(&state, &pair.b, &pair.a).unwrap().child.name, *child);
+            }
+        }
+    }
+
+    #[test]
+    fn shipped_special_pairs_override_power_average() {
+        let state = fixture();
+        for (parents, child) in &state.special_combos {
+            let (a, b) = parents.split_once('|').unwrap();
+            assert_eq!(calculate_child(&state, a, b).unwrap().child.name, *child);
+        }
+    }
+
+    #[tokio::test]
+    async fn capture_api_labels_heuristic_and_accepts_normalized_names() {
+        let state = fixture();
+        let response = api_capture(State(state), Path("lamball".to_string())).await.unwrap().0;
+        assert_eq!(response.target, "Lamball");
+        assert!(response.basis.contains("not an in-game capture probability"));
+        assert!((4..=95).contains(&response.difficulty_score));
+        assert!(response.easier_targets.windows(2).all(|pair| pair[0].power >= pair[1].power));
+    }
+
+    #[tokio::test]
+    async fn chain_api_rejects_unknown_names() {
+        let state = fixture();
+        let result = api_chain(State(state), Query(ChainQuery {
+            owned: "Unknown".into(), goal: "Lamball".into(), also_owned: None,
+        })).await;
+        assert_eq!(result.unwrap_err().0, StatusCode::BAD_REQUEST);
     }
 }

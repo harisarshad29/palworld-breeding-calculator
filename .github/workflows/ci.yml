@@ -1,0 +1,25 @@
+name: Check calculator
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check frontend syntax
+        run: node --check app.js
+      - name: Run regression tests
+        run: cargo test --locked
+      - name: Check release build
+        run: cargo build --release --locked

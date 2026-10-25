@@ -23,6 +23,7 @@ const arenaCard = document.getElementById("arenaCard");
 const reverseCard = document.getElementById("reverseCard");
 const chainCard = document.getElementById("chainCard");
 const chainOwnedSelect = document.getElementById("chainOwned");
+const chainAdditionalSelect = document.getElementById("chainAdditional");
 const chainGoalSelect = document.getElementById("chainGoal");
 const findChainBtn = document.getElementById("findChainBtn");
 const chainResultDiv = document.getElementById("chainResult");
@@ -72,12 +73,12 @@ const viewMeta = {
   },
   capture: {
     badge: "Capture View",
-    subtitle: "Use capture estimates and easier targets to plan parent farming efficiently.",
+    subtitle: "Compare a breeding-power difficulty heuristic. This is not an in-game capture probability.",
     focusCardId: "reverseCard"
   },
   chain: {
     badge: "Chain Breeder",
-    subtitle: "Plan multi-step egg routes from a Pal you own to any legendary or rare target.",
+    subtitle: "Check routes using your selected owned roster. Missing partner species must be acquired first.",
     focusCardId: "chainCard"
   }
 };
@@ -590,7 +591,7 @@ async function renderDatabasePanel(view) {
 
   if (view === "chain") {
     databasePanelTitle.textContent = "Chain Breeding";
-    databasePanelBody.innerHTML = `Plan routes from common Pals to legendaries. Example: <a href="/palworld-chain-breeding?owned=Lamball&goal=Jetragon">Lamball → Jetragon</a>.`;
+    databasePanelBody.innerHTML = `Only the species selected in your owned roster are treated as available. Every step requires both parent species to be available. Use reverse lookup to find partners to acquire first; the bounded planner does not guarantee a route.`;
     return;
   }
 
@@ -598,12 +599,13 @@ async function renderDatabasePanel(view) {
     const targetName = targetChildSelect.value || appData.pals[0].name;
     const capture = await apiFetch(`/api/capture/${encodeURIComponent(targetName)}`);
     const list = capture.easier_targets.map((pal) => `<li>${pal.name} (${pal.power})</li>`).join("");
-    databasePanelTitle.textContent = "Capture Rate";
+    databasePanelTitle.textContent = "Capture Difficulty Heuristic";
     databasePanelBody.innerHTML = `
       <div class="database-caption">
-        Estimated capture chance for <strong>${capture.target}</strong>: <strong>${capture.estimate_percent}%</strong>
+        Breeding-power difficulty score for <strong>${escapeHtml(capture.target)}</strong>: <strong>${capture.difficulty_score}/100</strong> (higher means harder in this heuristic).
       </div>
-      <div class="database-caption">Easier capture targets in this roster:</div>
+      <p class="muted">This score uses breeding power only. It is not a capture probability and does not account for spheres, health, level, or settings.</p>
+      <div class="database-caption">Lower-score species in this roster (not verified capture rates):</div>
       <ul class="database-list">${list}</ul>
     `;
     return;
@@ -717,7 +719,9 @@ async function renderChainBreeding() {
   chainResultDiv.innerHTML = `<span class="muted">Finding chain from ${escapeHtml(owned)} to ${escapeHtml(goal)}…</span>`;
   if (findChainBtn) findChainBtn.disabled = true;
 
+  const alsoOwned = Array.from(chainAdditionalSelect?.selectedOptions || []).map((option) => option.value);
   const params = new URLSearchParams({ owned, goal });
+  if (alsoOwned.length) params.set("also_owned", alsoOwned.join(","));
   const shareUrl = `${globalThis.location.pathname}?${params}`;
   if (globalThis.location.search !== `?${params}`) {
     globalThis.history.replaceState({}, "", shareUrl);
@@ -731,7 +735,7 @@ async function renderChainBreeding() {
       const msg =
         data.hint ||
         data.message ||
-        `No breeding chain found from ${owned} to ${goal} within 15 steps. Try reverse lookup or a closer goal.`;
+        `No executable route found within planner limits. Add other owned species or use reverse lookup to acquire a partner.`;
       let extra = "";
       if (data.partial?.missing_partner) {
         const p = data.partial;
@@ -755,7 +759,7 @@ async function renderChainBreeding() {
       return;
     }
     if (!steps.length) {
-      chainResultDiv.innerHTML = `<span class="muted">No intermediate steps — you can breed <strong>${escapeHtml(goal)}</strong> directly from <strong>${escapeHtml(owned)}</strong> (check reverse lookup).</span>`;
+      chainResultDiv.innerHTML = `<span class="muted">Your selected roster already includes <strong>${escapeHtml(goal)}</strong> — no breeding steps needed.</span>`;
       return;
     }
 
@@ -1002,6 +1006,12 @@ async function bootstrap() {
   if (chainGoalSelect) {
     populateSelect(chainGoalSelect);
   }
+  if (chainAdditionalSelect) {
+    populateSelect(chainAdditionalSelect);
+    for (const option of chainAdditionalSelect.options) option.selected = false;
+    const savedRoster = new URLSearchParams(globalThis.location.search).get("also_owned")?.split(",") || [];
+    for (const option of chainAdditionalSelect.options) option.selected = savedRoster.includes(option.value);
+  }
 
   // A filled <select> always reports the first option, so an empty-value
   // check never applied these defaults and both parents stayed the same Pal.
@@ -1116,3 +1126,4 @@ try {
       '<span class="muted">Server not running. Double-click <strong>START-SERVER.bat</strong> in the project folder.</span>';
   }
 }
+
