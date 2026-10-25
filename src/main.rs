@@ -1267,7 +1267,7 @@ async fn not_found_handler() -> StatusCode {
 
 async fn robots_txt(State(state): State<AppState>) -> impl IntoResponse {
     let body = format!(
-        "User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: {}/sitemap.xml\n",
+        "User-agent: *\nAllow: /\n\nSitemap: {}/sitemap.xml\n",
         state.base_url
     );
     ([(axum::http::header::CONTENT_TYPE, "text/plain; charset=utf-8")], body)
