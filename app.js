@@ -562,7 +562,7 @@ async function renderDatabasePanel(view) {
       .map((tech) => `<tr><td>${tech.level}</td><td>${tech.name}</td><td>${tech.cost}</td></tr>`)
       .join("");
     databasePanelBody.innerHTML = `
-      <div class="database-caption">Starter technology milestones for progression.</div>
+      <div class="database-caption">Breeding, egg and sphere unlocks for Palworld 1.0.5 (level cap 80).</div>
       <table class="database-table">
         <thead><tr><th>Level</th><th>Technology</th><th>Cost</th></tr></thead>
         <tbody>${rows}</tbody>

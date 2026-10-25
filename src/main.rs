@@ -100,6 +100,11 @@ struct CaptureResponse {
 /// Primary calculator URL for consolidations and internal links.
 const PRIMARY_CALCULATOR_PATH: &str = "/palworld-breeding-calculator";
 
+/// Game version the breeding data was cross-checked against (see data/SOURCES.md).
+pub(crate) const GAME_VERSION: &str = "1.0.5";
+/// Date data and page copy were last reviewed (ISO 8601); also the sitemap lastmod.
+pub(crate) const DATA_UPDATED: &str = "2026-10-25";
+
 /// High-value breed targets for hub pages (how-to-breed + combos index).
 const PRIORITY_BREED_TARGETS: &[&str] = &[
     "Anubis", "Jetragon", "Frostallion", "Necromus", "Paladius", "Lyleen", "Blazamut", "Suzaku",
@@ -154,7 +159,7 @@ struct GuidePage {
 const SEO_PAGES: [SeoPage; 11] = [
     SeoPage {
         path: "/",
-        title: "Palworld Breeding Calculator – Combos & Reverse Lookup",
+        title: "Palworld Breeding Calculator 1.0 – Combos & Reverse Lookup",
         meta_description: "Free Palworld breeding calculator with parent pair testing, reverse lookup for any Pal, combo pages, and guides for Anubis, Jetragon, and legendaries.",
         h1: "Palworld Breeding Calculator",
         badge: "Home",
@@ -174,7 +179,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
     SeoPage {
         path: "/pals",
-        title: "Palworld Pals Database - Powers and References",
+        title: "Palworld Pals Database 1.0 - Breeding Powers",
         meta_description: "Browse Palworld Pals by breeding power, open a profile for parent combos and map notes, then send that Pal into the breeding calculator when you are ready.",
         h1: "Palworld Pals Database",
         badge: "Pals Database",
@@ -204,7 +209,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
     SeoPage {
         path: "/technology",
-        title: "Palworld Technology Tree Guide - Key Milestones",
+        title: "Palworld Technology Tree 1.0 - Breeding Unlock Levels",
         meta_description: "Track Palworld technology levels for the Breeding Farm, Egg Incubator, Pal Spheres, and production tools you need before starting a breeding chain on your save.",
         h1: "Palworld Technology Milestones",
         badge: "Technology Guide",
@@ -224,7 +229,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
     SeoPage {
         path: "/palworld-breeding-calculator",
-        title: "Palworld Breeding Calculator Online – Reverse Lookup",
+        title: "Palworld Breeding Calculator 1.0 Online – Reverse Lookup",
         meta_description: "Online Palworld breeding calculator for parent-pair tests, reverse lookup, and legendary combo checks, with results to verify before using cake on mobile.",
         h1: "Palworld Breeding Calculator Online",
         badge: "Online Calculator",
@@ -270,70 +275,70 @@ const GUIDE_PAGES: [GuidePage; 11] = [
         title: "How to Breed Anubis in Palworld - Fast Parent Paths",
         description: seo_copy::GUIDE_HOW_TO_BREED_ANUBIS,
         heading: "How to Breed Anubis in Palworld",
-        body_html: "<p>Start with <a href=\"/combos/anubis\">Anubis reverse lookup</a> and choose parents already available in your save. The imported snapshot includes Kitsun Noct + Eidrolon Ignis → Anubis; Anubis + Anubis also preserves the species.</p><h2>Choose a practical pair</h2><p>Confirm both parent species in the calculator, supply suitable male and female parents, and compare the resources needed to obtain them. A valid pair is not automatically the fastest route.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>Start with <a href=\"/combos/anubis\">Anubis reverse lookup</a> and choose parents already available in your save. The imported snapshot includes Kitsun Noct + Eidrolon Ignis → Anubis; Anubis + Anubis also preserves the species.</p><h2>Choose a practical pair</h2><p>Confirm both parent species in the calculator, supply suitable male and female parents, and compare the resources needed to obtain them. A valid pair is not automatically the fastest route.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/guides/best-breeding-combos",
         title: "Best Palworld Breeding Combos - Practical Combo Guide",
         description: seo_copy::GUIDE_BEST_COMBOS,
         heading: "Best Breeding Combos Strategy",
-        body_html: "<p>The best pair depends on your owned roster and goal. Start with reverse lookup, choose a pair you can supply, and verify any displayed gender requirement.</p><h2>Plan from owned species</h2><p>Add your available species to the chain planner. Each returned step requires both parents to be available first. If the bounded search finds no route, use reverse lookup to identify a partner to acquire.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>The best pair depends on your owned roster and goal. Start with reverse lookup, choose a pair you can supply, and verify any displayed gender requirement.</p><h2>Plan from owned species</h2><p>Add your available species to the chain planner. Each returned step requires both parents to be available first. If the bounded search finds no route, use reverse lookup to identify a partner to acquire.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/guides/capture-rate-explained",
         title: "Palworld Capture Rate Explained - Better Catch Planning",
         description: seo_copy::GUIDE_CAPTURE_RATE,
         heading: "Capture Rate Planning for Breeding",
-        body_html: "<p>This website does not calculate actual capture probability. Its score is a breeding-power heuristic, which omits sphere type, health, levels, status effects, and world settings.</p><h2>Check in the game</h2><p>Use the capture information shown in your current game. Breeding power is not a substitute for a capture formula or a reliable combat ranking.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>This website does not calculate actual capture probability. Its score is a breeding-power heuristic, which omits sphere type, health, levels, status effects, and world settings.</p><h2>Check in the game</h2><p>Use the capture information shown in your current game. Breeding power is not a substitute for a capture formula or a reliable combat ranking.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/fastest-anubis-breed",
         title: "Fastest Anubis Breed Route in Palworld - Parent Combos",
         description: seo_copy::GUIDE_FASTEST_ANUBIS,
         heading: "Fastest Anubis Breed Routes",
-        body_html: "<p>No single Anubis route is fastest for every save. Use <a href=\"/combos/anubis\">the current imported Anubis pairs</a>, choose parents you already own, and account for capture and incubation time.</p><h2>A source-backed example</h2><p>Kitsun Noct + Eidrolon Ignis produces Anubis in the pinned PalCalc snapshot. Confirm the pair in the calculator and check compatibility with your game version before breeding.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>No single Anubis route is fastest for every save. Use <a href=\"/combos/anubis\">the current imported Anubis pairs</a>, choose parents you already own, and account for capture and incubation time.</p><h2>A source-backed example</h2><p>Kitsun Noct + Eidrolon Ignis produces Anubis in the pinned PalCalc snapshot. Confirm the pair in the calculator and check compatibility with your game version before breeding.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/legendary-breeding",
         title: "Legendary Pal Breeding Guide - Palworld Routes",
         description: seo_copy::GUIDE_LEGENDARY,
         heading: "Legendary Pal Breeding Guide",
-        body_html: "<p>Do not assume a legendary can be reached by crossing ordinary parents. The source snapshot restricts Jetragon, Frostallion, Paladius, and Necromus to same-species pairs.</p><h2>Acquire the species first</h2><p>For example, Jetragon + Jetragon produces Jetragon. Reverse lookup lists only supported pairs. The owned-roster planner will not invent a route when prerequisite species are unavailable.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>Do not assume a legendary can be reached by crossing ordinary parents. The source snapshot restricts Jetragon, Frostallion, Paladius, and Necromus to same-species pairs.</p><h2>Acquire the species first</h2><p>For example, Jetragon + Jetragon produces Jetragon. Reverse lookup lists only supported pairs. The owned-roster planner will not invent a route when prerequisite species are unavailable.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/best-early-game-breeding-combo",
         title: "Best Early Game Breeding Combos in Palworld",
         description: seo_copy::GUIDE_EARLY_GAME,
         heading: "Best Early Game Breeding Combos",
-        body_html: "<p>Choose an early route from the species you already own. Select your target in reverse lookup and compare the listed parents with your Pal Box.</p><h2>Avoid outdated pair lists</h2><p>Breeding data can change between game versions. This tool identifies its source snapshot and import date; check the displayed outcome rather than assuming an older guide still applies.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>Choose an early route from the species you already own. Select your target in reverse lookup and compare the listed parents with your Pal Box.</p><h2>Avoid outdated pair lists</h2><p>Breeding data can change between game versions. This tool identifies its source snapshot and import date; check the displayed outcome rather than assuming an older guide still applies.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/egg-incubation-guide",
         title: "Palworld Egg Incubation Guide - Hatch Time & Breeding Setup",
         description: seo_copy::GUIDE_EGG_INCUBATION,
         heading: "Egg Incubation Guide",
-        body_html: "<p>Confirm a supported male/female parent pair and keep the required cake in the Breeding Farm chest. Once an egg is produced, use the incubator available in your current game.</p><h2>Check your settings</h2><p>Incubation time and requirements depend on the current game and world configuration. This calculator predicts species; it does not calculate egg timers or inherit passive traits.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>Confirm a supported male/female parent pair and keep the required cake in the Breeding Farm chest. Once an egg is produced, use the incubator available in your current game.</p><h2>Check your settings</h2><p>Incubation time and requirements depend on the current game and world configuration. This calculator predicts species; it does not calculate egg timers or inherit passive traits.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/best-mining-pal-breeding",
         title: "Best Mining Pal Breeding - Palworld Work Pal Routes",
         description: seo_copy::GUIDE_MINING,
         heading: "Best Mining Pal Breeding",
-        body_html: "<p>Choose a mining species suited to your base, then open its reverse lookup. <a href=\"/combos/anubis\">Anubis</a> and <a href=\"/combos/digtoise\">Digtoise</a> have dedicated combination pages.</p><h2>Separate species from traits</h2><p>The calculator predicts the child species, not work suitability changes, passive inheritance, or individual stats. Inspect those properties in your game before choosing a long-term worker.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>Choose a mining species suited to your base, then open its reverse lookup. <a href=\"/combos/anubis\">Anubis</a> and <a href=\"/combos/digtoise\">Digtoise</a> have dedicated combination pages.</p><h2>Separate species from traits</h2><p>The calculator predicts the child species, not work suitability changes, passive inheritance, or individual stats. Inspect those properties in your game before choosing a long-term worker.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/fastest-flying-mount-breeding",
         title: "Fastest Flying Mount Breeding - Jetragon & Legendary Routes",
         description: seo_copy::GUIDE_FLYING_MOUNT,
         heading: "Fastest Flying Mount Breeding",
-        body_html: "<p>Choose a flying species you can acquire and use reverse lookup to inspect its pairs. Do not treat Jetragon as a target reachable from arbitrary starting species: the snapshot supports Jetragon + Jetragon.</p><h2>Compare available parents</h2><p>The route planner uses your selected roster and does not estimate travel speed, capture time, or incubation time. A short breeding chain is not a guaranteed fastest mount unlock.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>Choose a flying species you can acquire and use reverse lookup to inspect its pairs. Do not treat Jetragon as a target reachable from arbitrary starting species: the snapshot supports Jetragon + Jetragon.</p><h2>Compare available parents</h2><p>The route planner uses your selected roster and does not estimate travel speed, capture time, or incubation time. A short breeding chain is not a guaranteed fastest mount unlock.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/anubis-vs-lyleen",
         title: "Anubis vs Lyleen in Palworld - Breeding & Role Comparison",
         description: seo_copy::GUIDE_ANUBIS_VS_LYLEEN,
         heading: "Anubis vs Lyleen",
-        body_html: "<p>Choose your target according to your base needs and the species already available in your save. Compare <a href=\"/combos/anubis\">Anubis pairs</a> with <a href=\"/combos/lyleen\">Lyleen pairs</a>.</p><h2>Check restrictions first</h2><p>The pinned snapshot has several Anubis routes, while Lyleen requires Lyleen + Lyleen. These are species outcomes; the tool does not compare passive traits, combat performance, or individual stats.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. The source does not declare a game build.</p>",
+        body_html: "<p>Choose your target according to your base needs and the species already available in your save. Compare <a href=\"/combos/anubis\">Anubis pairs</a> with <a href=\"/combos/lyleen\">Lyleen pairs</a>.</p><h2>Check restrictions first</h2><p>The pinned snapshot has several Anubis routes, while Lyleen requires Lyleen + Lyleen. These are species outcomes; the tool does not compare passive traits, combat performance, or individual stats.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/guides/breeding-not-working",
@@ -848,7 +853,7 @@ fn chain_failure_hint(state: &AppState, owned: &str, goal: &str) -> Option<Strin
     }
 
     let gap = goal_pal.power.saturating_sub(owned_pal.power);
-    if gap > 100 {
+    if gap > 200 {
         return Some(format!(
             "{owned} (breeding power {}) is far below {goal} (power {}). Pick an owned Pal closer to your goal, or use reverse lookup for parent pairs."
             ,
@@ -868,7 +873,8 @@ async fn api_capture(
         .cloned()
         .ok_or_else(|| (StatusCode::BAD_REQUEST, "Unknown target pal".to_string()))?;
 
-    let difficulty_score = ((1600 - target_pal.power) as f32 / 16.0).round() as i32;
+    // Breeding power runs from 20 (rarest) to about 3,100 (most common) since Palworld 1.0.
+    let difficulty_score = ((3200 - target_pal.power) as f32 / 32.0).round() as i32;
     let difficulty_score = difficulty_score.clamp(4, 95);
 
     let mut easier_targets = state.pals.clone();
@@ -1247,7 +1253,7 @@ async fn robots_txt(State(state): State<AppState>) -> impl IntoResponse {
 
 async fn sitemap_index(State(state): State<AppState>) -> impl IntoResponse {
     let base = &state.base_url;
-    let lastmod = chrono_like_today();
+    let lastmod = DATA_UPDATED.to_string();
     let body = format!(
         r#"<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -1263,7 +1269,7 @@ async fn sitemap_index(State(state): State<AppState>) -> impl IntoResponse {
 }
 
 async fn sitemap_pages(State(state): State<AppState>) -> impl IntoResponse {
-    let lastmod = chrono_like_today();
+    let lastmod = DATA_UPDATED.to_string();
     let mut urls = String::new();
     for page in SEO_PAGES {
         if page.path == "/breeding-calculator" {
@@ -1293,7 +1299,7 @@ async fn sitemap_pages(State(state): State<AppState>) -> impl IntoResponse {
 }
 
 async fn sitemap_hubs(State(state): State<AppState>) -> impl IntoResponse {
-    let lastmod = chrono_like_today();
+    let lastmod = DATA_UPDATED.to_string();
     let mut urls = String::new();
     for name in PRIORITY_BREED_TARGETS {
         let slug = pal_slug(name);
@@ -1314,7 +1320,7 @@ async fn sitemap_hubs(State(state): State<AppState>) -> impl IntoResponse {
 }
 
 async fn sitemap_guides(State(state): State<AppState>) -> impl IntoResponse {
-    let lastmod = chrono_like_today();
+    let lastmod = DATA_UPDATED.to_string();
     let mut urls = String::new();
     for page in GUIDE_PAGES {
         push_url(&mut urls, &format!("{}{}", state.base_url, page.path), &lastmod, "0.85");
@@ -1323,7 +1329,7 @@ async fn sitemap_guides(State(state): State<AppState>) -> impl IntoResponse {
 }
 
 async fn sitemap_pals(State(state): State<AppState>) -> impl IntoResponse {
-    let lastmod = chrono_like_today();
+    let lastmod = DATA_UPDATED.to_string();
     let mut urls = String::new();
     for pal in &state.pals {
         let slug = pal_slug(&pal.name);
@@ -1338,7 +1344,7 @@ async fn sitemap_pals(State(state): State<AppState>) -> impl IntoResponse {
 }
 
 async fn sitemap_combos(State(state): State<AppState>) -> impl IntoResponse {
-    let lastmod = chrono_like_today();
+    let lastmod = DATA_UPDATED.to_string();
     let mut urls = String::new();
     let mut keys: Vec<_> = state.special_combos.keys().cloned().collect();
     keys.sort();
@@ -1401,29 +1407,6 @@ fn xml_response(body: String) -> impl IntoResponse {
         ],
         body,
     )
-}
-
-fn chrono_like_today() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let seconds = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_secs())
-        .unwrap_or(0);
-    // Approximate UTC day without external chrono dependency.
-    // Good enough for sitemap freshness metadata.
-    let days = seconds / 86_400;
-    // 1970-01-01 + days (rough conversion by civil algorithm)
-    let z = days as i64 + 719468;
-    let era = if z >= 0 { z } else { z - 146096 } / 146097;
-    let doe = z - era * 146097;
-    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
-    let y = yoe + era * 400;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let d = doy - (153 * mp + 2) / 5 + 1;
-    let m = mp + if mp < 10 { 3 } else { -9 };
-    let year = y + if m <= 2 { 1 } else { 0 };
-    format!("{year:04}-{m:02}-{d:02}")
 }
 
 fn google_verification_meta_html() -> String {
@@ -1692,9 +1675,9 @@ fn combo_table_rows(combos: &[(String, String, String)], limit: usize) -> String
 }
 
 fn pal_tier_note(power: i32) -> &'static str {
-    if power <= 350 {
+    if power <= 300 {
         "high-priority rare / legendary tier"
-    } else if power <= 800 {
+    } else if power <= 1500 {
         "mid-game breeding target"
     } else {
         "often used as an accessible parent in chains"
@@ -1906,6 +1889,8 @@ fn build_guide_page_html(base_url: &str, page: GuidePage) -> String {
         "@type":"Article",
         "headline":"{title}",
         "description":"{description}",
+        "dateModified":"{DATA_UPDATED}",
+        "author":{{"@type":"Organization","name":"Palworld Breeding Calculator","url":"{base_url}/"}},
         "mainEntityOfPage":"{page_url}"
       }}
     </script>
@@ -1927,6 +1912,7 @@ fn build_guide_page_html(base_url: &str, page: GuidePage) -> String {
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/palworld-breeding-calculator">Calculator</a> / {heading}</nav>
       <div class="card">
         <h1>{heading}</h1>
+        <p class="muted">Updated {DATA_UPDATED}. Breeding data cross-checked against Palworld {GAME_VERSION}.</p>
         {body_html}
         <div class="links">
           <a href="/palworld-breeding-calculator">Breeding Calculator</a>
@@ -2046,6 +2032,8 @@ fn build_pal_page_html(
         "@type":"Article",
         "headline":"{title}",
         "description":"{description}",
+        "dateModified":"{DATA_UPDATED}",
+        "author":{{"@type":"Organization","name":"Palworld Breeding Calculator","url":"{base_url}/"}},
         "mainEntityOfPage":"{page_url}"
       }}
     </script>
@@ -2067,6 +2055,7 @@ fn build_pal_page_html(
       <div class="crumbs"><a href="/">Home</a> / <a href="/pals">Pals</a> / {pal_name}</div>
       <div class="card">
         <h1>{pal_name} in Palworld</h1>
+        <p class="muted">Breeding data cross-checked against Palworld {GAME_VERSION} (updated {DATA_UPDATED}).</p>
         <p><strong>Breeding Power:</strong> {power}</p>
         <p><strong>Map Area:</strong> {area} | <strong>Coordinates:</strong> {coords}</p>
         <p>{dynamic_summary}</p>
@@ -2458,12 +2447,8 @@ fn combinations_section_html(state: &AppState, target: &str) -> String {
 }
 
 fn legendary_pal_links_html(state: &AppState) -> String {
-    let legends: Vec<_> = state
-        .pals
-        .iter()
-        .filter(|p| p.power <= 120)
-        .take(12)
-        .collect();
+    let mut legends: Vec<_> = state.pals.iter().filter(|p| p.power <= 200).collect();
+    legends.sort_by_key(|p| p.power);
     let links = legends
         .iter()
         .map(|p| {
@@ -2478,28 +2463,48 @@ fn legendary_pal_links_html(state: &AppState) -> String {
 }
 
 fn build_items() -> Vec<ItemData> {
+    let item = |item: &str, source: &str, notes: &str| ItemData {
+        item: item.to_string(),
+        source: source.to_string(),
+        notes: notes.to_string(),
+    };
     vec![
-        ItemData { item: "Wool".to_string(), source: "Lamball".to_string(), notes: "Ranch / drops".to_string() },
-        ItemData { item: "Leather".to_string(), source: "Foxparks".to_string(), notes: "Frequent drop".to_string() },
-        ItemData { item: "Flame Organ".to_string(), source: "Rooby".to_string(), notes: "Fire pal material".to_string() },
-        ItemData { item: "Ice Organ".to_string(), source: "Frostallion".to_string(), notes: "Late-game material".to_string() },
-        ItemData { item: "Electric Organ".to_string(), source: "Jolthog".to_string(), notes: "Electric crafting".to_string() },
-        ItemData { item: "Ancient Civilization Parts".to_string(), source: "Alpha bosses".to_string(), notes: "Boss rewards".to_string() },
-        ItemData { item: "Pal Fluids".to_string(), source: "Pengullet".to_string(), notes: "Water crafting".to_string() },
-        ItemData { item: "High Quality Pal Oil".to_string(), source: "Mammorest class".to_string(), notes: "Advanced recipes".to_string() },
+        item("Wool", "Lamball", "Ranch / drops"),
+        item("Leather", "Foxparks", "Frequent drop"),
+        item("Flame Organ", "Rooby", "Fire Pal material; the Cooking Pot needs 3"),
+        item("Ice Organ", "Foxcicle / Chillet", "Foxcicle and Mau Cryst also produce it at a Ranch; Frostallion drops 10"),
+        item("Electric Organ", "Jolthog", "Electric crafting"),
+        item("Ancient Civilization Parts", "Alpha bosses", "Needed for every Egg Incubator tier"),
+        item("Pal Fluids", "Pengullet", "Water crafting"),
+        item("High Quality Pal Oil", "Mammorest / Dumud / Woolipop", "Also Eidrolon, Solmora and other 1.0 Pals"),
+        item("Cake", "Cooking Pot (Lv 17)", "Flour, Red Berries, Milk, Egg, Honey; feeds the Breeding Farm"),
+        item("Deluxe Vegetable Cake", "Large-Scale Stone Oven / Ancient Kitchen (Lv 60)", "Raises the chance of a Mutation egg (1.0)"),
     ]
 }
 
 fn build_technologies() -> Vec<TechnologyData> {
+    // Palworld 1.0.5 unlock levels (level cap 80), cross-checked on paldb.gg and palworldcalc.com.
+    let tech = |level: i32, name: &str, cost: &str| TechnologyData {
+        level,
+        name: name.to_string(),
+        cost: cost.to_string(),
+    };
     vec![
-        TechnologyData { level: 2, name: "Pal Sphere".to_string(), cost: "1 Tech Point".to_string() },
-        TechnologyData { level: 6, name: "Egg Incubator".to_string(), cost: "2 Tech Points".to_string() },
-        TechnologyData { level: 7, name: "Breeding Farm".to_string(), cost: "2 Tech Points".to_string() },
-        TechnologyData { level: 14, name: "Weapon Workbench".to_string(), cost: "2 Tech Points".to_string() },
-        TechnologyData { level: 20, name: "Electric Kitchen".to_string(), cost: "3 Tech Points".to_string() },
-        TechnologyData { level: 26, name: "Production Assembly Line".to_string(), cost: "3 Tech Points".to_string() },
-        TechnologyData { level: 35, name: "Legendary Sphere".to_string(), cost: "4 Tech Points".to_string() },
-        TechnologyData { level: 42, name: "Advanced Production Line".to_string(), cost: "4 Tech Points".to_string() },
+        tech(2, "Pal Sphere", "1 Tech Point"),
+        tech(10, "Egg Incubator", "1 Ancient Tech Point"),
+        tech(14, "Mega Sphere", "2 Tech Points"),
+        tech(17, "Cooking Pot (Cake)", "2 Tech Points"),
+        tech(19, "Breeding Farm", "2 Ancient Tech Points"),
+        tech(20, "Weapon Workbench", "3 Tech Points"),
+        tech(20, "Giga Sphere", "3 Tech Points"),
+        tech(27, "Hyper Sphere", "3 Tech Points"),
+        tech(29, "Production Assembly Line", "3 Tech Points"),
+        tech(36, "Electric Egg Incubator", "5 Ancient Tech Points"),
+        tech(41, "Electric Kitchen", "3 Tech Points"),
+        tech(44, "Legendary Sphere", "5 Tech Points"),
+        tech(58, "Exotic Sphere", "5 Tech Points"),
+        tech(58, "Large-Scale Electric Egg Incubator", "5 Ancient Tech Points"),
+        tech(70, "Ancient Kitchen", "4 Tech Points"),
     ]
 }
 

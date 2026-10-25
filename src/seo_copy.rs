@@ -86,7 +86,7 @@ pub const SITE_FOOTER_HTML: &str = r#"<footer class="site-footer" role="contenti
       </ul>
     </nav>
   </div>
-  <p class="site-footer-copy">Palworld Breeding Calculator — unofficial fan tool. Not affiliated with Pocketpair. Data derived from <a href="https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb">PalCalc</a>, MIT license; imported 25 October 2026. Game build not declared by the source snapshot.</p>
+  <p class="site-footer-copy">Palworld Breeding Calculator — unofficial fan tool. Not affiliated with Pocketpair. Data derived from <a href="https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb">PalCalc</a>, MIT license; imported 25 October 2026 and cross-checked against Palworld 1.0.5 (<a href="https://palsphere.app">PalSphere</a> extract).</p>
 </footer>"#;
 
 /// Guide meta descriptions, about 150–160 characters, unique per page.
