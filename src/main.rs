@@ -1,5 +1,6 @@
 mod chain;
 mod data;
+mod export;
 mod seo_copy;
 
 use std::collections::{HashMap, HashSet};
@@ -389,6 +390,38 @@ async fn main() {
     let state = build_app_state(index_template, resolve_base_url());
     let base_url_hint = state.base_url.clone();
 
+    // `palworld-breeding-calculator export <dir>` writes a static copy of the site
+    // (HTML, sitemaps, JSON) for shared hosting such as Namecheap cPanel.
+    let args: Vec<String> = std::env::args().collect();
+    if args.get(1).map(String::as_str) == Some("export") {
+        let out = args.get(2).cloned().unwrap_or_else(|| "dist".to_string());
+        let pal_names = state.pals.iter().map(|pal| pal.name.clone()).collect();
+        if let Err(error) = export::run(build_router(state), pal_names, &base_url_hint, &out).await {
+            eprintln!("Export failed: {error}");
+            std::process::exit(1);
+        }
+        return;
+    }
+
+    let app = build_router(state);
+
+    // Render and other hosts require 0.0.0.0 so the port is reachable externally.
+    let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
+    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
+    let bind_addr = format!("{host}:{port}");
+    let listener = tokio::net::TcpListener::bind(&bind_addr)
+        .await
+        .unwrap_or_else(|err| panic!("failed to bind to {bind_addr}: {err}"));
+
+    println!("Server running at http://{bind_addr}");
+    if base_url_hint.contains("127.0.0.1") || base_url_hint.contains("localhost") {
+        eprintln!("Deploy tip: set BASE_URL=https://your-live-domain.com for correct canonicals and sitemaps.");
+    }
+    axum::serve(listener, app).await.expect("server error");
+}
+
+/// All page, API and static-file routes. Shared by the server and the static export.
+fn build_router(state: AppState) -> Router {
     let assets_cache = SetResponseHeaderLayer::if_not_present(
         header::CACHE_CONTROL,
         HeaderValue::from_static("public, max-age=604800"),
@@ -421,7 +454,7 @@ async fn main() {
         )
         .layer(root_static_cache);
 
-    let app = Router::new()
+    Router::new()
         .route("/", get(index_page))
         .route("/health", get(health))
         .route("/breeding-calculator", get(redirect_to_primary_calculator))
@@ -475,21 +508,7 @@ async fn main() {
         .merge(app_js)
         .with_state(state)
         .fallback(not_found_handler)
-        .layer(CompressionLayer::new());
-
-    // Render and other hosts require 0.0.0.0 so the port is reachable externally.
-    let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
-    let bind_addr = format!("{host}:{port}");
-    let listener = tokio::net::TcpListener::bind(&bind_addr)
-        .await
-        .unwrap_or_else(|err| panic!("failed to bind to {bind_addr}: {err}"));
-
-    println!("Server running at http://{bind_addr}");
-    if base_url_hint.contains("127.0.0.1") || base_url_hint.contains("localhost") {
-        eprintln!("Deploy tip: set BASE_URL=https://your-live-domain.com for correct canonicals and sitemaps.");
-    }
-    axum::serve(listener, app).await.expect("server error");
+        .layer(CompressionLayer::new())
 }
 
 async fn health(State(state): State<AppState>) -> Json<serde_json::Value> {
@@ -624,7 +643,10 @@ fn collect_combo_page_pairs(state: &AppState, max: Option<usize>) -> Vec<(String
     let mut seen = HashSet::new();
     let mut pairs = Vec::new();
 
-    for key in state.special_combos.keys() {
+    // Sorted so page output (and the static export) is identical on every run.
+    let mut special_keys: Vec<&String> = state.special_combos.keys().collect();
+    special_keys.sort();
+    for key in special_keys {
         let Some((a, b)) = key.split_once('|') else {
             continue;
         };

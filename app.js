@@ -193,6 +193,167 @@ function calculateChildLocal(parentA, parentB, genderA = null, genderB = null) {
   return child ? { child, method, distance: null } : null;
 }
 
+// ---- Chain planner (runs in the browser; mirrors src/chain.rs exactly) ----
+const CHAIN_MAX_STEPS = 15;
+const CHAIN_MAX_STATES = 8000;
+let reverseIndexCache = null;
+
+function tableOutcomes(i, j) {
+  const table = appData.breeding_table;
+  const n = appData.pals.length;
+  const offset = i * n - i * (i - 1) / 2 + j - i;
+  const child = table.children[offset];
+  if (child >= 0) return [{ a: i, b: j, child, a_gender: "wildcard", b_gender: "wildcard" }];
+  return table.gender_outcomes.filter((row) => row.a === i && row.b === j);
+}
+
+function outcomeMethod(row) {
+  const pals = appData.pals;
+  if (row.a_gender !== "wildcard") {
+    return `Gender-specific: ${pals[row.a].name} ${row.a_gender} + ${pals[row.b].name} ${row.b_gender}`;
+  }
+  if (row.a === row.b) return "Same species";
+  if (appData.special_combos?.[comboKey(pals[row.a].name, pals[row.b].name)]) return "Special combination";
+  return "PalCalc source table";
+}
+
+// child name -> [{a, b, method}] in the same order as the server's reverse index.
+function reverseIndex() {
+  if (reverseIndexCache) return reverseIndexCache;
+  const pals = appData.pals;
+  const index = new Map();
+  for (let i = 0; i < pals.length; i++) {
+    for (let j = i; j < pals.length; j++) {
+      for (const row of tableOutcomes(i, j)) {
+        const name = pals[row.child].name;
+        if (!index.has(name)) index.set(name, []);
+        index.get(name).push({ a: pals[i].name, b: pals[j].name, method: outcomeMethod(row) });
+      }
+    }
+  }
+  reverseIndexCache = index;
+  return index;
+}
+
+function byChildThenParents(x, y) {
+  const kx = [x.child, x.parent_a, x.parent_b];
+  const ky = [y.child, y.parent_a, y.parent_b];
+  for (let k = 0; k < 3; k++) {
+    if (kx[k] < ky[k]) return -1;
+    if (kx[k] > ky[k]) return 1;
+  }
+  return 0;
+}
+
+function searchChainLocal(owned, goal, alsoOwned) {
+  if (owned === goal) return [];
+  const startHave = new Set([owned, ...alsoOwned]);
+  if (startHave.has(goal)) return [];
+  const indexOf = new Map(appData.pals.map((pal) => [pal.name, pal.tableIndex]));
+  const keyOf = (have) => [...have].sort().join("|");
+  const seen = new Set([keyOf(startHave)]);
+  const queue = [{ steps: [], have: startHave }];
+  for (let head = 0; head < queue.length; head++) {
+    const node = queue[head];
+    if (node.steps.length >= CHAIN_MAX_STEPS) continue;
+    // Every recipe whose parents are both owned, in the server's (child, a, b) order.
+    const owned_ = [...node.have].map((name) => indexOf.get(name)).sort((x, y) => x - y);
+    const recipes = [];
+    for (let x = 0; x < owned_.length; x++) {
+      for (let y = x; y < owned_.length; y++) {
+        for (const row of tableOutcomes(owned_[x], owned_[y])) {
+          recipes.push({
+            parent_a: appData.pals[owned_[x]].name,
+            parent_b: appData.pals[owned_[y]].name,
+            child: appData.pals[row.child].name,
+            method: outcomeMethod(row)
+          });
+        }
+      }
+    }
+    recipes.sort(byChildThenParents);
+    for (const recipe of recipes) {
+      if (node.have.has(recipe.child)) continue;
+      const steps = [...node.steps, recipe];
+      if (recipe.child === goal) return steps;
+      const have = new Set(node.have);
+      have.add(recipe.child);
+      const key = keyOf(have);
+      if (seen.has(key)) continue;
+      if (seen.size >= CHAIN_MAX_STATES) return null;
+      seen.add(key);
+      queue.push({ steps, have });
+    }
+  }
+  return null;
+}
+
+function directParentComboForOwned(owned, goal) {
+  const lower = owned.toLowerCase();
+  const pairs = (reverseIndex().get(goal) || []).filter(
+    (pair) => pair.a.toLowerCase() === lower || pair.b.toLowerCase() === lower
+  );
+  const partnerOf = (pair) => (pair.a.toLowerCase() === lower ? pair.b : pair.a);
+  const power = (name) => palByNameLower.get(name.toLowerCase())?.power ?? 0;
+  pairs.sort((x, y) => {
+    const px = partnerOf(x), py = partnerOf(y);
+    if (power(px) !== power(py)) return power(py) - power(px);
+    return px < py ? -1 : px > py ? 1 : 0;
+  });
+  return pairs[0] || null;
+}
+
+function chainFailureHint(owned, goal) {
+  const ownedPal = palByNameLower.get(owned.toLowerCase());
+  const goalPal = palByNameLower.get(goal.toLowerCase());
+  if (!ownedPal || !goalPal) return null;
+  const pair = directParentComboForOwned(ownedPal.name, goalPal.name);
+  if (pair) {
+    const partner = pair.a.toLowerCase() === owned.toLowerCase() ? pair.b : pair.a;
+    const partnerPal = palByNameLower.get(partner.toLowerCase());
+    if (!partnerPal) return null;
+    return `${owned} can breed ${goal} with ${partner}, but the planner could not reach ${partner} (breeding power ${partnerPal.power}) starting from only ${owned} (power ${ownedPal.power}). Capture or breed ${partner} first, then use that pair in the calculator.`;
+  }
+  if (goalPal.power - ownedPal.power > 200) {
+    return `${owned} (breeding power ${ownedPal.power}) is far below ${goal} (power ${goalPal.power}). Pick an owned Pal closer to your goal, or use reverse lookup for parent pairs.`;
+  }
+  return null;
+}
+
+/** Same JSON shape as the old /api/chain endpoint, computed in the browser. */
+function planChainLocal(ownedInput, goalInput, alsoOwnedInput = []) {
+  const owned = ownedInput.trim();
+  const goal = goalInput.trim();
+  const ownedPal = palByNameLower.get(owned.toLowerCase());
+  const goalPal = palByNameLower.get(goal.toLowerCase());
+  if (!owned || !goal || !ownedPal || !goalPal) throw new Error("Unknown owned or goal Pal");
+  const roster = [];
+  for (const name of alsoOwnedInput.map((n) => n.trim()).filter(Boolean)) {
+    const pal = palByNameLower.get(name.toLowerCase());
+    if (!pal) throw new Error(`Unknown owned Pal: ${name}`);
+    if (!roster.includes(pal.name)) roster.push(pal.name);
+  }
+  const steps = searchChainLocal(ownedPal.name, goalPal.name, roster);
+  if (steps) {
+    return { owned, also_owned: roster, goal, found: true, steps, step_count: steps.length };
+  }
+  const hint = roster.length ? null : chainFailureHint(owned, goal);
+  const pair = directParentComboForOwned(owned, goalPal.name);
+  const partial = pair
+    ? {
+        parent_a: pair.a,
+        parent_b: pair.b,
+        child: goal,
+        method: pair.method,
+        missing_partner: pair.a.toLowerCase() === owned.toLowerCase() ? pair.b : pair.a
+      }
+    : null;
+  return {
+    owned, also_owned: roster, goal, found: false, steps: [], step_count: 0, hint, partial,
+    message: hint || `No executable breeding chain found from ${owned} to ${goal} within planner limits (15 steps and 8,000 inventories). Only selected species are treated as owned. Add owned partners or acquire a partner from reverse lookup first.`
+  };
+}
+
 function getPalCdnUrl(palName) {
   const name = resolvePalDisplayName(palName);
   return `https://ggservers.com/images/palworld/${encodeURIComponent(name)}.webp`;
@@ -713,7 +874,8 @@ async function renderChainBreeding() {
   }
 
   try {
-    const data = await apiFetch(`/api/chain?${params}`);
+    // Computed in the browser so the site also works as static files (no server API).
+    const data = planChainLocal(owned, goal, alsoOwned);
     if (requestId !== chainRequestId) return;
     const steps = data.steps || [];
     if (data.found === false || (!steps.length && data.found !== true)) {
@@ -935,8 +1097,9 @@ function resolvePalName(raw, palNames) {
     return raw;
   }
   const query = raw.toLowerCase();
+  const slug = palSlug(raw);
   for (const name of palNames) {
-    if (name.toLowerCase() === query) {
+    if (name.toLowerCase() === query || palSlug(name) === slug) {
       return name;
     }
   }

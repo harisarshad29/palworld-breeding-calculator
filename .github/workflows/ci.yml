@@ -25,6 +25,18 @@ jobs:
         run: cargo test --locked
       - name: Check release build
         run: cargo build --release --locked
+      - name: Export static site for Namecheap
+        run: |
+          BASE_URL=https://www.palworld-breeding-calculator.us ./target/release/palworld-breeding-calculator export dist
+          test -f dist/.htaccess && test -f dist/index.html && test -f dist/api/bootstrap.json
+          (cd dist && zip -qr9 ../namecheap-site.zip .)
+          ls -lh namecheap-site.zip
+      - name: Save Namecheap upload zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: namecheap-site
+          path: namecheap-site.zip
+          retention-days: 30
       - name: Install browser test dependencies
         run: |
           npm ci --ignore-scripts
