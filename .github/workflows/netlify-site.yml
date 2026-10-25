@@ -1,0 +1,39 @@
+name: Publish static site for Netlify
+
+# Builds the static export and force-pushes it as a single commit to the `netlify-site`
+# branch. Point the Netlify project at that branch (no build command, publish dir ".").
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: netlify-site
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Export
+        run: |
+          cargo build --release --locked
+          BASE_URL=https://www.palworld-breeding-calculator.us ./target/release/palworld-breeding-calculator export dist
+          test -f dist/index.html && test -f dist/_redirects && test -f dist/api/bootstrap.json
+          printf '[build]\n  publish = "."\n  command = "echo static site"\n' > dist/netlify.toml
+      - name: Push to netlify-site branch
+        working-directory: dist
+        run: |
+          git init -q -b netlify-site
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Static site from ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" netlify-site

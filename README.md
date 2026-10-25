@@ -67,6 +67,13 @@ chain planner runs in the browser. CI uploads the result as the `namecheap-site`
 artifact; step-by-step upload and DNS instructions are in
 [NAMECHEAP-DEPLOY.md](NAMECHEAP-DEPLOY.md).
 
+### Netlify (free alternative)
+
+`export` also writes `_redirects` and `_headers`, so the same output runs on Netlify.
+`.github/workflows/netlify-site.yml` force-pushes the export to the `netlify-site`
+branch on every `main` push; link the Netlify project to that branch (no build
+command, publish directory `.`).
+
 ## Hosting and health (Render, legacy)
 
 `render.yaml` builds the locked release, declares the preferred `www` domain,
