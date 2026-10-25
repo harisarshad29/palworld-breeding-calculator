@@ -1,0 +1,49 @@
+name: Deploy to Namecheap
+
+# Optional automatic upload. Add these repository secrets first
+# (GitHub → Settings → Secrets and variables → Actions):
+#   NAMECHEAP_FTP_SERVER    e.g. ftp.palworld-breeding-calculator.us
+#   NAMECHEAP_FTP_USERNAME  cPanel FTP account
+#   NAMECHEAP_FTP_PASSWORD  its password
+# Without them this workflow skips the upload; use the namecheap-site zip from CI instead.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-namecheap
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check FTP secrets
+        id: secrets
+        env:
+          FTP_SERVER: ${{ secrets.NAMECHEAP_FTP_SERVER }}
+        run: echo "ready=$([ -n "$FTP_SERVER" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.secrets.outputs.ready == 'true'
+      - name: Test and export
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          cargo test --locked
+          cargo build --release --locked
+          BASE_URL=https://www.palworld-breeding-calculator.us ./target/release/palworld-breeding-calculator export dist
+      - name: Upload changed files over FTPS
+        if: steps.secrets.outputs.ready == 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.NAMECHEAP_FTP_SERVER }}
+          username: ${{ secrets.NAMECHEAP_FTP_USERNAME }}
+          password: ${{ secrets.NAMECHEAP_FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: dist/
+          server-dir: public_html/

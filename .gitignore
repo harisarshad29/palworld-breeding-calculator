@@ -13,3 +13,6 @@ wordpress-plugin/
 node_modules/
 test-results/
 
+# Static export for Namecheap
+/dist/
+namecheap-site.zip

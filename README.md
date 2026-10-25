@@ -50,7 +50,24 @@ gender-specific outcomes, swapping, reverse lookup, owned-roster chains, theme
 switching, and horizontal overflow. Screenshots are saved to `test-results/` and
 uploaded by CI. `BROWSER_BASE_URL` overrides the test server origin.
 
-## Hosting and health
+## Hosting on Namecheap (static export)
+
+The site is published as static files on Namecheap shared hosting (Apache), so no
+always-on server is needed:
+
+```sh
+cargo build --release --locked
+BASE_URL=https://www.palworld-breeding-calculator.us ./target/release/palworld-breeding-calculator export dist
+```
+
+`export` renders every sitemap page and every internally linked page through the
+same router the server uses, writes `api/*.json` for the calculator, copies assets,
+and generates `.htaccess` (https + www, clean URLs, old redirects, 404 page). The
+chain planner runs in the browser. CI uploads the result as the `namecheap-site`
+artifact; step-by-step upload and DNS instructions are in
+[NAMECHEAP-DEPLOY.md](NAMECHEAP-DEPLOY.md).
+
+## Hosting and health (Render, legacy)
 
 `render.yaml` builds the locked release, declares the preferred `www` domain,
 waits for CI checks, and uses `/health` for readiness. Apply or sync the Blueprint
