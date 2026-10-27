@@ -270,7 +270,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
 ];
 
-const GUIDE_PAGES: [GuidePage; 11] = [
+const GUIDE_PAGES: [GuidePage; 12] = [
     GuidePage {
         path: "/guides/how-to-breed-anubis",
         title: "How to Breed Anubis in Palworld - Fast Parent Paths",
@@ -347,6 +347,13 @@ const GUIDE_PAGES: [GuidePage; 11] = [
         description: seo_copy::GUIDE_BREEDING_NOT_WORKING,
         heading: "Breeding Not Working? Fix Checklist",
         body_html: "<p>If breeding fails in Palworld, check these items in order before changing parent pairs.</p><h2>1. Breeding Farm setup</h2><p>Confirm the Breeding Farm is built and suitable male and female parents are assigned.</p><h2>2. Cake supply</h2><p>The Breeding Farm chest must have cake. Empty cake stops the breeding process even when parents are assigned.</p><h2>3. Valid parent pair</h2><p>Use our <a href=\"/palworld-breeding-calculator\">calculator</a> to verify the pair can produce your target child. Invalid pairs waste time.</p><h2>4. Incubator space</h2><p>Collect eggs and place them in an incubator. Full inventory or missing incubator delays progress.</p><h2>5. Pal conditions</h2><p>Sick, starving, or depressed Pals may block breeding—heal and feed parents first.</p><p>Still stuck? Compare routes on the <a href=\"/how-to-breed/anubis\">Anubis guide</a> or your target <a href=\"/pals\">Pal page</a>.</p>",
+    },
+    GuidePage {
+        path: "/guides/breeding-statistics",
+        title: "Palworld Breeding Statistics - Most Common Results (1.0.5 Data)",
+        description: seo_copy::GUIDE_BREEDING_STATS,
+        heading: "Palworld Breeding by the Numbers",
+        body_html: "<p>We analysed every possible parent pair in our Palworld 1.0.5 breeding table: 299 species and 44,850 unordered pairs. Here is what the numbers say. Each figure can be reproduced in the <a href=\"/palworld-breeding-calculator\">breeding calculator</a>.</p><h2>Key numbers</h2><ul><li><strong>299</strong> species, <strong>44,850</strong> unordered parent pairs.</li><li><strong>28</strong> species can only be produced by breeding two of the same species. Legendaries such as Jetragon, Frostallion, Paladius and Necromus are in this group.</li><li><strong>Felbat</strong> is the most common outcome, produced by 1,280 different pairs.</li><li>Anubis can be produced by 234 different pairs, so there is almost always a route that fits your roster.</li></ul><h2>The 10 most common breeding results</h2><table><thead><tr><th>Child</th><th>Pairs that produce it</th></tr></thead><tbody><tr><td><a href=\"/pal/felbat\">Felbat</a></td><td>1,280</td></tr><tr><td><a href=\"/pal/vanwyrm\">Vanwyrm</a></td><td>1,229</td></tr><tr><td><a href=\"/pal/azurobe\">Azurobe</a></td><td>1,090</td></tr><tr><td><a href=\"/pal/valentail\">Valentail</a></td><td>1,021</td></tr><tr><td><a href=\"/pal/warsect\">Warsect</a></td><td>858</td></tr><tr><td><a href=\"/pal/mammorest\">Mammorest</a></td><td>774</td></tr><tr><td><a href=\"/pal/venusa\">Venusa</a></td><td>712</td></tr><tr><td><a href=\"/pal/sweepa\">Sweepa</a></td><td>701</td></tr><tr><td><a href=\"/pal/dazemu\">Dazemu</a></td><td>679</td></tr><tr><td><a href=\"/pal/loomen\">Loomen</a></td><td>670</td></tr></tbody></table><h2>Species you can only breed from the same species</h2><p><a href=\"/pal/bastigor\">Bastigor</a> • <a href=\"/pal/bellanoir-libero\">Bellanoir Libero</a> • <a href=\"/pal/blazamut-ryu\">Blazamut Ryu</a> • <a href=\"/pal/cave-bat\">Cave Bat</a> • <a href=\"/pal/dandilord\">Dandilord</a> • <a href=\"/pal/faleris\">Faleris</a> • <a href=\"/pal/frostallion\">Frostallion</a> • <a href=\"/pal/green-slime\">Green Slime</a> • <a href=\"/pal/grizzbolt\">Grizzbolt</a> • <a href=\"/pal/gumoss-flower\">Gumoss (Flower)</a> • <a href=\"/pal/hartalis\">Hartalis</a> • <a href=\"/pal/jetragon\">Jetragon</a> • <a href=\"/pal/katress-ignis\">Katress Ignis</a> • <a href=\"/pal/lyleen\">Lyleen</a> • <a href=\"/pal/mimog\">Mimog</a> • <a href=\"/pal/necromus\">Necromus</a> • <a href=\"/pal/neptilius\">Neptilius</a> • <a href=\"/pal/orserk\">Orserk</a> • <a href=\"/pal/paladius\">Paladius</a> • <a href=\"/pal/panthalus\">Panthalus</a> • <a href=\"/pal/selyne\">Selyne</a> • <a href=\"/pal/shadowbeak\">Shadowbeak</a> • <a href=\"/pal/shaolong\">Shaolong</a> • <a href=\"/pal/silvance\">Silvance</a> • <a href=\"/pal/wixen-noct\">Wixen Noct</a> • <a href=\"/pal/xenogard\">Xenogard</a> • <a href=\"/pal/xenolord\">Xenolord</a> • <a href=\"/pal/xenovader\">Xenovader</a></p><p>For these, capture or obtain the species first; no mix of other parents will give it.</p><h2>How we counted</h2><p>Counts use the species-level breeding table, where a pair appears once regardless of which parent is male or female. One gender-dependent pair is excluded because its result depends on parent gender. Figures describe species outcomes only, not passive skills or stats.</p><h2>Cite this page</h2><p>You may quote these figures with a link to <a href=\"/guides/breeding-statistics\">this page</a>. Data derived from PalCalc (MIT license) and cross-checked against Palworld 1.0.5.</p>",
     },
 ];
 
@@ -484,6 +491,7 @@ fn build_router(state: AppState) -> Router {
         .route("/fastest-flying-mount-breeding", get(guide_page_handler))
         .route("/anubis-vs-lyleen", get(guide_page_handler))
         .route("/guides/breeding-not-working", get(guide_page_handler))
+        .route("/guides/breeding-statistics", get(guide_page_handler))
         .route("/breed/:name", get(breed_alias_redirect))
         .route("/robots.txt", get(robots_txt))
         .route("/sitemap.xml", get(sitemap_index))
