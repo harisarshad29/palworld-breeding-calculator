@@ -72,6 +72,7 @@ pub const SITE_FOOTER_HTML: &str = r#"<footer class="site-footer" role="contenti
         <li><a href="/guides/best-breeding-combos">Best Breeding Combos</a></li>
         <li><a href="/guides/breeding-not-working">Breeding Not Working</a></li>
         <li><a href="/egg-incubation-guide">Egg Incubation</a></li>
+        <li><a href="/guides/breeding-statistics">Breeding Statistics</a></li>
       </ul>
     </nav>
     <nav class="site-footer-col" aria-label="Popular Pals">
@@ -109,6 +110,8 @@ pub const GUIDE_MINING: &str = "Breed mining Pals such as Digtoise in Palworld b
 pub const GUIDE_FLYING_MOUNT: &str = "Plan flying mount breeding with supported parent pairs. Check Jetragon same-species restrictions and choose an available target before spending cake in game.";
 
 pub const GUIDE_ANUBIS_VS_LYLEEN: &str = "Compare Anubis and Lyleen in Palworld by breeding time, parent difficulty, and base role so you know which of the two to breed first on your current save.";
+
+pub const GUIDE_BREEDING_STATS: &str = "Palworld breeding statistics from 44,850 parent pairs: the most common breeding results, which Pals can only be bred from their own species, and how many routes lead to Anubis.";
 
 pub const GUIDE_BREEDING_NOT_WORKING: &str = "If Palworld breeding fails, check the Breeding Farm chest for cake, suitable male and female parents, and supported pairs before changing your setup in game.";
 
