@@ -270,7 +270,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
 ];
 
-const GUIDE_PAGES: [GuidePage; 12] = [
+const GUIDE_PAGES: [GuidePage; 13] = [
     GuidePage {
         path: "/guides/how-to-breed-anubis",
         title: "How to Breed Anubis in Palworld - Fast Parent Paths",
@@ -350,10 +350,17 @@ const GUIDE_PAGES: [GuidePage; 12] = [
     },
     GuidePage {
         path: "/guides/breeding-statistics",
-        title: "Palworld Breeding Statistics - Most Common Results (1.0.5 Data)",
+        title: "Palworld Breeding Statistics - Common Results (1.0.5 Data)",
         description: seo_copy::GUIDE_BREEDING_STATS,
         heading: "Palworld Breeding by the Numbers",
         body_html: "<p>We analysed every possible parent pair in our Palworld 1.0.5 breeding table: 299 species and 44,850 unordered pairs. Here is what the numbers say. Each figure can be reproduced in the <a href=\"/palworld-breeding-calculator\">breeding calculator</a>.</p><h2>Key numbers</h2><ul><li><strong>299</strong> species, <strong>44,850</strong> unordered parent pairs.</li><li><strong>28</strong> species can only be produced by breeding two of the same species. Legendaries such as Jetragon, Frostallion, Paladius and Necromus are in this group.</li><li><strong>Felbat</strong> is the most common outcome, produced by 1,280 different pairs.</li><li>Anubis can be produced by 234 different pairs, so there is almost always a route that fits your roster.</li></ul><h2>The 10 most common breeding results</h2><table><thead><tr><th>Child</th><th>Pairs that produce it</th></tr></thead><tbody><tr><td><a href=\"/pal/felbat\">Felbat</a></td><td>1,280</td></tr><tr><td><a href=\"/pal/vanwyrm\">Vanwyrm</a></td><td>1,229</td></tr><tr><td><a href=\"/pal/azurobe\">Azurobe</a></td><td>1,090</td></tr><tr><td><a href=\"/pal/valentail\">Valentail</a></td><td>1,021</td></tr><tr><td><a href=\"/pal/warsect\">Warsect</a></td><td>858</td></tr><tr><td><a href=\"/pal/mammorest\">Mammorest</a></td><td>774</td></tr><tr><td><a href=\"/pal/venusa\">Venusa</a></td><td>712</td></tr><tr><td><a href=\"/pal/sweepa\">Sweepa</a></td><td>701</td></tr><tr><td><a href=\"/pal/dazemu\">Dazemu</a></td><td>679</td></tr><tr><td><a href=\"/pal/loomen\">Loomen</a></td><td>670</td></tr></tbody></table><h2>Species you can only breed from the same species</h2><p><a href=\"/pal/bastigor\">Bastigor</a> • <a href=\"/pal/bellanoir-libero\">Bellanoir Libero</a> • <a href=\"/pal/blazamut-ryu\">Blazamut Ryu</a> • <a href=\"/pal/cave-bat\">Cave Bat</a> • <a href=\"/pal/dandilord\">Dandilord</a> • <a href=\"/pal/faleris\">Faleris</a> • <a href=\"/pal/frostallion\">Frostallion</a> • <a href=\"/pal/green-slime\">Green Slime</a> • <a href=\"/pal/grizzbolt\">Grizzbolt</a> • <a href=\"/pal/gumoss-flower\">Gumoss (Flower)</a> • <a href=\"/pal/hartalis\">Hartalis</a> • <a href=\"/pal/jetragon\">Jetragon</a> • <a href=\"/pal/katress-ignis\">Katress Ignis</a> • <a href=\"/pal/lyleen\">Lyleen</a> • <a href=\"/pal/mimog\">Mimog</a> • <a href=\"/pal/necromus\">Necromus</a> • <a href=\"/pal/neptilius\">Neptilius</a> • <a href=\"/pal/orserk\">Orserk</a> • <a href=\"/pal/paladius\">Paladius</a> • <a href=\"/pal/panthalus\">Panthalus</a> • <a href=\"/pal/selyne\">Selyne</a> • <a href=\"/pal/shadowbeak\">Shadowbeak</a> • <a href=\"/pal/shaolong\">Shaolong</a> • <a href=\"/pal/silvance\">Silvance</a> • <a href=\"/pal/wixen-noct\">Wixen Noct</a> • <a href=\"/pal/xenogard\">Xenogard</a> • <a href=\"/pal/xenolord\">Xenolord</a> • <a href=\"/pal/xenovader\">Xenovader</a></p><p>For these, capture or obtain the species first; no mix of other parents will give it.</p><h2>How we counted</h2><p>Counts use the species-level breeding table, where a pair appears once regardless of which parent is male or female. One gender-dependent pair is excluded because its result depends on parent gender. Figures describe species outcomes only, not passive skills or stats.</p><h2>Cite this page</h2><p>You may quote these figures with a link to <a href=\"/guides/breeding-statistics\">this page</a>. Data derived from PalCalc (MIT license) and cross-checked against Palworld 1.0.5.</p>",
+    },
+    GuidePage {
+        path: "/guides/breeding-farm-setup",
+        title: "Palworld Breeding Farm Guide - Setup & Pairs (1.0.5)",
+        description: seo_copy::GUIDE_BREEDING_FARM,
+        heading: "Palworld Breeding Farm Guide",
+        body_html: "<p>A Breeding Farm needs one male and one female Pal that the breeding table supports, plus cake in the Breeding Farm chest. This page covers the planning side: which pairs to pick and what to expect. Check any pair in the <a href=\"/palworld-breeding-calculator\">breeding calculator</a>.</p><h2>Setup checklist</h2><ol><li>Pick a target Pal and open its reverse lookup (for example <a href=\"/combos/anubis\">Anubis</a>).</li><li>Choose a pair you already own. Both parents must be a male and a female.</li><li>Keep cake in the Breeding Farm chest.</li><li>Collect the egg and use the incubator available in your game. See <a href=\"/egg-incubation-guide\">egg incubation</a>.</li></ol><h2>Same-species parents</h2><p>In the 1.0.5 table every Pal breeds true with its own species, and 28 Pals can only come from two of the same species. Catch or hatch one of these first. See the <a href=\"/guides/breeding-statistics\">breeding statistics</a>.</p><h2>Special combinations (81)</h2><p>81 parent pairs give a fixed result that differs from the normal table. 77 of them produce an element variant:</p><table><thead><tr><th>Variant</th><th>Special combos</th></tr></thead><tbody><tr><td>Cryst</td><td>17</td></tr><tr><td>Ignis</td><td>13</td></tr><tr><td>Noct</td><td>13</td></tr><tr><td>Terra</td><td>11</td></tr><tr><td>Lux</td><td>10</td></tr><tr><td>Primo</td><td>5</td></tr><tr><td>Aqua</td><td>4</td></tr><tr><td>Botan</td><td>3</td></tr><tr><td>Gild</td><td>1</td></tr></tbody></table><p>The other four give Red Slime, Blue Slime, Bellanoir and Celesdir. Browse them on the <a href=\"/palworld-breeding-combinations\">combinations page</a>.</p><h2>Multi-step plans</h2><p>If you do not own the right parents, the <a href=\"/palworld-chain-breeding\">chain planner</a> finds a route from the Pals you have. It predicts species only, not egg timers or passive traits.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
 ];
 
@@ -492,6 +499,7 @@ fn build_router(state: AppState) -> Router {
         .route("/anubis-vs-lyleen", get(guide_page_handler))
         .route("/guides/breeding-not-working", get(guide_page_handler))
         .route("/guides/breeding-statistics", get(guide_page_handler))
+        .route("/guides/breeding-farm-setup", get(guide_page_handler))
         .route("/breed/:name", get(breed_alias_redirect))
         .route("/robots.txt", get(robots_txt))
         .route("/sitemap.xml", get(sitemap_index))
