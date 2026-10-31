@@ -113,6 +113,20 @@ const PRIORITY_BREED_TARGETS: &[&str] = &[
     "Chikipi", "Foxparks", "Lamball", "Cattiva", "Grizzbolt", "Orserk", "Helzephyr", "Kingpaca",
 ];
 
+/// A Pal with this many breeding routes or fewer is a thin page: its /pal, /how-to-breed
+/// and /combos pages get `noindex,follow` and stay out of the sitemaps. The pages are
+/// still rendered, so internal and external links keep working.
+const THIN_PAL_MAX_ROUTES: usize = 3;
+
+/// Rows shown in the route tables before the "Showing X of Y routes" cap kicks in.
+const PAL_PAGE_ROUTE_CAP: usize = 25;
+const HOW_TO_BREED_ROUTE_CAP: usize = 20;
+const COMBOS_HUB_ROUTE_CAP: usize = 30;
+const COMBO_PAGE_ALTERNATIVES_CAP: usize = 60;
+
+const ROBOTS_INDEX: &str = "index,follow,max-image-preview:large";
+const ROBOTS_NOINDEX: &str = "noindex,follow";
+
 /// High-value parent pairs for combo page discovery (beyond special_combos.json).
 const LEGENDARY_COMBO_SEEDS: &[(&str, &str)] = &[
     ("Anubis", "Jetragon"),
@@ -353,14 +367,14 @@ const GUIDE_PAGES: [GuidePage; 15] = [
         title: "Palworld Breeding Statistics - Common Results (1.0.5 Data)",
         description: seo_copy::GUIDE_BREEDING_STATS,
         heading: "Palworld Breeding by the Numbers",
-        body_html: "<p>We analysed every possible parent pair in our Palworld 1.0.5 breeding table: 299 species and 44,850 unordered pairs. Here is what the numbers say. Each figure can be reproduced in the <a href=\"/\">breeding calculator</a>.</p><h2>Key numbers</h2><ul><li><strong>299</strong> species, <strong>44,850</strong> unordered parent pairs.</li><li><strong>28</strong> species can only be produced by breeding two of the same species. Legendaries such as Jetragon, Frostallion, Paladius and Necromus are in this group.</li><li><strong>Felbat</strong> is the most common outcome, produced by 1,280 different pairs.</li><li>Anubis can be produced by 234 different pairs, so there is almost always a route that fits your roster.</li></ul><h2>The 10 most common breeding results</h2><table><thead><tr><th>Child</th><th>Pairs that produce it</th></tr></thead><tbody><tr><td><a href=\"/pal/felbat\">Felbat</a></td><td>1,280</td></tr><tr><td><a href=\"/pal/vanwyrm\">Vanwyrm</a></td><td>1,229</td></tr><tr><td><a href=\"/pal/azurobe\">Azurobe</a></td><td>1,090</td></tr><tr><td><a href=\"/pal/valentail\">Valentail</a></td><td>1,021</td></tr><tr><td><a href=\"/pal/warsect\">Warsect</a></td><td>858</td></tr><tr><td><a href=\"/pal/mammorest\">Mammorest</a></td><td>774</td></tr><tr><td><a href=\"/pal/venusa\">Venusa</a></td><td>712</td></tr><tr><td><a href=\"/pal/sweepa\">Sweepa</a></td><td>701</td></tr><tr><td><a href=\"/pal/dazemu\">Dazemu</a></td><td>679</td></tr><tr><td><a href=\"/pal/loomen\">Loomen</a></td><td>670</td></tr></tbody></table><h2>Species you can only breed from the same species</h2><p><a href=\"/pal/bastigor\">Bastigor</a> • <a href=\"/pal/bellanoir-libero\">Bellanoir Libero</a> • <a href=\"/pal/blazamut-ryu\">Blazamut Ryu</a> • <a href=\"/pal/cave-bat\">Cave Bat</a> • <a href=\"/pal/dandilord\">Dandilord</a> • <a href=\"/pal/faleris\">Faleris</a> • <a href=\"/pal/frostallion\">Frostallion</a> • <a href=\"/pal/green-slime\">Green Slime</a> • <a href=\"/pal/grizzbolt\">Grizzbolt</a> • <a href=\"/pal/gumoss-flower\">Gumoss (Flower)</a> • <a href=\"/pal/hartalis\">Hartalis</a> • <a href=\"/pal/jetragon\">Jetragon</a> • <a href=\"/pal/katress-ignis\">Katress Ignis</a> • <a href=\"/pal/lyleen\">Lyleen</a> • <a href=\"/pal/mimog\">Mimog</a> • <a href=\"/pal/necromus\">Necromus</a> • <a href=\"/pal/neptilius\">Neptilius</a> • <a href=\"/pal/orserk\">Orserk</a> • <a href=\"/pal/paladius\">Paladius</a> • <a href=\"/pal/panthalus\">Panthalus</a> • <a href=\"/pal/selyne\">Selyne</a> • <a href=\"/pal/shadowbeak\">Shadowbeak</a> • <a href=\"/pal/shaolong\">Shaolong</a> • <a href=\"/pal/silvance\">Silvance</a> • <a href=\"/pal/wixen-noct\">Wixen Noct</a> • <a href=\"/pal/xenogard\">Xenogard</a> • <a href=\"/pal/xenolord\">Xenolord</a> • <a href=\"/pal/xenovader\">Xenovader</a></p><p>For these, capture or obtain the species first; no mix of other parents will give it.</p><h2>How we counted</h2><p>Counts use the species-level breeding table, where a pair appears once regardless of which parent is male or female. One gender-dependent pair is excluded because its result depends on parent gender. Figures describe species outcomes only, not passive skills or stats.</p><h2>Cite this page</h2><p>You may quote these figures with a link to <a href=\"/guides/breeding-statistics\">this page</a>. Data derived from PalCalc (MIT license) and cross-checked against Palworld 1.0.5.</p>",
+        body_html: "<p>We analysed every possible parent pair in our Palworld 1.0.5 breeding table: 299 species and 44,850 unordered pairs. Here is what the numbers say. Each figure can be reproduced in the <a href=\"/\">breeding calculator</a>.</p><h2>Key numbers</h2><ul><li><strong>299</strong> species, <strong>44,850</strong> unordered parent pairs.</li><li><strong>26</strong> species can only be produced by breeding two of the same species. Legendaries such as Jetragon, Frostallion, Paladius and Necromus are in this group.</li><li><strong>Felbat</strong> is the most common outcome, produced by 1,280 different pairs.</li><li>Anubis can be produced by 234 different pairs, so there is almost always a route that fits your roster.</li></ul><h2>The 10 most common breeding results</h2><table><thead><tr><th>Child</th><th>Pairs that produce it</th></tr></thead><tbody><tr><td><a href=\"/pal/felbat\">Felbat</a></td><td>1,280</td></tr><tr><td><a href=\"/pal/vanwyrm\">Vanwyrm</a></td><td>1,229</td></tr><tr><td><a href=\"/pal/azurobe\">Azurobe</a></td><td>1,090</td></tr><tr><td><a href=\"/pal/valentail\">Valentail</a></td><td>1,021</td></tr><tr><td><a href=\"/pal/warsect\">Warsect</a></td><td>858</td></tr><tr><td><a href=\"/pal/mammorest\">Mammorest</a></td><td>774</td></tr><tr><td><a href=\"/pal/venusa\">Venusa</a></td><td>712</td></tr><tr><td><a href=\"/pal/sweepa\">Sweepa</a></td><td>701</td></tr><tr><td><a href=\"/pal/dazemu\">Dazemu</a></td><td>679</td></tr><tr><td><a href=\"/pal/loomen\">Loomen</a></td><td>670</td></tr></tbody></table><h2>Species you can only breed from the same species</h2><p><a href=\"/pal/bastigor\">Bastigor</a> • <a href=\"/pal/bellanoir-libero\">Bellanoir Libero</a> • <a href=\"/pal/blazamut-ryu\">Blazamut Ryu</a> • <a href=\"/pal/cave-bat\">Cave Bat</a> • <a href=\"/pal/dandilord\">Dandilord</a> • <a href=\"/pal/faleris\">Faleris</a> • <a href=\"/pal/frostallion\">Frostallion</a> • <a href=\"/pal/green-slime\">Green Slime</a> • <a href=\"/pal/grizzbolt\">Grizzbolt</a> • <a href=\"/pal/gumoss-flower\">Gumoss (Flower)</a> • <a href=\"/pal/hartalis\">Hartalis</a> • <a href=\"/pal/jetragon\">Jetragon</a> • <a href=\"/pal/lyleen\">Lyleen</a> • <a href=\"/pal/mimog\">Mimog</a> • <a href=\"/pal/necromus\">Necromus</a> • <a href=\"/pal/neptilius\">Neptilius</a> • <a href=\"/pal/orserk\">Orserk</a> • <a href=\"/pal/paladius\">Paladius</a> • <a href=\"/pal/panthalus\">Panthalus</a> • <a href=\"/pal/selyne\">Selyne</a> • <a href=\"/pal/shadowbeak\">Shadowbeak</a> • <a href=\"/pal/shaolong\">Shaolong</a> • <a href=\"/pal/silvance\">Silvance</a> • <a href=\"/pal/xenogard\">Xenogard</a> • <a href=\"/pal/xenolord\">Xenolord</a> • <a href=\"/pal/xenovader\">Xenovader</a></p><p>For these, capture or obtain the species first; no mix of other parents will give it.</p><h2>How we counted</h2><p>Counts use the species-level breeding table, where a pair appears once regardless of which parent is male or female. One gender-dependent pair is excluded because its result depends on parent gender. Figures describe species outcomes only, not passive skills or stats.</p><h2>Cite this page</h2><p>You may quote these figures with a link to <a href=\"/guides/breeding-statistics\">this page</a>. Data derived from PalCalc (MIT license) and cross-checked against Palworld 1.0.5.</p>",
     },
     GuidePage {
         path: "/guides/breeding-farm-setup",
         title: "Palworld Breeding Farm Guide - Setup & Pairs (1.0.5)",
         description: seo_copy::GUIDE_BREEDING_FARM,
         heading: "Palworld Breeding Farm Guide",
-        body_html: "<p>A Breeding Farm needs one male and one female Pal that the breeding table supports, plus cake in the Breeding Farm chest. This page covers the planning side: which pairs to pick and what to expect. Check any pair in the <a href=\"/\">breeding calculator</a>.</p><h2>Setup checklist</h2><ol><li>Pick a target Pal and open its reverse lookup (for example <a href=\"/combos/anubis\">Anubis</a>).</li><li>Choose a pair you already own. Both parents must be a male and a female.</li><li>Keep cake in the Breeding Farm chest.</li><li>Collect the egg and use the incubator available in your game. See <a href=\"/egg-incubation-guide\">egg incubation</a>.</li></ol><h2>Same-species parents</h2><p>In the 1.0.5 table every Pal breeds true with its own species, and 28 Pals can only come from two of the same species. Catch or hatch one of these first. See the <a href=\"/guides/breeding-statistics\">breeding statistics</a>.</p><h2>Special combinations (81)</h2><p>81 parent pairs give a fixed result that differs from the normal table. 77 of them produce an element variant:</p><table><thead><tr><th>Variant</th><th>Special combos</th></tr></thead><tbody><tr><td>Cryst</td><td>17</td></tr><tr><td>Ignis</td><td>13</td></tr><tr><td>Noct</td><td>13</td></tr><tr><td>Terra</td><td>11</td></tr><tr><td>Lux</td><td>10</td></tr><tr><td>Primo</td><td>5</td></tr><tr><td>Aqua</td><td>4</td></tr><tr><td>Botan</td><td>3</td></tr><tr><td>Gild</td><td>1</td></tr></tbody></table><p>The other four give Red Slime, Blue Slime, Bellanoir and Celesdir. Browse them on the <a href=\"/palworld-breeding-combinations\">combinations page</a>.</p><h2>Multi-step plans</h2><p>If you do not own the right parents, the <a href=\"/palworld-chain-breeding\">chain planner</a> finds a route from the Pals you have. It predicts species only, not egg timers or passive traits.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
+        body_html: "<p>A Breeding Farm needs one male and one female Pal that the breeding table supports, plus cake in the Breeding Farm chest. This page covers the planning side: which pairs to pick and what to expect. Check any pair in the <a href=\"/\">breeding calculator</a>.</p><h2>Setup checklist</h2><ol><li>Pick a target Pal and open its reverse lookup (for example <a href=\"/combos/anubis\">Anubis</a>).</li><li>Choose a pair you already own. Both parents must be a male and a female.</li><li>Keep cake in the Breeding Farm chest.</li><li>Collect the egg and use the incubator available in your game. See <a href=\"/egg-incubation-guide\">egg incubation</a>.</li></ol><h2>Same-species parents</h2><p>In the 1.0.5 table every Pal breeds true with its own species, and 26 Pals can only come from two of the same species. Catch or hatch one of these first. See the <a href=\"/guides/breeding-statistics\">breeding statistics</a>.</p><h2>Special combinations (81)</h2><p>81 parent pairs give a fixed result that differs from the normal table. 77 of them produce an element variant:</p><table><thead><tr><th>Variant</th><th>Special combos</th></tr></thead><tbody><tr><td>Cryst</td><td>17</td></tr><tr><td>Ignis</td><td>13</td></tr><tr><td>Noct</td><td>13</td></tr><tr><td>Terra</td><td>11</td></tr><tr><td>Lux</td><td>10</td></tr><tr><td>Primo</td><td>5</td></tr><tr><td>Aqua</td><td>4</td></tr><tr><td>Botan</td><td>3</td></tr><tr><td>Gild</td><td>1</td></tr></tbody></table><p>The other four give Red Slime, Blue Slime, Bellanoir and Celesdir. Browse them on the <a href=\"/palworld-breeding-combinations\">combinations page</a>.</p><h2>Multi-step plans</h2><p>If you do not own the right parents, the <a href=\"/palworld-chain-breeding\">chain planner</a> finds a route from the Pals you have. It predicts species only, not egg timers or passive traits.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/about",
@@ -708,6 +722,56 @@ fn collect_combo_page_pairs(state: &AppState, max: Option<usize>) -> Vec<(String
         pairs.truncate(limit);
     }
     pairs
+}
+
+fn pal_is_indexable(route_count: usize) -> bool {
+    route_count > THIN_PAL_MAX_ROUTES
+}
+
+fn pal_robots(route_count: usize) -> &'static str {
+    if pal_is_indexable(route_count) { ROBOTS_INDEX } else { ROBOTS_NOINDEX }
+}
+
+/// Only special combinations carry content beyond the shared template (a fixed result that
+/// overrides the normal table); every other combo page is the same table with new names.
+fn combo_page_is_indexable(method: &str) -> bool {
+    method.contains("Special")
+}
+
+/// Combo pairs whose page is indexable, in sitemap order.
+fn indexable_combo_page_pairs(state: &AppState) -> Vec<(String, String)> {
+    let mut keys: Vec<&String> = state.special_combos.keys().collect();
+    keys.sort();
+    keys.into_iter()
+        .filter_map(|key| key.split_once('|'))
+        .filter(|(a, b)| {
+            calculate_child(state, a, b).is_some_and(|result| combo_page_is_indexable(&result.method))
+        })
+        .map(|(a, b)| (a.to_string(), b.to_string()))
+        .collect()
+}
+
+/// True when every route to `name` is two parents of the same species (read from the table,
+/// not guessed from breeding power).
+fn breeds_only_from_own_species(name: &str, combos: &[(String, String, String)]) -> bool {
+    !combos.is_empty() && combos.iter().all(|(a, b, _)| a == name && b == name)
+}
+
+fn same_species_note(name: &str, combos: &[(String, String, String)]) -> String {
+    if breeds_only_from_own_species(name, combos) {
+        format!(" {name} only breeds from two {name} parents.")
+    } else {
+        String::new()
+    }
+}
+
+fn showing_routes_note(cap: usize, total: usize) -> String {
+    let shown = total.min(cap);
+    if shown < total {
+        format!("Showing {shown} of {total} routes.")
+    } else {
+        format!("Showing all {}.", counted(total, "route", "routes"))
+    }
 }
 
 fn seo_combo_links_html(state: &AppState, max: Option<usize>) -> String {
@@ -1100,11 +1164,23 @@ fn build_pal_pages_directory_html(state: &AppState) -> String {
 fn build_combo_pages_directory_html(state: &AppState) -> String {
     let pairs = collect_combo_page_pairs(state, None);
     let count = pairs.len();
-    let links = pairs
+    let special: HashSet<String> = indexable_combo_page_pairs(state)
         .iter()
-        .map(|(a, b)| combo_pair_list_item(a, b))
-        .collect::<Vec<_>>()
-        .join("\n");
+        .map(|(a, b)| combo_key(a, b))
+        .collect();
+    let (special_pairs, other_pairs): (Vec<_>, Vec<_>) =
+        pairs.iter().partition(|(a, b)| special.contains(&combo_key(a, b)));
+    let list = |items: &[&(String, String)]| {
+        items
+            .iter()
+            .map(|(a, b)| combo_pair_list_item(a, b))
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+    let special_count = special_pairs.len();
+    let other_count = other_pairs.len();
+    let special_links = list(&special_pairs);
+    let other_links = list(&other_pairs);
     format!(
         r#"<!doctype html>
 <html lang="en">
@@ -1132,8 +1208,11 @@ fn build_combo_pages_directory_html(state: &AppState) -> String {
   <main class="wrap">
     <p class="muted"><a href="/">Home</a> / Combo Pages</p>
     <h1>Featured Breeding Combo Pages</h1>
-    <p class="muted">{count} parent-pair pages including special combinations and top legendary routes.</p>
-    <ul class="seo-directory-grid">{links}</ul>
+    <p class="muted">{count} featured parent-pair pages: {special_count} special combinations (indexed) and {other_count} other pairs.</p>
+    <h2>Special combinations ({special_count})</h2>
+    <ul class="seo-directory-grid">{special_links}</ul>
+    <h2>Other featured pairs ({other_count})</h2>
+    <ul class="seo-directory-grid">{other_links}</ul>
     <p><a href="/">Open breeding calculator</a></p>
   </main>
 </body>
@@ -1141,7 +1220,10 @@ fn build_combo_pages_directory_html(state: &AppState) -> String {
         base = state.base_url,
         count = count,
         description = combo_directory_description(count),
-        links = links,
+        special_count = special_count,
+        other_count = other_count,
+        special_links = special_links,
+        other_links = other_links,
         kid_bg = seo_kid_background_html(),
         SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
     )
@@ -1186,8 +1268,7 @@ async fn pal_detail_page(
         .ok_or_else(|| (StatusCode::NOT_FOUND, "Pal not found".to_string()))?;
 
     let location = state.pal_locations.get(&target.name);
-    let mut combos = combos_producing_target(&state, &target.name);
-    combos.truncate(25);
+    let combos = combos_producing_target(&state, &target.name);
 
     let related: Vec<&Pal> = state
         .pals
@@ -1234,7 +1315,6 @@ async fn combo_detail_page(
     let alternative_pairs: Vec<(String, String, String)> = combinations_for_target(&state, &result.child.name)
         .into_iter()
         .map(|pair| (pair.a, pair.b, pair.method))
-        .take(60)
         .collect();
 
     Ok(Html(build_combo_page_html(
@@ -1357,6 +1437,9 @@ async fn sitemap_hubs(State(state): State<AppState>) -> impl IntoResponse {
     let lastmod = DATA_UPDATED.to_string();
     let mut urls = String::new();
     for name in PRIORITY_BREED_TARGETS {
+        if !pal_is_indexable(combinations_for_target(&state, name).len()) {
+            continue;
+        }
         let slug = pal_slug(name);
         push_url(
             &mut urls,
@@ -1387,6 +1470,9 @@ async fn sitemap_pals(State(state): State<AppState>) -> impl IntoResponse {
     let lastmod = DATA_UPDATED.to_string();
     let mut urls = String::new();
     for pal in &state.pals {
+        if !pal_is_indexable(combinations_for_target(&state, &pal.name).len()) {
+            continue;
+        }
         let slug = pal_slug(&pal.name);
         push_url(
             &mut urls,
@@ -1401,13 +1487,8 @@ async fn sitemap_pals(State(state): State<AppState>) -> impl IntoResponse {
 async fn sitemap_combos(State(state): State<AppState>) -> impl IntoResponse {
     let lastmod = DATA_UPDATED.to_string();
     let mut urls = String::new();
-    let mut keys: Vec<_> = state.special_combos.keys().cloned().collect();
-    keys.sort();
-    for key in keys {
-        let Some((parent_a, parent_b)) = key.split_once('|') else {
-            continue;
-        };
-        let (a_slug, b_slug) = canonical_combo_slugs(parent_a, parent_b);
+    for (parent_a, parent_b) in indexable_combo_page_pairs(&state) {
+        let (a_slug, b_slug) = canonical_combo_slugs(&parent_a, &parent_b);
         let loc = format!("{}/combo/{a_slug}/{b_slug}", state.base_url);
         push_url(&mut urls, &loc, &lastmod, "0.7");
     }
@@ -1729,16 +1810,6 @@ fn combo_table_rows(combos: &[(String, String, String)], limit: usize) -> String
         .join("")
 }
 
-fn pal_tier_note(power: i32) -> &'static str {
-    if power <= 300 {
-        "high-priority rare / legendary tier"
-    } else if power <= 1500 {
-        "mid-game breeding target"
-    } else {
-        "often used as an accessible parent in chains"
-    }
-}
-
 fn build_how_to_breed_html(
     base_url: &str,
     target: &Pal,
@@ -1748,7 +1819,10 @@ fn build_how_to_breed_html(
     let page_url = format!("{base_url}/how-to-breed/{slug}");
     let title = format!("How to Breed {} in Palworld", target.name);
     let description = how_to_breed_meta_description(target, combos.len());
-    let rows = combo_table_rows(combos, 20);
+    let rows = combo_table_rows(combos, HOW_TO_BREED_ROUTE_CAP);
+    let showing = showing_routes_note(HOW_TO_BREED_ROUTE_CAP, combos.len());
+    let robots = pal_robots(combos.len());
+    let same_species = same_species_note(&target.name, combos);
     let calc_link = format!(
         "{}?target={}",
         PRIMARY_CALCULATOR_PATH,
@@ -1762,7 +1836,7 @@ fn build_how_to_breed_html(
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content="{description}" />
-    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="robots" content="{robots}" />
     <link rel="canonical" href="{page_url}" />
     <meta property="og:title" content="{title}" />
     <meta property="og:description" content="{description}" />
@@ -1790,7 +1864,7 @@ fn build_how_to_breed_html(
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/">Calculator</a> / <a href="/pal/{slug}">{pal_name}</a> / How to Breed</nav>
       <div class="card">
         <h1>How to Breed {pal_name} in Palworld</h1>
-        <p><strong>Breeding power:</strong> {power} — {tier_note}</p>
+        <p><strong>Breeding power:</strong> {power}. {combo_count_text} can produce {pal_name}.{same_species}</p>
         <p>Follow this route: unlock breeding → pick parents from the table → run eggs in the incubator. Use the <a href="{calc_link}">breeding calculator</a> with {pal_name} pre-selected as target.</p>
         <h2>Quick steps</h2>
         <ol>
@@ -1804,7 +1878,7 @@ fn build_how_to_breed_html(
       </div>
       <div class="card">
         <h2>Parent pairs that produce {pal_name}</h2>
-        <p>Showing up to 20 routes. Method shows special combo vs power average.</p>
+        <p>{showing} Method shows special combo vs power average.</p>
         <table><thead><tr><th>Parents</th><th>Method</th></tr></thead><tbody>{rows}</tbody></table>
       </div>
     </main>
@@ -1820,7 +1894,10 @@ fn build_how_to_breed_html(
         combo_count = combos.len(),
         rows = rows,
         calc_link = calc_link,
-        tier_note = pal_tier_note(target.power),
+        combo_count_text = counted(combos.len(), "parent route", "parent routes"),
+        same_species = same_species,
+        showing = showing,
+        robots = robots,
         SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
         SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
         SEO_FOOTER_STYLES = SEO_FOOTER_STYLES,
@@ -1838,7 +1915,9 @@ fn build_combos_hub_html(
     let page_url = format!("{base_url}/combos/{slug}");
     let title = format!("{} Breeding Combinations | Palworld", target.name);
     let description = combos_hub_meta_description(target, combos.len());
-    let rows = combo_table_rows(combos, 30);
+    let rows = combo_table_rows(combos, COMBOS_HUB_ROUTE_CAP);
+    let showing = showing_routes_note(COMBOS_HUB_ROUTE_CAP, combos.len());
+    let robots = pal_robots(combos.len());
     let calc_link = format!(
         "{}?target={}",
         PRIMARY_CALCULATOR_PATH,
@@ -1852,7 +1931,7 @@ fn build_combos_hub_html(
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content="{description}" />
-    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="robots" content="{robots}" />
     <link rel="canonical" href="{page_url}" />
     <meta property="og:title" content="{title}" />
     <meta property="og:description" content="{description}" />
@@ -1884,7 +1963,8 @@ fn build_combos_hub_html(
         <p><a href="/guides/best-breeding-combos">Best breeding combos</a> • <a href="/guides/capture-rate-explained">Capture rate guide</a> • <a href="/guides/breeding-not-working">Breeding fixes</a></p>
       </div>
       <div class="card">
-        <h2>All parent pairs</h2>
+        <h2>Parent pairs for {pal_name}</h2>
+        <p>{showing}</p>
         <table><thead><tr><th>Parents</th><th>Method</th></tr></thead><tbody>{rows}</tbody></table>
       </div>
     </main>
@@ -1899,6 +1979,8 @@ fn build_combos_hub_html(
         combo_count = combos.len(),
         rows = rows,
         calc_link = calc_link,
+        showing = showing,
+        robots = robots,
         SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
         SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
         kid_bg = seo_kid_background_html(),
@@ -2003,6 +2085,7 @@ fn build_pal_page_html(
     let description = pal_page_meta_description(target, combos.len());
     let combo_rows = combos
         .iter()
+        .take(PAL_PAGE_ROUTE_CAP)
         .map(|(a, b, method)| combo_pair_table_row(a, b, method))
         .collect::<Vec<_>>()
         .join("");
@@ -2032,13 +2115,13 @@ fn build_pal_page_html(
         .unwrap_or("Palpagos Island (search in-game map)");
     let coords = location.map(|l| l.coords.as_str()).unwrap_or("Open Map tab");
     let dynamic_summary = format!(
-        "This page lists {} parent pair routes that can produce {} using live breeding logic. With breeding power {}, {} is {} to plan in long chains.",
-        combos.len(),
+        "{} can produce {} in the imported breeding table.{}",
+        counted(combos.len(), "parent pair route", "parent pair routes"),
         target.name,
-        target.power,
-        target.name,
-        pal_tier_note(target.power)
+        same_species_note(&target.name, combos)
     );
+    let showing = showing_routes_note(PAL_PAGE_ROUTE_CAP, combos.len());
+    let robots = pal_robots(combos.len());
     let combo_count = combos.len();
     let calc_link = format!(
         "{}?target={}",
@@ -2058,7 +2141,7 @@ fn build_pal_page_html(
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content="{description}" />
-    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="robots" content="{robots}" />
     <link rel="canonical" href="{page_url}" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="{title}" />
@@ -2115,6 +2198,7 @@ fn build_pal_page_html(
       </div>
       <div class="card">
         <h2>{pal_name} Parent Combinations</h2>
+        <p>{showing}</p>
         <table>
           <thead><tr><th>Parent A</th><th>Parent B</th><th>Method</th></tr></thead>
           <tbody>{combo_rows}</tbody>
@@ -2147,6 +2231,8 @@ fn build_pal_page_html(
         guide_links = guide_links,
         dynamic_summary = dynamic_summary,
         combo_count = combo_count,
+        showing = showing,
+        robots = robots,
         calc_link = calc_link,
         pal_query = pal_query,
         SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
@@ -2271,6 +2357,7 @@ fn build_combo_page_html(
     );
     let alt_rows = alternatives
         .iter()
+        .take(COMBO_PAGE_ALTERNATIVES_CAP)
         .map(|(a, b, method)| combo_pair_table_row(a, b, method))
         .collect::<Vec<_>>()
         .join("");
@@ -2306,11 +2393,8 @@ fn build_combo_page_html(
         .distance
         .map(|d| d.to_string())
         .unwrap_or_else(|| "N/A".to_string());
-    let robots = if result.method.contains("Special") {
-        "index,follow,max-image-preview:large"
-    } else {
-        "noindex,follow"
-    };
+    let robots = if combo_page_is_indexable(&result.method) { ROBOTS_INDEX } else { ROBOTS_NOINDEX };
+    let showing = showing_routes_note(COMBO_PAGE_ALTERNATIVES_CAP, alternatives.len());
 
     format!(
         r#"<!doctype html>
@@ -2383,6 +2467,7 @@ fn build_combo_page_html(
       </div>
       <div class="card">
         <h2>Alternative Parent Routes for {child_name}</h2>
+        <p>{showing}</p>
         <table>
           <thead><tr><th>Parent A</th><th>Parent B</th><th>Method</th></tr></thead>
           <tbody>{alt_rows}</tbody>
@@ -2411,6 +2496,7 @@ fn build_combo_page_html(
         method = result.method,
         distance = distance,
         alt_rows = alt_rows,
+        showing = showing,
         combo_hero = combo_hero,
         SEO_PAL_IMG_STYLES = SEO_PAL_IMG_STYLES,
         SEO_BACKGROUND_STYLES = SEO_BACKGROUND_STYLES,
@@ -2499,18 +2585,23 @@ fn combinations_section_html(state: &AppState, target: &str) -> String {
 }
 
 fn legendary_pal_links_html(state: &AppState) -> String {
-    let mut legends: Vec<_> = state.pals.iter().filter(|p| p.power <= 200).collect();
-    legends.sort_by_key(|p| p.power);
-    let links = legends
+    let mut own_species_only: Vec<_> = state
+        .pals
+        .iter()
+        .filter(|p| breeds_only_from_own_species(&p.name, &combos_producing_target(state, &p.name)))
+        .collect();
+    own_species_only.sort_by(|a, b| a.name.cmp(&b.name));
+    let count = own_species_only.len();
+    let links = own_species_only
         .iter()
         .map(|p| {
             let slug = pal_slug(&p.name);
-            format!("<a href=\"/pal/{slug}\">{}</a> (power {})", p.name, p.power)
+            format!("<a href=\"/pal/{slug}\">{}</a>", p.name)
         })
         .collect::<Vec<_>>()
         .join(" • ");
     format!(
-        r#"<div class="card"><h2>Legendary Pal pages</h2><p>{links}</p></div>"#
+        r#"<div class="card"><h2>Pals that only breed from their own species ({count})</h2><p>The imported table has no cross-species route to these Pals, so you need two of the same species.</p><p>{links}</p></div>"#
     )
 }
 
@@ -2756,5 +2847,143 @@ mod source_table_regression_tests {
             })).await;
             assert_eq!(response.unwrap_err().0,StatusCode::BAD_REQUEST);
         }
+    }
+}
+
+#[cfg(test)]
+mod thin_page_floor_tests {
+    use super::*;
+    use axum::body::to_bytes;
+
+    fn state() -> AppState {
+        build_app_state(include_str!("../index.html").into(), "https://example.com".into())
+    }
+
+    fn routes(state: &AppState, name: &str) -> Vec<(String, String, String)> {
+        combos_producing_target(state, name)
+    }
+
+    fn pal_split(state: &AppState) -> (Vec<Pal>, Vec<Pal>) {
+        state.pals.iter().cloned().partition(|pal| pal_is_indexable(routes(state, &pal.name).len()))
+    }
+
+    async fn body_text(response: axum::response::Response) -> String {
+        String::from_utf8(to_bytes(response.into_body(), 16 * 1024 * 1024).await.unwrap().to_vec()).unwrap()
+    }
+
+    #[test]
+    fn floor_is_three_routes() {
+        assert!(!pal_is_indexable(0));
+        assert!(!pal_is_indexable(THIN_PAL_MAX_ROUTES));
+        assert!(pal_is_indexable(THIN_PAL_MAX_ROUTES + 1));
+    }
+
+    #[test]
+    fn thin_pal_pages_are_noindex_and_others_are_indexed() {
+        let state = state();
+        let (indexed, thin) = pal_split(&state);
+        assert!(!thin.is_empty() && !indexed.is_empty());
+        for (pal, expect) in thin.iter().map(|p| (p, ROBOTS_NOINDEX)).chain(indexed.iter().map(|p| (p, ROBOTS_INDEX))) {
+            let combos = routes(&state, &pal.name);
+            let tag = format!(r#"<meta name="robots" content="{expect}" />"#);
+            for html in [
+                build_pal_page_html(&state.base_url, pal, None, &combos, &[]),
+                build_how_to_breed_html(&state.base_url, pal, &combos),
+                build_combos_hub_html(&state.base_url, pal, &combos),
+            ] {
+                assert!(html.contains(&tag), "{} should carry {expect}", pal.name);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn sitemaps_leave_out_noindexed_pages() {
+        let state = state();
+        let (indexed, thin) = pal_split(&state);
+        let pals = body_text(sitemap_pals(State(state.clone())).await.into_response()).await;
+        let hubs = body_text(sitemap_hubs(State(state.clone())).await.into_response()).await;
+        for pal in &thin {
+            let slug = pal_slug(&pal.name);
+            assert!(!pals.contains(&format!("/pal/{slug}</loc>")), "{slug} in pal sitemap");
+            assert!(!hubs.contains(&format!("/how-to-breed/{slug}</loc>")), "{slug} in hub sitemap");
+            assert!(!hubs.contains(&format!("/combos/{slug}</loc>")), "{slug} in hub sitemap");
+        }
+        for pal in &indexed {
+            assert!(pals.contains(&format!("/pal/{}</loc>", pal_slug(&pal.name))));
+        }
+        // Every PRIORITY target that clears the floor still has its hub pages listed.
+        for name in PRIORITY_BREED_TARGETS {
+            let listed = hubs.contains(&format!("/how-to-breed/{}</loc>", pal_slug(name)));
+            assert_eq!(listed, pal_is_indexable(routes(&state, name).len()), "{name}");
+        }
+
+        let combos = body_text(sitemap_combos(State(state.clone())).await.into_response()).await;
+        let listed = combos.matches("<loc>").count();
+        assert_eq!(listed, indexable_combo_page_pairs(&state).len());
+        assert!(listed > 0);
+        for (a, b) in collect_combo_page_pairs(&state, None) {
+            let Some(result) = calculate_child(&state, &a, &b) else { continue };
+            let in_sitemap = combos.contains(&format!("{}</loc>", combo_href(&a, &b)));
+            assert_eq!(in_sitemap, combo_page_is_indexable(&result.method), "{a} + {b}");
+            let (pa, pb) = (find_pal_in_state(&state, &a).unwrap(), find_pal_in_state(&state, &b).unwrap());
+            let html = build_combo_page_html(&state.base_url, pa, pb, &result, &[]);
+            let robots = if in_sitemap { ROBOTS_INDEX } else { ROBOTS_NOINDEX };
+            assert!(html.contains(&format!(r#"content="{robots}""#)), "{a} + {b}");
+        }
+    }
+
+    #[test]
+    fn capped_lists_show_cap_and_total() {
+        let state = state();
+        let anubis = find_pal_in_state(&state, "Anubis").unwrap().clone();
+        let combos = routes(&state, "Anubis");
+        let total = combos.len();
+        assert!(total > COMBOS_HUB_ROUTE_CAP);
+        let pal_html = build_pal_page_html(&state.base_url, &anubis, None, &combos, &[]);
+        assert!(pal_html.contains(&format!("Showing {PAL_PAGE_ROUTE_CAP} of {total} routes.")));
+        assert!(pal_html.contains(&format!("{total} parent pair routes can produce Anubis")));
+        assert!(build_how_to_breed_html(&state.base_url, &anubis, &combos)
+            .contains(&format!("Showing {HOW_TO_BREED_ROUTE_CAP} of {total} routes.")));
+        assert!(build_combos_hub_html(&state.base_url, &anubis, &combos)
+            .contains(&format!("Showing {COMBOS_HUB_ROUTE_CAP} of {total} routes.")));
+        assert_eq!(showing_routes_note(25, 3), "Showing all 3 routes.");
+    }
+
+    #[test]
+    fn tier_labels_come_from_the_table_not_breeding_power() {
+        let state = state();
+        for pal in &state.pals {
+            let combos = routes(&state, &pal.name);
+            let html = build_pal_page_html(&state.base_url, pal, None, &combos, &[])
+                + &build_how_to_breed_html(&state.base_url, pal, &combos);
+            assert!(!html.contains("legendary tier"), "{}", pal.name);
+        }
+        let jetragon = routes(&state, "Jetragon");
+        assert!(breeds_only_from_own_species("Jetragon", &jetragon));
+        assert!(!breeds_only_from_own_species("Anubis", &routes(&state, "Anubis")));
+        let legend_list = legendary_pal_links_html(&state);
+        assert!(legend_list.contains("/pal/jetragon"));
+        assert!(!legend_list.contains("/pal/anubis\""));
+    }
+
+    #[test]
+    fn same_species_counts_in_guides_match_the_table() {
+        let state = state();
+        let n = state.pals.iter().filter(|p| breeds_only_from_own_species(&p.name, &routes(&state, &p.name))).count();
+        let guides: String = GUIDE_PAGES.iter().map(|g| g.body_html).collect();
+        assert!(guides.contains(&format!("<strong>{n}</strong> species can only be produced")));
+        assert!(guides.contains(&format!("{n} Pals can only come from two of the same species")));
+        assert!(legendary_pal_links_html(&state).contains(&format!("own species ({n})")));
+    }
+
+    #[test]
+    fn combo_directory_counts_match_its_lists_and_the_sitemap() {
+        let state = state();
+        let html = build_combo_pages_directory_html(&state);
+        let special = indexable_combo_page_pairs(&state).len();
+        let total = collect_combo_page_pairs(&state, None).len();
+        assert!(html.contains(&format!("<h2>Special combinations ({special})</h2>")));
+        assert!(html.contains(&format!("<h2>Other featured pairs ({})</h2>", total - special)));
+        assert_eq!(html.matches("<li><a href=\"/combo/").count(), total);
     }
 }
