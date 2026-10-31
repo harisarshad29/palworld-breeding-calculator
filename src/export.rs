@@ -249,6 +249,9 @@ fn netlify_redirects(base_url: &str, redirects: &BTreeMap<String, (u16, String)>
     }
     // Existing files always win over the rules below (no `!`), like the Apache setup.
     out.push_str("/api/*  /api/:splat.json  200\n");
+    // Combo pages that are not pre-rendered still get Google clicks, so send those
+    // visitors to the calculator with both parents filled in instead of a 404.
+    out.push_str("/combo/:a/:b  /?parentA=:a&parentB=:b  302\n");
     out
 }
 
@@ -302,8 +305,9 @@ RewriteCond %{{REQUEST_FILENAME}} !-f
 RewriteCond %{{DOCUMENT_ROOT}}/$1.html -f
 RewriteRule ^(.+)$ $1.html [L]
 
-# Combo URLs that were not pre-rendered fall through to the 404 page, so crawlers
-# do not get an endless set of redirects to the calculator.
+# Combo pages that are not pre-rendered still get Google clicks: open them in the calculator
+RewriteCond %{{REQUEST_FILENAME}} !-f
+RewriteRule ^combo/([^/.]+)/([^/.]+)$ https://{host}/?parentA=$1&parentB=$2 [R=302,L]
 </IfModule>
 
 <IfModule mod_deflate.c>
