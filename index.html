@@ -17,10 +17,11 @@
     </style>
     <link rel="preload" href="/styles.css" as="style" />
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="preload" href="/app.js?v=20261025b" as="script" />
+    <link rel="modulepreload" href="/app.js?v=20261031" />
+    <link rel="preload" href="/api/bootstrap" as="fetch" crossorigin="anonymous" />
   </head>
   <body>
-    <div id="kidBg" class="kid-bg"></div>
+    <div id="kidBg" class="kid-bg" aria-hidden="true"></div>
     <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
     <div class="top-nav">
       <div class="nav-inner">
@@ -37,7 +38,7 @@
     <a class="skip-link" href="#main">Skip to calculator</a>
     <main id="main" class="container">
       <header>
-        <div id="heroStrip" class="hero-strip"></div>
+        <div id="heroStrip" class="hero-strip"><!--HERO_STRIP--></div>
         <div class="header-row">
           <h1 id="siteH1">__SITE_H1__</h1>
           <div class="header-actions">
@@ -119,16 +120,18 @@
             Pal You Own
             <select id="chainOwned"></select>
           </label>
-          <label>
-            Additional Owned Species (optional; select multiple)
-            <select id="chainAdditional" multiple size="6" aria-describedby="chainRosterHelp"></select>
-          </label>
+          <div class="chip-picker">
+            <label for="chainAdditionalSearch">Additional Owned Species (optional)</label>
+            <ul id="chainAdditionalChips" class="chip-list" aria-label="Additional owned species"></ul>
+            <input id="chainAdditionalSearch" type="search" placeholder="Search species to add" autocomplete="off" enterkeyhint="done" aria-describedby="chainRosterHelp" aria-controls="chainAdditionalOptions" />
+            <div id="chainAdditionalOptions" class="chip-options" hidden></div>
+          </div>
           <label>
             Goal Pal
             <select id="chainGoal"></select>
           </label>
         </div>
-        <p id="chainRosterHelp" class="muted">Choose any other species already in your Pal Box. On a keyboard, hold Ctrl (Windows) or Command (Mac) to select multiple.</p>
+        <p id="chainRosterHelp" class="muted">Type a name and tap it to add any other species already in your Pal Box. Tap × on a chip to remove it.</p>
         <button id="findChainBtn" type="button">Find Breeding Chain</button>
         <p class="muted chain-hint">The search is bounded and may not find every route. Both parent species must be available before a step can be completed.</p>
         <div id="chainResult" class="chain-result" role="status" aria-live="polite"></div>
@@ -142,7 +145,9 @@
             <input id="palSearch" placeholder="Type to filter (e.g. Jetragon)" autocomplete="off" />
           </label>
         </div>
-        <div id="palGrid" class="pal-grid"></div>
+        <p id="palGridStatus" class="muted pal-grid-count">Featured Pals. Tap one to use it in the calculator.</p>
+        <div id="palGrid" class="pal-grid"><!--FEATURED_PALS--></div>
+        <button type="button" id="showAllPalsBtn" class="ghost-btn load-more-pals">Show all Pals</button>
       </section>
 
       <section class="card seo-content">
@@ -203,7 +208,7 @@
 
     <!--SITE_FOOTER-->
 
-    <script type="module" src="/app.js?v=20261025b"></script>
+    <script type="module" src="/app.js?v=20261031"></script>
   </body>
 </html>
 

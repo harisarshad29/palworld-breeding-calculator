@@ -25,12 +25,18 @@ const arenaCard = document.getElementById("arenaCard");
 const reverseCard = document.getElementById("reverseCard");
 const chainCard = document.getElementById("chainCard");
 const chainOwnedSelect = document.getElementById("chainOwned");
-const chainAdditionalSelect = document.getElementById("chainAdditional");
+const chainAdditionalSearch = document.getElementById("chainAdditionalSearch");
+const chainAdditionalChips = document.getElementById("chainAdditionalChips");
+const chainAdditionalOptions = document.getElementById("chainAdditionalOptions");
 const chainGoalSelect = document.getElementById("chainGoal");
 const findChainBtn = document.getElementById("findChainBtn");
 const chainResultDiv = document.getElementById("chainResult");
 const palBoxCard = document.getElementById("palBoxCard");
 const heroStrip = document.getElementById("heroStrip");
+const palGridStatus = document.getElementById("palGridStatus");
+const showAllPalsBtn = document.getElementById("showAllPalsBtn");
+// Featured cards are rendered by the server; the full list is built on demand.
+const featuredPalCards = Array.from(palGrid?.children || []);
 
 const pathToView = {
   "/": "breeding",
@@ -104,10 +110,10 @@ let appData = {
   special_combos: {}
 };
 
-const PAL_GRID_INITIAL = 24;
+const PAL_GRID_CHUNK = 48;
 const COMBO_LIST_WITH_IMAGES = 24;
 const COMBO_LIST_MAX = 80;
-const PAL_GRID_SEARCH_ALL = 9999;
+const CHAIN_SUGGESTIONS_MAX = 8;
 
 let palByNameLower = new Map();
 let palBySlugMap = new Map();
@@ -125,8 +131,35 @@ const serverRouteIntro =
   document.getElementById("routeSubtitle")?.textContent?.trim() ||
   "";
 
+// Same wording as `pal_icon_alt` in src/main.rs.
 function getPalAltText(palName) {
-  return `${palName} Palworld breeding combination`;
+  return `${palName} Palworld Pal icon`;
+}
+
+function debounce(fn, ms) {
+  let timer = null;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
+// The first toLocaleString() call loads ICU locale data: ~200ms on a throttled phone CPU.
+function formatCount(value) {
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function yieldToMain() {
+  if (globalThis.scheduler?.yield) return globalThis.scheduler.yield();
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+function whenIdle(fn, timeout = 200) {
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(fn, { timeout });
+  } else {
+    setTimeout(fn, 16);
+  }
 }
 
 function palSlug(palName) {
@@ -386,7 +419,7 @@ function buildPalImage(palName, className = "pal-image") {
   const cdn = "";
   const size = className.includes("grid") ? 100 : className.includes("hero") ? 42 : 36;
   
-  return `<img class="${escapeHtml(className)}" src="${localThumb}" alt="${getPalAltText(palName)}" width="${size}" height="${size}" loading="lazy" decoding="async"
+  return `<img class="${escapeHtml(className)}" src="${localThumb}" alt="${escapeHtml(getPalAltText(palName))}" width="${size}" height="${size}" loading="lazy" decoding="async"
     data-full="${localFull}" data-cdn="${cdn}" data-placeholder="${PAL_PLACEHOLDER}"
     onerror="window.__palImgFallback&&window.__palImgFallback(this)" />`;
 }
@@ -534,12 +567,22 @@ function scheduleRenderResult(options = {}) {
   }, 50);
 }
 
+// Built once, then updated in place so a recalculation only swaps text and image sources.
+let resultView = null;
+
+function setArenaCard(card, palName) {
+  const img = card.querySelector("img");
+  delete img.dataset.fallback;
+  img.src = getPalImageUrl(palName);
+  img.dataset.full = getPalFullImageUrl(palName);
+  img.alt = getPalAltText(palName);
+  card.querySelector(".arena-name").textContent = palName;
+}
+
 function paintResult(calc, parentA, parentB, celebrate) {
-  const details =
-    typeof calc.distance === "number"
-      ? `<div class="muted">Closest power distance: ${calc.distance}</div>`
-      : "";
-  resultDiv.innerHTML = `
+  if (!resultView) {
+    const root = document.createElement("div");
+    root.innerHTML = `
       <div class="arena">
         ${buildArenaCard(parentA, "parent")}
         <span class="flow-symbol">+</span>
@@ -547,9 +590,19 @@ function paintResult(calc, parentA, parentB, celebrate) {
         <span class="flow-symbol">=</span>
         ${buildArenaCard(calc.child.name, "child")}
       </div>
-      <div class="muted">${escapeHtml(calc.method)}</div>
-      ${details}
-    `;
+      <div class="muted result-method"></div>
+      <div class="muted result-distance" hidden></div>`;
+    resultView = { root, cards: root.querySelectorAll(".arena-card"), method: root.querySelector(".result-method"), distance: root.querySelector(".result-distance") };
+  }
+  const [cardA, cardB, cardChild] = resultView.cards;
+  setArenaCard(cardA, parentA);
+  setArenaCard(cardB, parentB);
+  setArenaCard(cardChild, calc.child.name);
+  resultView.method.textContent = calc.method;
+  const hasDistance = typeof calc.distance === "number";
+  resultView.distance.hidden = !hasDistance;
+  resultView.distance.textContent = hasDistance ? `Closest power distance: ${calc.distance}` : "";
+  if (resultView.root.parentNode !== resultDiv) resultDiv.replaceChildren(resultView.root);
   if (celebrate) {
     celebrateConfetti();
   }
@@ -865,7 +918,7 @@ async function renderChainBreeding() {
   chainResultDiv.innerHTML = `<span class="muted">Finding chain from ${escapeHtml(owned)} to ${escapeHtml(goal)}…</span>`;
   if (findChainBtn) findChainBtn.disabled = true;
 
-  const alsoOwned = Array.from(chainAdditionalSelect?.selectedOptions || []).map((option) => option.value);
+  const alsoOwned = [...chainRoster];
   const params = new URLSearchParams({ owned, goal });
   if (alsoOwned.length) params.set("also_owned", alsoOwned.join(","));
   const shareUrl = `${globalThis.location.pathname}?${params}`;
@@ -1002,38 +1055,109 @@ async function renderCombinations() {
   }
 }
 
-function renderPalGrid(showAll = false) {
-  const query = String(palSearch.value || "").trim().toLowerCase();
-  const filtered = appData.pals.filter((pal) => pal.name.toLowerCase().includes(query));
-  const limit = showAll || query ? filtered.length : PAL_GRID_INITIAL;
-  const visible = filtered.slice(0, limit);
+// Cards are created once per Pal and reused, so searching only moves existing nodes.
+const palCardCache = new Map();
+let palGridExpanded = false;
+let palGridToken = 0;
 
-  document.querySelector(".load-more-pals")?.remove();
-  document.querySelector(".pal-grid-count")?.remove();
-  palGrid.innerHTML = visible
-    .map(
-      (pal) => `
-      <button class="pal-grid-card" type="button" data-pal-name="${escapeHtml(pal.name)}">
-        ${buildPalImage(pal.name, "pal-grid-img")}
-        <div class="pal-grid-name">${escapeHtml(pal.name)}</div>
-        <div class="pal-power">Power ${pal.power}</div>
-      </button>
-    `
-    )
-    .join("");
-
-  if (!showAll && !query && filtered.length > visible.length) {
-    palGrid.insertAdjacentHTML(
-      "afterend",
-      `<button type="button" class="ghost-btn load-more-pals">Show all ${filtered.length} Pals (${visible.length} visible)</button>`
-    );
-    document.querySelector(".load-more-pals")?.addEventListener("click", () => renderPalGrid(true));
-  } else if (!query && filtered.length > 0) {
-    palGrid.insertAdjacentHTML(
-      "afterend",
-      `<p class="muted pal-grid-count">${filtered.length} Pals in database</p>`
-    );
+function palCard(pal) {
+  let card = palCardCache.get(pal.name);
+  if (!card) {
+    const template = document.createElement("template");
+    template.innerHTML = `<button class="pal-grid-card" type="button" data-pal-name="${escapeHtml(pal.name)}">${buildPalImage(pal.name, "pal-grid-img")}<div class="pal-grid-name">${escapeHtml(pal.name)}</div><div class="pal-power">Power ${pal.power}</div></button>`;
+    card = template.content.firstElementChild;
+    palCardCache.set(pal.name, card);
   }
+  return card;
+}
+
+// Appends cards in idle-time chunks so a long list never blocks input.
+function fillPalGrid(pals) {
+  const token = ++palGridToken;
+  palGrid.replaceChildren();
+  let next = 0;
+  const appendChunk = () => {
+    if (token !== palGridToken) return;
+    const fragment = document.createDocumentFragment();
+    const end = Math.min(next + PAL_GRID_CHUNK, pals.length);
+    for (; next < end; next++) fragment.appendChild(palCard(pals[next]));
+    palGrid.appendChild(fragment);
+    if (next < pals.length) whenIdle(appendChunk);
+  };
+  appendChunk();
+}
+
+function renderPalGrid() {
+  const query = String(palSearch.value || "").trim().toLowerCase();
+  if (showAllPalsBtn) {
+    showAllPalsBtn.hidden = palGridExpanded || Boolean(query);
+    showAllPalsBtn.textContent = `Show all ${appData.pals.length} Pals`;
+  }
+  if (!query && !palGridExpanded) {
+    ++palGridToken;
+    palGrid.replaceChildren(...featuredPalCards);
+    if (palGridStatus) palGridStatus.textContent = "Featured Pals. Tap one to use it in the calculator.";
+    return;
+  }
+  const pals = query ? appData.pals.filter((pal) => pal.name.toLowerCase().includes(query)) : appData.pals;
+  if (palGridStatus) {
+    palGridStatus.textContent = query
+      ? `${pals.length} Pal${pals.length === 1 ? "" : "s"} match "${palSearch.value.trim()}".`
+      : `${pals.length} Pals in database.`;
+  }
+  fillPalGrid(pals);
+}
+
+// ---- Chain planner roster: searchable chips (works with touch, unlike <select multiple>) ----
+const chainRoster = [];
+
+function renderChainChips() {
+  if (!chainAdditionalChips) return;
+  chainAdditionalChips.replaceChildren(
+    ...chainRoster.map((name) => {
+      const chip = document.createElement("li");
+      chip.className = "roster-chip";
+      chip.innerHTML = `<span>${escapeHtml(name)}</span><button type="button" class="roster-chip-remove" data-remove="${escapeHtml(name)}" aria-label="Remove ${escapeHtml(name)}">×</button>`;
+      return chip;
+    })
+  );
+}
+
+function renderChainSuggestions() {
+  if (!chainAdditionalOptions || !chainAdditionalSearch) return;
+  const query = chainAdditionalSearch.value.trim().toLowerCase();
+  if (!query) {
+    chainAdditionalOptions.hidden = true;
+    chainAdditionalOptions.replaceChildren();
+    return;
+  }
+  const matches = appData.pals
+    .filter((pal) => pal.name.toLowerCase().includes(query) && !chainRoster.includes(pal.name))
+    .sort((x, y) => Number(!x.name.toLowerCase().startsWith(query)) - Number(!y.name.toLowerCase().startsWith(query)))
+    .slice(0, CHAIN_SUGGESTIONS_MAX);
+  chainAdditionalOptions.innerHTML = matches.length
+    ? matches
+        .map((pal) => `<button type="button" class="chip-option" data-add="${escapeHtml(pal.name)}" aria-label="Add ${escapeHtml(pal.name)}">+ ${escapeHtml(pal.name)}</button>`)
+        .join("")
+    : `<span class="muted">No matching species.</span>`;
+  chainAdditionalOptions.hidden = false;
+}
+
+function addToChainRoster(name) {
+  const pal = palByNameLower.get(String(name).toLowerCase());
+  if (!pal || chainRoster.includes(pal.name)) return;
+  chainRoster.push(pal.name);
+  renderChainChips();
+  if (chainAdditionalSearch) chainAdditionalSearch.value = "";
+  renderChainSuggestions();
+}
+
+function removeFromChainRoster(name) {
+  const index = chainRoster.indexOf(name);
+  if (index < 0) return;
+  chainRoster.splice(index, 1);
+  renderChainChips();
+  renderChainSuggestions();
 }
 
 function quickPickPal(palName) {
@@ -1106,25 +1230,33 @@ function resolvePalName(raw, palNames) {
   return null;
 }
 
-function applyQueryFromUrl() {
+function applyParentQueryFromUrl() {
   const params = new URLSearchParams(globalThis.location.search);
-  const parentA = params.get("parentA") || params.get("parent_a");
-  const parentB = params.get("parentB") || params.get("parent_b");
-  const target = params.get("target") || params.get("child");
-  const owned = params.get("owned");
-  const goal = params.get("goal");
   const palNames = new Set(appData.pals.map((p) => p.name));
-
-  const matchedA = resolvePalName(parentA, palNames);
-  const matchedB = resolvePalName(parentB, palNames);
-  const matchedTarget = resolvePalName(target, palNames);
-  const matchedOwned = resolvePalName(owned, palNames);
-  const matchedGoal = resolvePalName(goal, palNames);
+  const matchedA = resolvePalName(params.get("parentA") || params.get("parent_a"), palNames);
+  const matchedB = resolvePalName(params.get("parentB") || params.get("parent_b"), palNames);
   if (matchedA) {
     parentASelect.value = matchedA;
   }
   if (matchedB) {
     parentBSelect.value = matchedB;
+  }
+}
+
+/** Reverse lookup and chain planner fields; run after their selects are filled. */
+function applyQueryFromUrl() {
+  const params = new URLSearchParams(globalThis.location.search);
+  const target = params.get("target") || params.get("child");
+  const owned = params.get("owned");
+  const goal = params.get("goal");
+  const palNames = new Set(appData.pals.map((p) => p.name));
+
+  const matchedTarget = resolvePalName(target, palNames);
+  const matchedOwned = resolvePalName(owned, palNames);
+  const matchedGoal = resolvePalName(goal, palNames);
+  for (const name of params.get("also_owned")?.split(",") || []) {
+    const matched = resolvePalName(name.trim(), palNames);
+    if (matched) addToChainRoster(matched);
   }
   if (matchedTarget) {
     targetChildSelect.value = matchedTarget;
@@ -1147,43 +1279,33 @@ async function bootstrap() {
   const dataNote = document.getElementById("dataNote");
   if (dataNote && appData.data_provenance) {
     const metadata = appData.data_provenance;
-    dataNote.textContent = `${appData.pals.length} species · ${metadata.outcome_count.toLocaleString()} source outcomes · Data imported ${metadata.imported_on}. Species predictions use a pinned PalCalc community snapshot; mutations and passive traits are not modeled.`;
+    dataNote.textContent = `${appData.pals.length} species · ${formatCount(metadata.outcome_count)} source outcomes · Data imported ${metadata.imported_on}. Species predictions use a pinned PalCalc community snapshot; mutations and passive traits are not modeled.`;
   }
-  lastHeroView = "";
+  // The server already rendered the breeding hero strip; keep it on the homepage.
+  lastHeroView = heroStrip?.childElementCount ? "breeding" : "";
+  for (const card of featuredPalCards) {
+    const pal = palByNameLower.get(card.dataset.palName?.toLowerCase());
+    if (pal) palCardCache.set(pal.name, card);
+  }
+  // The calculator comes first; the other selects are filled when the browser is idle.
   populateSelect(parentASelect);
   populateSelect(parentBSelect);
-  populateSelect(targetChildSelect);
-  if (chainOwnedSelect) {
-    populateSelect(chainOwnedSelect);
-  }
-  if (chainGoalSelect) {
-    populateSelect(chainGoalSelect);
-  }
-  if (chainAdditionalSelect) {
-    populateSelect(chainAdditionalSelect);
-    for (const option of chainAdditionalSelect.options) option.selected = false;
-    const savedRoster = new URLSearchParams(globalThis.location.search).get("also_owned")?.split(",") || [];
-    for (const option of chainAdditionalSelect.options) option.selected = savedRoster.includes(option.value);
-  }
 
   // A filled <select> always reports the first option, so an empty-value
   // check never applied these defaults and both parents stayed the same Pal.
   parentASelect.value = "Anubis";
   parentBSelect.value = "Jetragon";
-  targetChildSelect.value = "Frostallion";
-
-  const { hasTarget, hasChain } = applyQueryFromUrl();
+  applyParentQueryFromUrl();
+  renderResult();
+  // Let the calculator paint before the rest of the page is wired up.
+  await yieldToMain();
 
   const savedTheme = localStorage.getItem("palworldTheme");
   setTheme(savedTheme === "light" ? "light" : "dark");
 
   renderStatsBar();
-  renderPalGrid(false);
-  if (typeof requestIdleCallback === "function") {
-    requestIdleCallback(() => renderKidBackground(), { timeout: 2000 });
-  } else {
-    setTimeout(renderKidBackground, 300);
-  }
+  renderPalGrid();
+  whenIdle(renderKidBackground, 2000);
   const initialView = resolveViewFromPath(globalThis.location.pathname);
   const panelPromise = renderDatabasePanel(initialView);
   if (initialView === "map") {
@@ -1192,8 +1314,19 @@ async function bootstrap() {
     void panelPromise;
   }
 
-  const runDeferred = () => {
-    void renderResult();
+  const secondarySelects = [targetChildSelect, chainOwnedSelect, chainGoalSelect].filter(Boolean);
+  const populateNextSelect = () => {
+    const select = secondarySelects.shift();
+    if (select) {
+      populateSelect(select);
+      whenIdle(populateNextSelect, 300);
+      return;
+    }
+    targetChildSelect.value = "Frostallion";
+    runDeferred(applyQueryFromUrl());
+  };
+
+  const runDeferred = ({ hasTarget, hasChain }) => {
     if (hasTarget) {
       void renderCombinations();
     } else if (combosDiv) {
@@ -1207,11 +1340,7 @@ async function bootstrap() {
         '<span class="muted">Pick the Pal you own and your goal, then click <strong>Find Breeding Chain</strong>.</span>';
     }
   };
-  if (typeof requestIdleCallback === "function") {
-    requestIdleCallback(runDeferred, { timeout: 600 });
-  } else {
-    setTimeout(runDeferred, 50);
-  }
+  whenIdle(populateNextSelect, 300);
   setTimeout(() => focusViewCard(initialView), 120);
 }
 
@@ -1262,7 +1391,29 @@ parentASelect.addEventListener("change", onParentSelectUpdate);
 parentBSelect.addEventListener("change", onParentSelectUpdate);
 parentASelect.addEventListener("input", onParentSelectUpdate);
 parentBSelect.addEventListener("input", onParentSelectUpdate);
-palSearch.addEventListener("input", renderPalGrid);
+palSearch.addEventListener("input", debounce(renderPalGrid, 150));
+showAllPalsBtn?.addEventListener("click", () => {
+  palGridExpanded = true;
+  renderPalGrid();
+});
+chainAdditionalSearch?.addEventListener("input", debounce(renderChainSuggestions, 100));
+chainAdditionalSearch?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+  event.preventDefault();
+  renderChainSuggestions();
+  const first = chainAdditionalOptions?.querySelector("[data-add]");
+  if (first) addToChainRoster(first.dataset.add);
+});
+chainAdditionalOptions?.addEventListener("click", (event) => {
+  const option = event.target.closest("[data-add]");
+  if (!option) return;
+  addToChainRoster(option.dataset.add);
+  chainAdditionalSearch?.focus();
+});
+chainAdditionalChips?.addEventListener("click", (event) => {
+  const remove = event.target.closest("[data-remove]");
+  if (remove) removeFromChainRoster(remove.dataset.remove);
+});
 palGrid.addEventListener("click", (event) => {
   const button = event.target.closest("[data-pal-name]");
   if (!button) {

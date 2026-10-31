@@ -650,7 +650,64 @@ fn prepare_index_template(mut template: String, state: &AppState) -> String {
         "<!--COMBO_PAGES_LINKS-->",
         &seo_combo_links_html(state, Some(80)),
     );
+    template = template.replace("<!--HERO_STRIP-->", &hero_strip_html(&state.pals));
+    template = template.replace("<!--FEATURED_PALS-->", &featured_pal_cards_html(&state.pals));
     template.replace("<!--SITE_FOOTER-->", seo_copy::SITE_FOOTER_HTML)
+}
+
+/// Pals shown in the homepage hero strip and the Pal Box before the full list is
+/// requested. Rendered on the server so the first paint has real `<img>` tags.
+const FEATURED_PALS: &[&str] = &[
+    "Anubis", "Jetragon", "Frostallion", "Blazamut", "Suzaku", "Jormuntide",
+    "Necromus", "Paladius", "Lamball", "Cattiva", "Foxparks", "Penking",
+];
+const HERO_STRIP_ICONS: usize = 8;
+
+fn featured_pals(pals: &[Pal]) -> impl Iterator<Item = &Pal> {
+    FEATURED_PALS
+        .iter()
+        .filter_map(|name| pals.iter().find(|pal| pal.name == *name))
+}
+
+/// Same wording as `getPalAltText` in app.js.
+fn pal_icon_alt(name: &str) -> String {
+    format!("{} Palworld Pal icon", html_escape(name))
+}
+
+fn pal_thumb_src(name: &str) -> String {
+    static ICONS: std::sync::OnceLock<HashSet<String>> = std::sync::OnceLock::new();
+    let icons = ICONS.get_or_init(|| serde_json::from_str(include_str!("../data/icon_names.json")).expect("Invalid icon manifest"));
+    let slug = pal_slug(name);
+    if icons.contains(&slug) { format!("/assets/pals/thumbs/{slug}.webp") } else { "/assets/pals/placeholder.svg".into() }
+}
+
+fn hero_strip_html(pals: &[Pal]) -> String {
+    featured_pals(pals)
+        .take(HERO_STRIP_ICONS)
+        .map(|pal| {
+            format!(
+                r#"<img class="hero-icon is-loaded" src="{}" alt="{}" width="42" height="42" decoding="async" />"#,
+                pal_thumb_src(&pal.name),
+                pal_icon_alt(&pal.name)
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("")
+}
+
+fn featured_pal_cards_html(pals: &[Pal]) -> String {
+    featured_pals(pals)
+        .map(|pal| {
+            let name = html_escape(&pal.name);
+            format!(
+                r#"<button class="pal-grid-card" type="button" data-pal-name="{name}"><img class="pal-grid-img" src="{}" alt="{}" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">{name}</div><div class="pal-power">Power {}</div></button>"#,
+                pal_thumb_src(&pal.name),
+                pal_icon_alt(&pal.name),
+                pal.power
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n          ")
 }
 
 fn seo_pal_links_html(pals: &[Pal], max: Option<usize>) -> String {
@@ -669,6 +726,24 @@ fn seo_pal_links_html(pals: &[Pal], max: Option<usize>) -> String {
         })
         .collect::<Vec<_>>()
         .join("\n          ")
+}
+
+#[cfg(test)]
+mod featured_pal_tests {
+    use super::*;
+
+    #[test]
+    fn homepage_template_ships_featured_images_with_specific_alt_text() {
+        let state = build_app_state(include_str!("../index.html").to_string(), "https://example.com".into());
+        let html = &state.index_template;
+        assert!(!html.contains("<!--FEATURED_PALS-->") && !html.contains("<!--HERO_STRIP-->"));
+        assert_eq!(html.matches("class=\"pal-grid-card\"").count(), FEATURED_PALS.len());
+        assert_eq!(html.matches("class=\"hero-icon is-loaded\"").count(), HERO_STRIP_ICONS);
+        for img in html.split("<img").skip(1) {
+            assert!(img.contains(" Palworld Pal icon\""), "image without specific alt: {img}");
+        }
+        assert!(html.contains(r#"alt="Jetragon Palworld Pal icon""#));
+    }
 }
 
 fn collect_combo_page_pairs(state: &AppState, max: Option<usize>) -> Vec<(String, String)> {
