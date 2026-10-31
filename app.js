@@ -897,10 +897,10 @@ async function renderChainBreeding() {
             <span class="muted">(${escapeHtml(p.method || "")})</span>
           </p>
           <p class="muted">You still need <strong>${escapeHtml(p.missing_partner)}</strong> before this egg works.</p>
-          <p><a href="/palworld-breeding-calculator?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a>
+          <p><a href="/?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a>
             · <a href="/combos/${goalSlug}">All ${escapeHtml(goal)} combos</a></p>`;
       } else {
-        extra = `<p><a href="/palworld-breeding-calculator?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a></p>`;
+        extra = `<p><a href="/?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a></p>`;
       }
       chainResultDiv.innerHTML = `<div class="chain-not-found"><p>${escapeHtml(msg)}</p>${extra}</div>`;
       return;
@@ -932,7 +932,7 @@ async function renderChainBreeding() {
     chainResultDiv.innerHTML = `
       <p><strong>${steps.length}</strong> breeding step${steps.length === 1 ? "" : "s"} from <strong>${escapeHtml(owned)}</strong> to <strong>${escapeHtml(goal)}</strong>.</p>
       <ol class="chain-steps">${items}</ol>
-      <p class="muted"><a href="/palworld-breeding-calculator?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a></p>
+      <p class="muted"><a href="/?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a></p>
     `;
   } catch (error) {
     if (requestId === chainRequestId) {

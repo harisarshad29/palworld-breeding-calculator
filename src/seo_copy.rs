@@ -55,7 +55,7 @@ pub const SITE_FOOTER_HTML: &str = r#"<footer class="site-footer" role="contenti
     <nav class="site-footer-col" aria-label="Tools">
       <p class="site-footer-heading">Tools</p>
       <ul>
-        <li><a href="/palworld-breeding-calculator">Breeding Calculator</a></li>
+        <li><a href="/">Breeding Calculator</a></li>
         <li><a href="/palworld-breeding-combinations">Breeding Combinations</a></li>
         <li><a href="/palworld-chain-breeding">Chain Breeding</a></li>
         <li><a href="/palworld-capture-rate-calculator">Capture Rate</a></li>
@@ -85,6 +85,14 @@ pub const SITE_FOOTER_HTML: &str = r#"<footer class="site-footer" role="contenti
         <li><a href="/pal/lyleen">Lyleen</a></li>
         <li><a href="/pal-pages">All Pal Pages</a></li>
         <li><a href="/combo-pages">Combo Pages</a></li>
+      </ul>
+    </nav>
+    <nav class="site-footer-col" aria-label="Site">
+      <p class="site-footer-heading">Site</p>
+      <ul>
+        <li><a href="/about">About &amp; Data Sources</a></li>
+        <li><a href="/about#contact">Contact</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
       </ul>
     </nav>
   </div>
@@ -119,3 +127,27 @@ pub const GUIDE_BREEDING_FARM: &str = "Palworld Breeding Farm guide: setup check
 pub const GUIDE_BREEDING_NOT_WORKING: &str = "If Palworld breeding fails, check the Breeding Farm chest for cake, suitable male and female parents, and supported pairs before changing your setup in game.";
 
 
+
+pub const PAGE_ABOUT: &str = "Who runs this unofficial Palworld breeding calculator, where its breeding data comes from, how results are checked against game 1.0.5, and how to report errors.";
+
+pub const PAGE_PRIVACY: &str = "Privacy policy for the Palworld Breeding Calculator: no accounts, no ads, no tracking cookies. Only a theme setting is saved in your browser, plus host logs.";
+
+pub const ABOUT_BODY_HTML: &str = r#"<p>The Palworld Breeding Calculator is a free, unofficial fan tool for planning Pal breeding. It predicts the child of any two parents, lists every parent pair that produces a chosen Pal, and plans multi-step breeding chains from the Pals you already own. It is not affiliated with or endorsed by Pocketpair.</p>
+<h2>Where the data comes from</h2>
+<p>Breeding results come from the open-source <a href="https://github.com/tylercamp/palcalc">PalCalc</a> project (MIT license), imported on 25 October 2026 and cross-checked against a Palworld 1.0.5 data extract. The table covers 299 Pals, 44,850 unordered parent pairs and 81 special combinations that override the normal breeding-power average. Gender-specific and same-species-only results are handled separately.</p>
+<h2>How results are checked</h2>
+<p>Automated tests run on every change to confirm known special combinations, same-species legendaries and a sample of power-average results. When a game patch changes breeding, the data is re-imported and the version and date shown on each page are updated. Capture difficulty figures are estimates from breeding power, not the in-game capture formula.</p>
+<h2 id="contact">Contact and corrections</h2>
+<p>Found a wrong result, a missing Pal or a broken page? Open an issue on <a href="https://github.com/harisarshad29/palworld-breeding-calculator/issues">GitHub</a> with the two parents and the child you got in game. Corrections are checked against the data source and usually fixed in the next update.</p>"#;
+
+pub const PRIVACY_BODY_HTML: &str = r#"<p>Last updated: 31 October 2026.</p>
+<h2>What we collect</h2>
+<p>This site has no accounts, no sign-up, no advertising and no analytics or tracking cookies. The calculator runs in your browser and the Pals you pick are not sent to us.</p>
+<h2>What is stored on your device</h2>
+<p>Your light or dark theme choice is saved in your browser's local storage so it stays the same on your next visit. You can clear it at any time through your browser settings.</p>
+<h2>Hosting logs</h2>
+<p>Like any website, the hosting provider (Netlify) records standard request logs such as IP address, browser type and the page requested, to deliver the site and protect it from abuse. We do not combine these logs with any other data.</p>
+<h2>Third-party links</h2>
+<p>Some pages link to other sites, such as the PalCalc project on GitHub. Their own privacy policies apply once you leave this site.</p>
+<h2>Questions</h2>
+<p>For privacy questions, see the <a href="/about#contact">contact section on the About page</a>.</p>"#;
