@@ -25,6 +25,7 @@ const EXTRA_ROUTES: &[&str] = &[
     "/api/bootstrap",
     "/api/locations",
     "/breeding-calculator",
+    "/palworld-breeding-calculator",
 ];
 
 /// Static files and folders copied as-is.
@@ -228,7 +229,7 @@ fn copy_dir(from: &Path, to: &Path) -> Result<(), String> {
 }
 
 fn not_found_html() -> &'static str {
-    r#"<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Page not found | Palworld Breeding Calculator</title><link rel="stylesheet" href="/styles.css"></head><body><main class="container"><h1>Page not found</h1><p>This page does not exist. Try the <a href="/palworld-breeding-calculator">breeding calculator</a>, <a href="/pal-pages">all Pal pages</a> or the <a href="/">home page</a>.</p></main></body></html>"#
+    r#"<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Page not found | Palworld Breeding Calculator</title><link rel="stylesheet" href="/styles.css"></head><body><main class="container"><h1>Page not found</h1><p>This page does not exist. Try the <a href="/">breeding calculator</a>, <a href="/pal-pages">all Pal pages</a> or the <a href="/">home page</a>.</p></main></body></html>"#
 }
 
 fn netlify_redirects(base_url: &str, redirects: &BTreeMap<String, (u16, String)>) -> String {
@@ -248,7 +249,6 @@ fn netlify_redirects(base_url: &str, redirects: &BTreeMap<String, (u16, String)>
     }
     // Existing files always win over the rules below (no `!`), like the Apache setup.
     out.push_str("/api/*  /api/:splat.json  200\n");
-    out.push_str("/combo/:a/:b  /palworld-breeding-calculator?parentA=:a&parentB=:b  302\n");
     out
 }
 
@@ -302,9 +302,8 @@ RewriteCond %{{REQUEST_FILENAME}} !-f
 RewriteCond %{{DOCUMENT_ROOT}}/$1.html -f
 RewriteRule ^(.+)$ $1.html [L]
 
-# Any other parent pair (44,850 exist; ~11k are pre-rendered) opens in the calculator
-RewriteCond %{{REQUEST_FILENAME}} !-f
-RewriteRule ^combo/([^/.]+)/([^/.]+)$ https://{host}/palworld-breeding-calculator?parentA=$1&parentB=$2 [R=302,L]
+# Combo URLs that were not pre-rendered fall through to the 404 page, so crawlers
+# do not get an endless set of redirects to the calculator.
 </IfModule>
 
 <IfModule mod_deflate.c>

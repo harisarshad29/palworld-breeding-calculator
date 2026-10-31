@@ -99,7 +99,7 @@ struct CaptureResponse {
 }
 
 /// Primary calculator URL for consolidations and internal links.
-const PRIMARY_CALCULATOR_PATH: &str = "/palworld-breeding-calculator";
+const PRIMARY_CALCULATOR_PATH: &str = "/";
 
 /// Game version the breeding data was cross-checked against (see data/SOURCES.md).
 pub(crate) const GAME_VERSION: &str = "1.0.5";
@@ -270,7 +270,7 @@ const SEO_PAGES: [SeoPage; 11] = [
     },
 ];
 
-const GUIDE_PAGES: [GuidePage; 13] = [
+const GUIDE_PAGES: [GuidePage; 15] = [
     GuidePage {
         path: "/guides/how-to-breed-anubis",
         title: "How to Breed Anubis in Palworld - Fast Parent Paths",
@@ -346,21 +346,35 @@ const GUIDE_PAGES: [GuidePage; 13] = [
         title: "Palworld Breeding Not Working – Fixes & Checklist",
         description: seo_copy::GUIDE_BREEDING_NOT_WORKING,
         heading: "Breeding Not Working? Fix Checklist",
-        body_html: "<p>If breeding fails in Palworld, check these items in order before changing parent pairs.</p><h2>1. Breeding Farm setup</h2><p>Confirm the Breeding Farm is built and suitable male and female parents are assigned.</p><h2>2. Cake supply</h2><p>The Breeding Farm chest must have cake. Empty cake stops the breeding process even when parents are assigned.</p><h2>3. Valid parent pair</h2><p>Use our <a href=\"/palworld-breeding-calculator\">calculator</a> to verify the pair can produce your target child. Invalid pairs waste time.</p><h2>4. Incubator space</h2><p>Collect eggs and place them in an incubator. Full inventory or missing incubator delays progress.</p><h2>5. Pal conditions</h2><p>Sick, starving, or depressed Pals may block breeding—heal and feed parents first.</p><p>Still stuck? Compare routes on the <a href=\"/how-to-breed/anubis\">Anubis guide</a> or your target <a href=\"/pals\">Pal page</a>.</p>",
+        body_html: "<p>If breeding fails in Palworld, check these items in order before changing parent pairs.</p><h2>1. Breeding Farm setup</h2><p>Confirm the Breeding Farm is built and suitable male and female parents are assigned.</p><h2>2. Cake supply</h2><p>The Breeding Farm chest must have cake. Empty cake stops the breeding process even when parents are assigned.</p><h2>3. Valid parent pair</h2><p>Use our <a href=\"/\">calculator</a> to verify the pair can produce your target child. Invalid pairs waste time.</p><h2>4. Incubator space</h2><p>Collect eggs and place them in an incubator. Full inventory or missing incubator delays progress.</p><h2>5. Pal conditions</h2><p>Sick, starving, or depressed Pals may block breeding—heal and feed parents first.</p><p>Still stuck? Compare routes on the <a href=\"/how-to-breed/anubis\">Anubis guide</a> or your target <a href=\"/pals\">Pal page</a>.</p>",
     },
     GuidePage {
         path: "/guides/breeding-statistics",
         title: "Palworld Breeding Statistics - Common Results (1.0.5 Data)",
         description: seo_copy::GUIDE_BREEDING_STATS,
         heading: "Palworld Breeding by the Numbers",
-        body_html: "<p>We analysed every possible parent pair in our Palworld 1.0.5 breeding table: 299 species and 44,850 unordered pairs. Here is what the numbers say. Each figure can be reproduced in the <a href=\"/palworld-breeding-calculator\">breeding calculator</a>.</p><h2>Key numbers</h2><ul><li><strong>299</strong> species, <strong>44,850</strong> unordered parent pairs.</li><li><strong>28</strong> species can only be produced by breeding two of the same species. Legendaries such as Jetragon, Frostallion, Paladius and Necromus are in this group.</li><li><strong>Felbat</strong> is the most common outcome, produced by 1,280 different pairs.</li><li>Anubis can be produced by 234 different pairs, so there is almost always a route that fits your roster.</li></ul><h2>The 10 most common breeding results</h2><table><thead><tr><th>Child</th><th>Pairs that produce it</th></tr></thead><tbody><tr><td><a href=\"/pal/felbat\">Felbat</a></td><td>1,280</td></tr><tr><td><a href=\"/pal/vanwyrm\">Vanwyrm</a></td><td>1,229</td></tr><tr><td><a href=\"/pal/azurobe\">Azurobe</a></td><td>1,090</td></tr><tr><td><a href=\"/pal/valentail\">Valentail</a></td><td>1,021</td></tr><tr><td><a href=\"/pal/warsect\">Warsect</a></td><td>858</td></tr><tr><td><a href=\"/pal/mammorest\">Mammorest</a></td><td>774</td></tr><tr><td><a href=\"/pal/venusa\">Venusa</a></td><td>712</td></tr><tr><td><a href=\"/pal/sweepa\">Sweepa</a></td><td>701</td></tr><tr><td><a href=\"/pal/dazemu\">Dazemu</a></td><td>679</td></tr><tr><td><a href=\"/pal/loomen\">Loomen</a></td><td>670</td></tr></tbody></table><h2>Species you can only breed from the same species</h2><p><a href=\"/pal/bastigor\">Bastigor</a> • <a href=\"/pal/bellanoir-libero\">Bellanoir Libero</a> • <a href=\"/pal/blazamut-ryu\">Blazamut Ryu</a> • <a href=\"/pal/cave-bat\">Cave Bat</a> • <a href=\"/pal/dandilord\">Dandilord</a> • <a href=\"/pal/faleris\">Faleris</a> • <a href=\"/pal/frostallion\">Frostallion</a> • <a href=\"/pal/green-slime\">Green Slime</a> • <a href=\"/pal/grizzbolt\">Grizzbolt</a> • <a href=\"/pal/gumoss-flower\">Gumoss (Flower)</a> • <a href=\"/pal/hartalis\">Hartalis</a> • <a href=\"/pal/jetragon\">Jetragon</a> • <a href=\"/pal/katress-ignis\">Katress Ignis</a> • <a href=\"/pal/lyleen\">Lyleen</a> • <a href=\"/pal/mimog\">Mimog</a> • <a href=\"/pal/necromus\">Necromus</a> • <a href=\"/pal/neptilius\">Neptilius</a> • <a href=\"/pal/orserk\">Orserk</a> • <a href=\"/pal/paladius\">Paladius</a> • <a href=\"/pal/panthalus\">Panthalus</a> • <a href=\"/pal/selyne\">Selyne</a> • <a href=\"/pal/shadowbeak\">Shadowbeak</a> • <a href=\"/pal/shaolong\">Shaolong</a> • <a href=\"/pal/silvance\">Silvance</a> • <a href=\"/pal/wixen-noct\">Wixen Noct</a> • <a href=\"/pal/xenogard\">Xenogard</a> • <a href=\"/pal/xenolord\">Xenolord</a> • <a href=\"/pal/xenovader\">Xenovader</a></p><p>For these, capture or obtain the species first; no mix of other parents will give it.</p><h2>How we counted</h2><p>Counts use the species-level breeding table, where a pair appears once regardless of which parent is male or female. One gender-dependent pair is excluded because its result depends on parent gender. Figures describe species outcomes only, not passive skills or stats.</p><h2>Cite this page</h2><p>You may quote these figures with a link to <a href=\"/guides/breeding-statistics\">this page</a>. Data derived from PalCalc (MIT license) and cross-checked against Palworld 1.0.5.</p>",
+        body_html: "<p>We analysed every possible parent pair in our Palworld 1.0.5 breeding table: 299 species and 44,850 unordered pairs. Here is what the numbers say. Each figure can be reproduced in the <a href=\"/\">breeding calculator</a>.</p><h2>Key numbers</h2><ul><li><strong>299</strong> species, <strong>44,850</strong> unordered parent pairs.</li><li><strong>28</strong> species can only be produced by breeding two of the same species. Legendaries such as Jetragon, Frostallion, Paladius and Necromus are in this group.</li><li><strong>Felbat</strong> is the most common outcome, produced by 1,280 different pairs.</li><li>Anubis can be produced by 234 different pairs, so there is almost always a route that fits your roster.</li></ul><h2>The 10 most common breeding results</h2><table><thead><tr><th>Child</th><th>Pairs that produce it</th></tr></thead><tbody><tr><td><a href=\"/pal/felbat\">Felbat</a></td><td>1,280</td></tr><tr><td><a href=\"/pal/vanwyrm\">Vanwyrm</a></td><td>1,229</td></tr><tr><td><a href=\"/pal/azurobe\">Azurobe</a></td><td>1,090</td></tr><tr><td><a href=\"/pal/valentail\">Valentail</a></td><td>1,021</td></tr><tr><td><a href=\"/pal/warsect\">Warsect</a></td><td>858</td></tr><tr><td><a href=\"/pal/mammorest\">Mammorest</a></td><td>774</td></tr><tr><td><a href=\"/pal/venusa\">Venusa</a></td><td>712</td></tr><tr><td><a href=\"/pal/sweepa\">Sweepa</a></td><td>701</td></tr><tr><td><a href=\"/pal/dazemu\">Dazemu</a></td><td>679</td></tr><tr><td><a href=\"/pal/loomen\">Loomen</a></td><td>670</td></tr></tbody></table><h2>Species you can only breed from the same species</h2><p><a href=\"/pal/bastigor\">Bastigor</a> • <a href=\"/pal/bellanoir-libero\">Bellanoir Libero</a> • <a href=\"/pal/blazamut-ryu\">Blazamut Ryu</a> • <a href=\"/pal/cave-bat\">Cave Bat</a> • <a href=\"/pal/dandilord\">Dandilord</a> • <a href=\"/pal/faleris\">Faleris</a> • <a href=\"/pal/frostallion\">Frostallion</a> • <a href=\"/pal/green-slime\">Green Slime</a> • <a href=\"/pal/grizzbolt\">Grizzbolt</a> • <a href=\"/pal/gumoss-flower\">Gumoss (Flower)</a> • <a href=\"/pal/hartalis\">Hartalis</a> • <a href=\"/pal/jetragon\">Jetragon</a> • <a href=\"/pal/katress-ignis\">Katress Ignis</a> • <a href=\"/pal/lyleen\">Lyleen</a> • <a href=\"/pal/mimog\">Mimog</a> • <a href=\"/pal/necromus\">Necromus</a> • <a href=\"/pal/neptilius\">Neptilius</a> • <a href=\"/pal/orserk\">Orserk</a> • <a href=\"/pal/paladius\">Paladius</a> • <a href=\"/pal/panthalus\">Panthalus</a> • <a href=\"/pal/selyne\">Selyne</a> • <a href=\"/pal/shadowbeak\">Shadowbeak</a> • <a href=\"/pal/shaolong\">Shaolong</a> • <a href=\"/pal/silvance\">Silvance</a> • <a href=\"/pal/wixen-noct\">Wixen Noct</a> • <a href=\"/pal/xenogard\">Xenogard</a> • <a href=\"/pal/xenolord\">Xenolord</a> • <a href=\"/pal/xenovader\">Xenovader</a></p><p>For these, capture or obtain the species first; no mix of other parents will give it.</p><h2>How we counted</h2><p>Counts use the species-level breeding table, where a pair appears once regardless of which parent is male or female. One gender-dependent pair is excluded because its result depends on parent gender. Figures describe species outcomes only, not passive skills or stats.</p><h2>Cite this page</h2><p>You may quote these figures with a link to <a href=\"/guides/breeding-statistics\">this page</a>. Data derived from PalCalc (MIT license) and cross-checked against Palworld 1.0.5.</p>",
     },
     GuidePage {
         path: "/guides/breeding-farm-setup",
         title: "Palworld Breeding Farm Guide - Setup & Pairs (1.0.5)",
         description: seo_copy::GUIDE_BREEDING_FARM,
         heading: "Palworld Breeding Farm Guide",
-        body_html: "<p>A Breeding Farm needs one male and one female Pal that the breeding table supports, plus cake in the Breeding Farm chest. This page covers the planning side: which pairs to pick and what to expect. Check any pair in the <a href=\"/palworld-breeding-calculator\">breeding calculator</a>.</p><h2>Setup checklist</h2><ol><li>Pick a target Pal and open its reverse lookup (for example <a href=\"/combos/anubis\">Anubis</a>).</li><li>Choose a pair you already own. Both parents must be a male and a female.</li><li>Keep cake in the Breeding Farm chest.</li><li>Collect the egg and use the incubator available in your game. See <a href=\"/egg-incubation-guide\">egg incubation</a>.</li></ol><h2>Same-species parents</h2><p>In the 1.0.5 table every Pal breeds true with its own species, and 28 Pals can only come from two of the same species. Catch or hatch one of these first. See the <a href=\"/guides/breeding-statistics\">breeding statistics</a>.</p><h2>Special combinations (81)</h2><p>81 parent pairs give a fixed result that differs from the normal table. 77 of them produce an element variant:</p><table><thead><tr><th>Variant</th><th>Special combos</th></tr></thead><tbody><tr><td>Cryst</td><td>17</td></tr><tr><td>Ignis</td><td>13</td></tr><tr><td>Noct</td><td>13</td></tr><tr><td>Terra</td><td>11</td></tr><tr><td>Lux</td><td>10</td></tr><tr><td>Primo</td><td>5</td></tr><tr><td>Aqua</td><td>4</td></tr><tr><td>Botan</td><td>3</td></tr><tr><td>Gild</td><td>1</td></tr></tbody></table><p>The other four give Red Slime, Blue Slime, Bellanoir and Celesdir. Browse them on the <a href=\"/palworld-breeding-combinations\">combinations page</a>.</p><h2>Multi-step plans</h2><p>If you do not own the right parents, the <a href=\"/palworld-chain-breeding\">chain planner</a> finds a route from the Pals you have. It predicts species only, not egg timers or passive traits.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
+        body_html: "<p>A Breeding Farm needs one male and one female Pal that the breeding table supports, plus cake in the Breeding Farm chest. This page covers the planning side: which pairs to pick and what to expect. Check any pair in the <a href=\"/\">breeding calculator</a>.</p><h2>Setup checklist</h2><ol><li>Pick a target Pal and open its reverse lookup (for example <a href=\"/combos/anubis\">Anubis</a>).</li><li>Choose a pair you already own. Both parents must be a male and a female.</li><li>Keep cake in the Breeding Farm chest.</li><li>Collect the egg and use the incubator available in your game. See <a href=\"/egg-incubation-guide\">egg incubation</a>.</li></ol><h2>Same-species parents</h2><p>In the 1.0.5 table every Pal breeds true with its own species, and 28 Pals can only come from two of the same species. Catch or hatch one of these first. See the <a href=\"/guides/breeding-statistics\">breeding statistics</a>.</p><h2>Special combinations (81)</h2><p>81 parent pairs give a fixed result that differs from the normal table. 77 of them produce an element variant:</p><table><thead><tr><th>Variant</th><th>Special combos</th></tr></thead><tbody><tr><td>Cryst</td><td>17</td></tr><tr><td>Ignis</td><td>13</td></tr><tr><td>Noct</td><td>13</td></tr><tr><td>Terra</td><td>11</td></tr><tr><td>Lux</td><td>10</td></tr><tr><td>Primo</td><td>5</td></tr><tr><td>Aqua</td><td>4</td></tr><tr><td>Botan</td><td>3</td></tr><tr><td>Gild</td><td>1</td></tr></tbody></table><p>The other four give Red Slime, Blue Slime, Bellanoir and Celesdir. Browse them on the <a href=\"/palworld-breeding-combinations\">combinations page</a>.</p><h2>Multi-step plans</h2><p>If you do not own the right parents, the <a href=\"/palworld-chain-breeding\">chain planner</a> finds a route from the Pals you have. It predicts species only, not egg timers or passive traits.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
+    },
+    GuidePage {
+        path: "/about",
+        title: "About the Palworld Breeding Calculator - Data & Sources",
+        description: seo_copy::PAGE_ABOUT,
+        heading: "About This Breeding Calculator",
+        body_html: seo_copy::ABOUT_BODY_HTML,
+    },
+    GuidePage {
+        path: "/privacy",
+        title: "Privacy Policy - Palworld Breeding Calculator",
+        description: seo_copy::PAGE_PRIVACY,
+        heading: "Privacy Policy",
+        body_html: seo_copy::PRIVACY_BODY_HTML,
     },
 ];
 
@@ -479,7 +493,7 @@ fn build_router(state: AppState) -> Router {
         .route("/items", get(index_items_page))
         .route("/technology", get(index_technology_page))
         .route("/capture-rate", get(index_capture_page))
-        .route("/palworld-breeding-calculator", get(index_keyword_breeding_page))
+        .route("/palworld-breeding-calculator", get(redirect_to_primary_calculator))
         .route("/palworld-breeding-combinations", get(index_keyword_combos_page))
         .route("/palworld-capture-rate-calculator", get(index_keyword_capture_page))
         .route("/palworld-chain-breeding", get(index_chain_breeding_page))
@@ -500,6 +514,8 @@ fn build_router(state: AppState) -> Router {
         .route("/guides/breeding-not-working", get(guide_page_handler))
         .route("/guides/breeding-statistics", get(guide_page_handler))
         .route("/guides/breeding-farm-setup", get(guide_page_handler))
+        .route("/about", get(guide_page_handler))
+        .route("/privacy", get(guide_page_handler))
         .route("/breed/:name", get(breed_alias_redirect))
         .route("/robots.txt", get(robots_txt))
         .route("/sitemap.xml", get(sitemap_index))
@@ -931,8 +947,14 @@ async fn index_page(State(state): State<AppState>) -> Result<Html<String>, (Stat
     render_index_with_seo(&state, SEO_PAGES[0]).await
 }
 
-async fn redirect_to_primary_calculator() -> axum::response::Redirect {
-    axum::response::Redirect::permanent(PRIMARY_CALCULATOR_PATH)
+async fn redirect_to_primary_calculator(
+    axum::extract::RawQuery(query): axum::extract::RawQuery,
+) -> axum::response::Redirect {
+    // Keep ?parentA=…&parentB=… so old shared calculator links still open the same pair.
+    match query {
+        Some(q) if !q.is_empty() => axum::response::Redirect::permanent(&format!("{PRIMARY_CALCULATOR_PATH}?{q}")),
+        _ => axum::response::Redirect::permanent(PRIMARY_CALCULATOR_PATH),
+    }
 }
 
 async fn index_pals_page(State(state): State<AppState>) -> Result<Html<String>, (StatusCode, String)> {
@@ -953,12 +975,6 @@ async fn index_capture_page(
     State(state): State<AppState>,
 ) -> Result<Html<String>, (StatusCode, String)> {
     render_index_with_seo(&state, SEO_PAGES[6]).await
-}
-
-async fn index_keyword_breeding_page(
-    State(state): State<AppState>,
-) -> Result<Html<String>, (StatusCode, String)> {
-    render_index_with_seo(&state, SEO_PAGES[7]).await
 }
 
 async fn index_keyword_combos_page(
@@ -1068,7 +1084,7 @@ fn build_pal_pages_directory_html(state: &AppState) -> String {
     <h1>All Pal Breeding Pages</h1>
     <p class="muted">{count} Pal profile pages with combos, map data, and breeding calculator links.</p>
     <ul class="seo-directory-grid">{links}</ul>
-    <p><a href="/palworld-breeding-calculator">Open breeding calculator</a></p>
+    <p><a href="/">Open breeding calculator</a></p>
   </main>
 </body>
 </html>"#,
@@ -1118,7 +1134,7 @@ fn build_combo_pages_directory_html(state: &AppState) -> String {
     <h1>Featured Breeding Combo Pages</h1>
     <p class="muted">{count} parent-pair pages including special combinations and top legendary routes.</p>
     <ul class="seo-directory-grid">{links}</ul>
-    <p><a href="/palworld-breeding-calculator">Open breeding calculator</a></p>
+    <p><a href="/">Open breeding calculator</a></p>
   </main>
 </body>
 </html>"#,
@@ -1310,7 +1326,8 @@ async fn sitemap_pages(State(state): State<AppState>) -> impl IntoResponse {
     let lastmod = DATA_UPDATED.to_string();
     let mut urls = String::new();
     for page in SEO_PAGES {
-        if page.path == "/breeding-calculator" {
+        // Both 301 to the homepage, so they are not separate pages.
+        if page.path == "/breeding-calculator" || page.path == "/palworld-breeding-calculator" {
             continue;
         }
         let path = page.canonical_path.unwrap_or(page.path);
@@ -1764,16 +1781,13 @@ fn build_how_to_breed_html(
       {SEO_FOOTER_STYLES}
     </style>
     <script type="application/ld+json">
-      {{"@context":"https://schema.org","@type":"HowTo","name":"How to breed {pal_name} in Palworld","description":"{description}","step":[{{"@type":"HowToStep","name":"Unlock Breeding Farm","text":"Research and build a Breeding Farm and Egg Incubator with cake in the farm chest."}},{{"@type":"HowToStep","name":"Find parent pairs","text":"Use the reverse calculator to list valid parents for {pal_name}."}},{{"@type":"HowToStep","name":"Breed and incubate","text":"Assign parents, collect the egg, and incubate until {pal_name} hatches."}}]}}
-    </script>
-    <script type="application/ld+json">
       {{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{{"@type":"Question","name":"How do you breed {pal_name}?","acceptedAnswer":{{"@type":"Answer","text":"Use valid parent pairs listed on this page or the reverse calculator. Special combinations override power averages when available."}}}},{{"@type":"Question","name":"How many combos produce {pal_name}?","acceptedAnswer":{{"@type":"Answer","text":"This database lists {combo_count} parent pair routes that can produce {pal_name}."}}}}]}}
     </script>
   </head>
   <body>
     {kid_bg}
     <main class="wrap">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/palworld-breeding-calculator">Calculator</a> / <a href="/pal/{slug}">{pal_name}</a> / How to Breed</nav>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/">Calculator</a> / <a href="/pal/{slug}">{pal_name}</a> / How to Breed</nav>
       <div class="card">
         <h1>How to Breed {pal_name} in Palworld</h1>
         <p><strong>Breeding power:</strong> {power} — {tier_note}</p>
@@ -1785,7 +1799,7 @@ fn build_how_to_breed_html(
           <li>Choose parents already available in your save. Breeding power is not a capture probability.</li>
           <li>Place parents, hatch the child, repeat if you need better passives.</li>
         </ol>
-        <p><a href="/pal/{slug}">{pal_name} Pal profile</a> • <a href="/palworld-breeding-calculator">Full calculator</a></p>
+        <p><a href="/pal/{slug}">{pal_name} Pal profile</a> • <a href="/">Full calculator</a></p>
         <p><a href="/guides/best-breeding-combos">Best breeding combos</a> • <a href="/guides/capture-rate-explained">Capture rate guide</a> • <a href="/guides/breeding-not-working">Breeding fixes</a></p>
       </div>
       <div class="card">
@@ -1947,13 +1961,13 @@ fn build_guide_page_html(base_url: &str, page: GuidePage) -> String {
   <body>
     {kid_bg}
     <main class="wrap">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/palworld-breeding-calculator">Calculator</a> / {heading}</nav>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/">Calculator</a> / {heading}</nav>
       <div class="card">
         <h1>{heading}</h1>
         <p class="muted">Updated {DATA_UPDATED}. Breeding data cross-checked against Palworld {GAME_VERSION}.</p>
         {body_html}
         <div class="links">
-          <a href="/palworld-breeding-calculator">Breeding Calculator</a>
+          <a href="/">Breeding Calculator</a>
           <a href="/how-to-breed/anubis">How to Breed Anubis</a>
           <a href="/guides/best-breeding-combos">Best Combos Guide</a>
           <a href="/guides/breeding-not-working">Breeding Fixes</a>
@@ -2097,7 +2111,7 @@ fn build_pal_page_html(
         <p><strong>Breeding Power:</strong> {power}</p>
         <p><strong>Map Area:</strong> {area} | <strong>Coordinates:</strong> {coords}</p>
         <p>{dynamic_summary}</p>
-        <p><a href="/how-to-breed/{slug}">How to breed {pal_name}</a> • <a href="/combos/{slug}">All {pal_name} combos ({combo_count})</a> • <a href="{calc_link}">Reverse calculator</a> • <a href="/palworld-chain-breeding?owned=Lamball&goal={pal_query}">Chain from Lamball</a> • <a href="/palworld-breeding-calculator">Breeding tool</a></p>
+        <p><a href="/how-to-breed/{slug}">How to breed {pal_name}</a> • <a href="/combos/{slug}">All {pal_name} combos ({combo_count})</a> • <a href="{calc_link}">Reverse calculator</a> • <a href="/palworld-chain-breeding?owned=Lamball&goal={pal_query}">Chain from Lamball</a> • <a href="/">Breeding tool</a></p>
       </div>
       <div class="card">
         <h2>{pal_name} Parent Combinations</h2>
@@ -2480,7 +2494,7 @@ fn combinations_section_html(state: &AppState, target: &str) -> String {
         r#"<div class="card"><h2>Top parent pairs for {target}</h2>
         <p>Auto-generated from live breeding logic. Open any row for a dedicated combo page.</p>
         <table><thead><tr><th>Parents</th><th>Method</th></tr></thead><tbody>{rows}</tbody></table>
-        <p><a href="/palworld-breeding-calculator">Open breeding calculator</a></p></div>"#
+        <p><a href="/">Open breeding calculator</a></p></div>"#
     )
 }
 
