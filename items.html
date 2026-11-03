@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="msvalidate.01" content="FFFE145B5E5268554D400E87CC07C6AF" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      html { background: #0b0f14; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #0b0f14;
+        color: #e8eef7;
+      }
+      .container, .top-nav { position: relative; z-index: 1; }
+    </style>
+    <link rel="preload" href="/styles.css" as="style" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="modulepreload" href="/app.js?v=20261031" />
+    <link rel="preload" href="/api/bootstrap" as="fetch" crossorigin="anonymous" />
+  
+    <title>Palworld Items Database - Sources and Drops</title>
+    <meta name="description" content="Look up Palworld item sources and drop notes for cake ingredients, spheres, and crafting parts that keep breeding and base production on schedule each session." />
+    
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://www.palworld-breeding-calculator.us/items" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/pals/anubis.webp" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Palworld Items Database - Sources and Drops" />
+    <meta property="og:description" content="Look up Palworld item sources and drop notes for cake ingredients, spheres, and crafting parts that keep breeding and base production on schedule each session." />
+    <meta property="og:url" content="https://www.palworld-breeding-calculator.us/items" />
+    <meta property="og:image" content="https://www.palworld-breeding-calculator.us/assets/pals/anubis.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Palworld Items Database - Sources and Drops" />
+    <meta name="twitter:description" content="Look up Palworld item sources and drop notes for cake ingredients, spheres, and crafting parts that keep breeding and base production on schedule each session." />
+    <meta name="twitter:image" content="https://www.palworld-breeding-calculator.us/assets/pals/anubis.webp" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Palworld Breeding Calculator",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Web",
+        "url": "https://www.palworld-breeding-calculator.us/items",
+        "description": "Look up Palworld item sources and drop notes for cake ingredients, spheres, and crafting parts that keep breeding and base production on schedule each session."
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context":"https://schema.org",
+        "@type":"WebSite",
+        "name":"Palworld Breeding Calculator",
+        "url":"https://www.palworld-breeding-calculator.us/",
+        "description": "Look up Palworld item sources and drop notes for cake ingredients, spheres, and crafting parts that keep breeding and base production on schedule each session."
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context":"https://schema.org",
+        "@type":"Organization",
+        "name":"Palworld Breeding Calculator",
+        "url":"https://www.palworld-breeding-calculator.us/",
+        "logo":"https://www.palworld-breeding-calculator.us/favicon.svg"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I breed Anubis?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Use the combination explorer and reverse calculator to test high-value parent pairs, then follow the dedicated Anubis breeding guide."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I find best breeding combos?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Start with the Reverse Calculator, select your target Pal, and compare all listed parent pairs and method types."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use this on mobile?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The interface is responsive and works on phones and tablets for quick breeding checks on the go."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can legendary pals breed?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Many legendary species require same-species parents. Jetragon + Jetragon produces Jetragon in the imported source snapshot; use reverse lookup to check restrictions."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does gender matter in Palworld breeding?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Use suitable male and female parents. Katress + Wixen has two source outcomes depending on which parent is male; choose both genders for that pair."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why is breeding not working?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Check that your Breeding Farm is built, both parents are assigned, and you have cake in the farm chest. Also verify you are using a valid parent pair for your target child."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the best early game breeding combo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Early game combos usually use easy Pals like Lamball, Cattiva, and Foxparks. Use the calculator to test low-risk pairs before targeting rare children."
+            }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body data-route-intro="Breeding item references">
+    <div id="kidBg" class="kid-bg" aria-hidden="true"></div>
+    <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+    <div class="top-nav">
+      <div class="nav-inner">
+        <div class="brand">Palworld Database</div>
+        <div class="nav-links" role="navigation" aria-label="Primary">
+          <a href="/pals" class="nav-link-btn" data-view="pals">Pals</a>
+          <a href="/map" class="nav-link-btn" data-view="map">Map</a>
+          <a href="/items" class="nav-link-btn" data-view="items">Items</a>
+          <a href="/" class="nav-link-btn" data-view="breeding">Breeding Calculator</a>
+          <a href="/technology" class="nav-link-btn" data-view="technology">Technology</a>
+        </div>
+      </div>
+    </div>
+    <a class="skip-link" href="#main">Skip to calculator</a>
+    <main id="main" class="container">
+      <header>
+        <div id="heroStrip" class="hero-strip"><img class="hero-icon is-loaded" src="/assets/pals/thumbs/anubis.webp" alt="Anubis Palworld Pal icon" width="42" height="42" decoding="async" /><img class="hero-icon is-loaded" src="/assets/pals/thumbs/jetragon.webp" alt="Jetragon Palworld Pal icon" width="42" height="42" decoding="async" /><img class="hero-icon is-loaded" src="/assets/pals/thumbs/frostallion.webp" alt="Frostallion Palworld Pal icon" width="42" height="42" decoding="async" /><img class="hero-icon is-loaded" src="/assets/pals/thumbs/blazamut.webp" alt="Blazamut Palworld Pal icon" width="42" height="42" decoding="async" /><img class="hero-icon is-loaded" src="/assets/pals/thumbs/suzaku.webp" alt="Suzaku Palworld Pal icon" width="42" height="42" decoding="async" /><img class="hero-icon is-loaded" src="/assets/pals/thumbs/jormuntide.webp" alt="Jormuntide Palworld Pal icon" width="42" height="42" decoding="async" /><img class="hero-icon is-loaded" src="/assets/pals/thumbs/necromus.webp" alt="Necromus Palworld Pal icon" width="42" height="42" decoding="async" /><img class="hero-icon is-loaded" src="/assets/pals/thumbs/paladius.webp" alt="Paladius Palworld Pal icon" width="42" height="42" decoding="async" /></div>
+        <div class="header-row">
+          <h1 id="siteH1">Palworld Items Database</h1>
+          <div class="header-actions">
+            <button id="themeToggleBtn" class="theme-btn" type="button">Toggle Theme</button>
+          </div>
+        </div>
+        <div id="routeBadge" class="route-badge">Items Database</div>
+        <nav class="visible-breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a> / <span>Items Database</span></nav>
+        <p id="routeSubtitle" class="subtitle">Breeding item references</p>
+        <div class="tool-links">
+          <a href="/" class="tool-link-btn" data-view="breeding">Breeding Calculator</a>
+          <a href="/pals" class="tool-link-btn" data-view="pals">Pals</a>
+          <a href="/map" class="tool-link-btn" data-view="map">Map</a>
+          <a href="/items" class="tool-link-btn" data-view="items">Items</a>
+          <a href="/capture-rate" class="tool-link-btn" data-view="capture">Capture Rate</a>
+          <a href="/palworld-chain-breeding" class="tool-link-btn" data-view="chain">Chain Breeding</a>
+        </div>
+        <div id="statsBar" class="stats-bar"></div>
+      </header>
+
+      <section class="card route-seo-blurb" id="aboutSite"><h2>About This Page</h2><p>Review the included item notes while planning a breeding session. Item availability and unlock requirements can change with game updates and world settings.</p></section>
+
+      <section id="databaseCard" class="card">
+        <h2 id="databasePanelTitle">Database Panel</h2>
+        <div id="databasePanelBody" class="database-panel"></div>
+      </section>
+
+      <section id="arenaCard" class="card">
+        <h2>Breeding Arena</h2>
+        <p id="dataNote" class="muted">Species outcomes from a pinned PalCalc community dataset. Choose suitable male and female parents; gender-specific pairs require both genders.</p>
+        <div class="grid">
+          <label>
+            Parent A
+            <select id="parentA"></select>
+          </label>
+          <label>
+            Parent A Gender
+            <select id="parentAGender"><option value="">Unspecified</option><option value="male">Male</option><option value="female">Female</option></select>
+          </label>
+          <label>
+            Parent B
+            <select id="parentB"></select>
+          </label>
+          <label>
+            Parent B Gender
+            <select id="parentBGender"><option value="">Unspecified</option><option value="male">Male</option><option value="female">Female</option></select>
+          </label>
+        </div>
+        <div class="actions">
+          <button id="calculateBtn">Calculate Child</button>
+          <button id="swapBtn" class="ghost-btn" type="button">Swap Parents</button>
+          <select id="pickFor" class="pick-for" aria-label="Choose quick pick target">
+            <option value="parentA">Quick Pick -> Parent A</option>
+            <option value="parentB">Quick Pick -> Parent B</option>
+            <option value="targetChild">Quick Pick -> Target Child</option>
+          </select>
+        </div>
+        <div id="result" class="result" role="status" aria-live="polite"></div>
+      </section>
+
+      <section id="reverseCard" class="card">
+        <h2>Reverse Calculator</h2>
+        <p>Find parent combinations that can produce your target Pal.</p>
+        <div class="grid">
+          <label>
+            Target Child
+            <select id="targetChild"></select>
+          </label>
+        </div>
+        <button id="findCombosBtn">Find Combinations</button>
+        <div id="combos" class="combos" role="status" aria-live="polite"></div>
+      </section>
+
+      <section id="chainCard" class="card">
+        <h2>Chain Breeding Path</h2>
+        <p>Select the Pal species you own and a target (up to 15 steps). The planner assumes you can supply suitable male and female parents; it does not model gender or passive traits.</p>
+        <div class="grid">
+          <label>
+            Pal You Own
+            <select id="chainOwned"></select>
+          </label>
+          <div class="chip-picker">
+            <label for="chainAdditionalSearch">Additional Owned Species (optional)</label>
+            <ul id="chainAdditionalChips" class="chip-list" aria-label="Additional owned species"></ul>
+            <input id="chainAdditionalSearch" type="search" placeholder="Search species to add" autocomplete="off" enterkeyhint="done" aria-describedby="chainRosterHelp" aria-controls="chainAdditionalOptions" />
+            <div id="chainAdditionalOptions" class="chip-options" hidden></div>
+          </div>
+          <label>
+            Goal Pal
+            <select id="chainGoal"></select>
+          </label>
+        </div>
+        <p id="chainRosterHelp" class="muted">Type a name and tap it to add any other species already in your Pal Box. Tap × on a chip to remove it.</p>
+        <button id="findChainBtn" type="button">Find Breeding Chain</button>
+        <p class="muted chain-hint">The search is bounded and may not find every route. Both parent species must be available before a step can be completed.</p>
+        <div id="chainResult" class="chain-result" role="status" aria-live="polite"></div>
+      </section>
+
+      <section id="palBoxCard" class="card">
+        <h2>Pal Box</h2>
+        <div class="grid">
+          <label>
+            Search Pal
+            <input id="palSearch" placeholder="Type to filter (e.g. Jetragon)" autocomplete="off" />
+          </label>
+        </div>
+        <p id="palGridStatus" class="muted pal-grid-count">Featured Pals. Tap one to use it in the calculator.</p>
+        <div id="palGrid" class="pal-grid"><button class="pal-grid-card" type="button" data-pal-name="Anubis"><img class="pal-grid-img" src="/assets/pals/thumbs/anubis.webp" alt="Anubis Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Anubis</div><div class="pal-power">Power 480</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Jetragon"><img class="pal-grid-img" src="/assets/pals/thumbs/jetragon.webp" alt="Jetragon Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Jetragon</div><div class="pal-power">Power 70</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Frostallion"><img class="pal-grid-img" src="/assets/pals/thumbs/frostallion.webp" alt="Frostallion Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Frostallion</div><div class="pal-power">Power 150</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Blazamut"><img class="pal-grid-img" src="/assets/pals/thumbs/blazamut.webp" alt="Blazamut Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Blazamut</div><div class="pal-power">Power 410</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Suzaku"><img class="pal-grid-img" src="/assets/pals/thumbs/suzaku.webp" alt="Suzaku Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Suzaku</div><div class="pal-power">Power 1200</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Jormuntide"><img class="pal-grid-img" src="/assets/pals/thumbs/jormuntide.webp" alt="Jormuntide Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Jormuntide</div><div class="pal-power">Power 590</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Necromus"><img class="pal-grid-img" src="/assets/pals/thumbs/necromus.webp" alt="Necromus Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Necromus</div><div class="pal-power">Power 190</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Paladius"><img class="pal-grid-img" src="/assets/pals/thumbs/paladius.webp" alt="Paladius Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Paladius</div><div class="pal-power">Power 180</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Lamball"><img class="pal-grid-img" src="/assets/pals/thumbs/lamball.webp" alt="Lamball Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Lamball</div><div class="pal-power">Power 3050</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Cattiva"><img class="pal-grid-img" src="/assets/pals/thumbs/cattiva.webp" alt="Cattiva Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Cattiva</div><div class="pal-power">Power 2760</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Foxparks"><img class="pal-grid-img" src="/assets/pals/thumbs/foxparks.webp" alt="Foxparks Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Foxparks</div><div class="pal-power">Power 2990</div></button>
+          <button class="pal-grid-card" type="button" data-pal-name="Penking"><img class="pal-grid-img" src="/assets/pals/thumbs/penking.webp" alt="Penking Palworld Pal icon" width="100" height="100" loading="lazy" decoding="async" /><div class="pal-grid-name">Penking</div><div class="pal-power">Power 2070</div></button></div>
+        <button type="button" id="showAllPalsBtn" class="ghost-btn load-more-pals">Show all Pals</button>
+      </section>
+
+      <section class="card seo-content">
+        <h2>How Palworld Breeding Works</h2>
+        <p>
+          Breeding in Palworld uses a combination system where specific parent pairs can produce special
+          children, while regular pairs follow breeding-power rules. This calculator helps you test both
+          approaches quickly and compare outcomes.
+        </p>
+        <h3>What You Can Do</h3>
+        <ul>
+          <li>Calculate child results from two selected parents.</li>
+          <li>Find all parent combinations for a chosen target Pal.</li>
+          <li>Check map locations, item sources, and technology milestones.</li>
+          <li>Compare a breeding-power difficulty heuristic, not an in-game capture probability.</li>
+        </ul>
+        <h3>People Also Ask</h3>
+        <p><strong>How do I breed Anubis?</strong> Use the reverse calculator and <a href="/fastest-anubis-breed">fastest Anubis breed guide</a> to compare parent pairs.</p>
+        <p><strong>How do I find best breeding combos?</strong> Start with the Reverse Calculator, select your target Pal, and compare all listed parent pairs and method types.</p>
+        <p><strong>Can legendary pals breed?</strong> Many legendary species require two parents of their own species. For example, Jetragon + Jetragon produces Jetragon; reverse lookup shows supported pairs.</p>
+        <p><strong>Does gender matter?</strong> Breeding requires a male and female parent. Katress + Wixen has different outcomes depending on which parent is male; set both genders for this pair.</p>
+        <p><strong>Why is breeding not working?</strong> See our <a href="/guides/breeding-not-working">breeding troubleshooting guide</a> — check Breeding Farm setup, cake in its chest, suitable male and female parents, and valid pairs.</p>
+        <p><strong>Best early game breeding combo?</strong> See our <a href="/best-early-game-breeding-combo">early game combo guide</a> for easy parent routes.</p>
+        <p><strong>Fastest flying mount breeding?</strong> Use the <a href="/fastest-flying-mount-breeding">Jetragon breeding guide</a> and reverse lookup.</p>
+        <p><strong>Can I use this on mobile?</strong> Yes. The interface is responsive for quick breeding checks on the go.</p>
+        <h3>Ranking Guides &amp; Comparisons</h3>
+        <ul>
+          <li><a href="/how-to-breed/anubis">How to Breed Anubis</a></li>
+          <li><a href="/combos/anubis">Anubis Combinations</a></li>
+          <li><a href="/guides/breeding-not-working">Breeding Not Working</a></li>
+          <li><a href="/fastest-anubis-breed">Fastest Anubis Breed</a></li>
+          <li><a href="/legendary-breeding">Legendary Breeding Guide</a></li>
+          <li><a href="/best-early-game-breeding-combo">Best Early Game Combos</a></li>
+          <li><a href="/egg-incubation-guide">Egg Incubation Guide</a></li>
+          <li><a href="/anubis-vs-lyleen">Anubis vs Lyleen</a></li>
+          <li><a href="/best-mining-pal-breeding">Best Mining Pal Breeding</a></li>
+          <li><a href="/fastest-flying-mount-breeding">Fastest Flying Mount Breeding</a></li>
+          <li><a href="/guides/best-breeding-combos">Best Breeding Combos</a></li>
+          <li><a href="/guides/capture-rate-explained">Capture Rate Explained</a></li>
+          <li><a href="/">Palworld Breeding Calculator Online</a></li>
+          <li><a href="/palworld-breeding-combinations">Palworld Breeding Combinations</a></li>
+          <li><a href="/palworld-chain-breeding">Palworld Chain Breeding Path Finder</a></li>
+        </ul>
+        <h3>Pal Pages</h3>
+        <p class="muted">Every Pal has a breeding profile with combos, map data, and calculator links.</p>
+        <ul class="seo-link-grid">
+          <li><a href="/pal/aegidron">Aegidron</a></li>
+          <li><a href="/pal/amione">Amione</a></li>
+          <li><a href="/pal/anubis">Anubis</a></li>
+          <li><a href="/pal/arsox">Arsox</a></li>
+          <li><a href="/pal/astegon">Astegon</a></li>
+          <li><a href="/pal/azurmane">Azurmane</a></li>
+          <li><a href="/pal/azurobe">Azurobe</a></li>
+          <li><a href="/pal/azurobe-cryst">Azurobe Cryst</a></li>
+          <li><a href="/pal/bakemi">Bakemi</a></li>
+          <li><a href="/pal/bastigor">Bastigor</a></li>
+          <li><a href="/pal/beakon">Beakon</a></li>
+          <li><a href="/pal/beakon-cryst">Beakon Cryst</a></li>
+          <li><a href="/pal/beegarde">Beegarde</a></li>
+          <li><a href="/pal/bellanoir">Bellanoir</a></li>
+          <li><a href="/pal/bellanoir-libero">Bellanoir Libero</a></li>
+          <li><a href="/pal/blazamut">Blazamut</a></li>
+          <li><a href="/pal/blazamut-ryu">Blazamut Ryu</a></li>
+          <li><a href="/pal/blazehowl">Blazehowl</a></li>
+          <li><a href="/pal/blazehowl-noct">Blazehowl Noct</a></li>
+          <li><a href="/pal/blue-slime">Blue Slime</a></li>
+          <li><a href="/pal/braloha">Braloha</a></li>
+          <li><a href="/pal/bristla">Bristla</a></li>
+          <li><a href="/pal/broncherry">Broncherry</a></li>
+          <li><a href="/pal/broncherry-aqua">Broncherry Aqua</a></li>
+          <li><a href="/pal/bulldosu">Bulldosu</a></li>
+          <li><a href="/pal/bushi">Bushi</a></li>
+          <li><a href="/pal/bushi-noct">Bushi Noct</a></li>
+          <li><a href="/pal/caprity">Caprity</a></li>
+          <li><a href="/pal/caprity-noct">Caprity Noct</a></li>
+          <li><a href="/pal/carnibora">Carnibora</a></li>
+          <li><a href="/pal/cattiva">Cattiva</a></li>
+          <li><a href="/pal/cave-bat">Cave Bat</a></li>
+          <li><a href="/pal/cawgnito">Cawgnito</a></li>
+          <li><a href="/pal/celaray">Celaray</a></li>
+          <li><a href="/pal/celaray-lux">Celaray Lux</a></li>
+          <li><a href="/pal/celesdir">Celesdir</a></li>
+          <li><a href="/pal/celesdir-noct">Celesdir Noct</a></li>
+          <li><a href="/pal/chikipi">Chikipi</a></li>
+          <li><a href="/pal/chillet">Chillet</a></li>
+          <li><a href="/pal/chillet-ignis">Chillet Ignis</a></li>
+          <li><a href="/pal/cinnamoth">Cinnamoth</a></li>
+          <li><a href="/pal/clovee">Clovee</a></li>
+          <li><a href="/pal/cremis">Cremis</a></li>
+          <li><a href="/pal/croajiro">Croajiro</a></li>
+          <li><a href="/pal/croajiro-noct">Croajiro Noct</a></li>
+          <li><a href="/pal/cryolinx">Cryolinx</a></li>
+          <li><a href="/pal/cryolinx-terra">Cryolinx Terra</a></li>
+          <li><a href="/pal/daedream">Daedream</a></li>
+          <li><a href="/pal/dandilord">Dandilord</a></li>
+          <li><a href="/pal/dazemu">Dazemu</a></li>
+          <li><a href="/pal/dazzi">Dazzi</a></li>
+          <li><a href="/pal/dazzi-noct">Dazzi Noct</a></li>
+          <li><a href="/pal/demon-eye">Demon Eye</a></li>
+          <li><a href="/pal/depresso">Depresso</a></li>
+          <li><a href="/pal/digtoise">Digtoise</a></li>
+          <li><a href="/pal/dinossom">Dinossom</a></li>
+          <li><a href="/pal/dinossom-lux">Dinossom Lux</a></li>
+          <li><a href="/pal/direhowl">Direhowl</a></li>
+          <li><a href="/pal/dogen">Dogen</a></li>
+          <li><a href="/pal/dualith">Dualith</a></li>
+        </ul>
+        <p><a href="/pal-pages">Browse all Pal breeding pages (full list)</a></p>
+        <h3>Combo Pages</h3>
+        <p class="muted">Parent-pair pages show the child Pal, breeding method, and related routes.</p>
+        <ul class="seo-link-grid">
+          <li><a href="/combo/arsox/chillet">Arsox + Chillet</a></li>
+          <li><a href="/combo/azurmane/fenglope">Azurmane + Fenglope</a></li>
+          <li><a href="/combo/azurobe/frostplume">Azurobe + Frostplume</a></li>
+          <li><a href="/combo/beakon/frostplume">Beakon + Frostplume</a></li>
+          <li><a href="/combo/beakon/helzephyr">Beakon + Helzephyr</a></li>
+          <li><a href="/combo/bellanoir/bellanoir-libero">Bellanoir + Bellanoir Libero</a></li>
+          <li><a href="/combo/blazehowl/felbat">Blazehowl + Felbat</a></li>
+          <li><a href="/combo/blazehowl/jormuntide">Blazehowl + Jormuntide</a></li>
+          <li><a href="/combo/blue-slime/green-slime">Blue Slime + Green Slime</a></li>
+          <li><a href="/combo/bristla/ribbuny">Bristla + Ribbuny</a></li>
+          <li><a href="/combo/broncherry/fuack">Broncherry + Fuack</a></li>
+          <li><a href="/combo/bushi-noct/croajiro">Bushi Noct + Croajiro</a></li>
+          <li><a href="/combo/bushi/petallia">Bushi + Petallia</a></li>
+          <li><a href="/combo/bushi/sootseer">Bushi + Sootseer</a></li>
+          <li><a href="/combo/caprity/tarantriss">Caprity + Tarantriss</a></li>
+          <li><a href="/combo/celaray/univolt">Celaray + Univolt</a></li>
+          <li><a href="/combo/celesdir/kitsun-noct">Celesdir + Kitsun Noct</a></li>
+          <li><a href="/combo/celesdir/starryon">Celesdir + Starryon</a></li>
+          <li><a href="/combo/celesdir/tetroise">Celesdir + Tetroise</a></li>
+          <li><a href="/combo/chillet-ignis/whalaska">Chillet Ignis + Whalaska</a></li>
+          <li><a href="/combo/cryolinx/dazemu">Cryolinx + Dazemu</a></li>
+          <li><a href="/combo/dazzi/omascul">Dazzi + Omascul</a></li>
+          <li><a href="/combo/digtoise/turtacle">Digtoise + Turtacle</a></li>
+          <li><a href="/combo/digtoise/warsect">Digtoise + Warsect</a></li>
+          <li><a href="/combo/dinossom/rayhound">Dinossom + Rayhound</a></li>
+          <li><a href="/combo/dualith/sootseer">Dualith + Sootseer</a></li>
+          <li><a href="/combo/dumud/eikthyrdeer-terra">Dumud + Eikthyrdeer Terra</a></li>
+          <li><a href="/combo/dumud/surfent">Dumud + Surfent</a></li>
+          <li><a href="/combo/eidrolon/suzaku">Eidrolon + Suzaku</a></li>
+          <li><a href="/combo/eikthyrdeer-terra/gildane">Eikthyrdeer Terra + Gildane</a></li>
+          <li><a href="/combo/eikthyrdeer/hangyu">Eikthyrdeer + Hangyu</a></li>
+          <li><a href="/combo/elgrove/pierdon-cryst">Elgrove + Pierdon Cryst</a></li>
+          <li><a href="/combo/elphidran/surfent">Elphidran + Surfent</a></li>
+          <li><a href="/combo/faleris/jormuntide">Faleris + Jormuntide</a></li>
+          <li><a href="/combo/finsider/gobfin-ignis">Finsider + Gobfin Ignis</a></li>
+          <li><a href="/combo/flambelle/fuack">Flambelle + Fuack</a></li>
+          <li><a href="/combo/flambelle/leezpunk">Flambelle + Leezpunk</a></li>
+          <li><a href="/combo/flambelle/tanzee">Flambelle + Tanzee</a></li>
+          <li><a href="/combo/foxcicle/foxparks">Foxcicle + Foxparks</a></li>
+          <li><a href="/combo/foxcicle/rayhound">Foxcicle + Rayhound</a></li>
+          <li><a href="/combo/foxcicle/reptyro">Foxcicle + Reptyro</a></li>
+          <li><a href="/combo/foxcicle/vanwyrm">Foxcicle + Vanwyrm</a></li>
+          <li><a href="/combo/frostallion/helzephyr">Frostallion + Helzephyr</a></li>
+          <li><a href="/combo/frostplume/univolt">Frostplume + Univolt</a></li>
+          <li><a href="/combo/fuddler/robinquill">Fuddler + Robinquill</a></li>
+          <li><a href="/combo/ghangler/sootseer">Ghangler + Sootseer</a></li>
+          <li><a href="/combo/gloopie/valentail">Gloopie + Valentail</a></li>
+          <li><a href="/combo/gobfin-ignis/skutlass">Gobfin Ignis + Skutlass</a></li>
+          <li><a href="/combo/gobfin/rooby">Gobfin + Rooby</a></li>
+          <li><a href="/combo/gorirat/kikit">Gorirat + Kikit</a></li>
+          <li><a href="/combo/green-slime/red-slime">Green Slime + Red Slime</a></li>
+          <li><a href="/combo/grizzbolt/mossanda">Grizzbolt + Mossanda</a></li>
+          <li><a href="/combo/hangyu/swee">Hangyu + Swee</a></li>
+          <li><a href="/combo/helzephyr-lux/prixter">Helzephyr Lux + Prixter</a></li>
+          <li><a href="/combo/incineram/maraith">Incineram + Maraith</a></li>
+          <li><a href="/combo/jolthog/pengullet">Jolthog + Pengullet</a></li>
+          <li><a href="/combo/jormuntide/suzaku">Jormuntide + Suzaku</a></li>
+          <li><a href="/combo/katress/pyrin">Katress + Pyrin</a></li>
+          <li><a href="/combo/kikit/woolipop">Kikit + Woolipop</a></li>
+          <li><a href="/combo/killamari/ribbuny">Killamari + Ribbuny</a></li>
+          <li><a href="/combo/kingpaca/reindrix">Kingpaca + Reindrix</a></li>
+          <li><a href="/combo/kitsun/nyafia">Kitsun + Nyafia</a></li>
+          <li><a href="/combo/knocklem/menasting">Knocklem + Menasting</a></li>
+          <li><a href="/combo/knocklem/ragnahawk">Knocklem + Ragnahawk</a></li>
+          <li><a href="/combo/lapure/sibelyx">Lapure + Sibelyx</a></li>
+          <li><a href="/combo/loupmoon/sweepa">Loupmoon + Sweepa</a></li>
+          <li><a href="/combo/lullu/quivern">Lullu + Quivern</a></li>
+          <li><a href="/combo/lyleen/menasting">Lyleen + Menasting</a></li>
+          <li><a href="/combo/mammorest/wumpo">Mammorest + Wumpo</a></li>
+          <li><a href="/combo/mau/pengullet">Mau + Pengullet</a></li>
+          <li><a href="/combo/moldron/reptyro-cryst">Moldron + Reptyro Cryst</a></li>
+          <li><a href="/combo/munchill/smokie">Munchill + Smokie</a></li>
+          <li><a href="/combo/needoll/prunelia">Needoll + Prunelia</a></li>
+          <li><a href="/combo/nitemary/petallia">Nitemary + Petallia</a></li>
+          <li><a href="/combo/pengullet/sparkit">Pengullet + Sparkit</a></li>
+          <li><a href="/combo/penking/rayhound">Penking + Rayhound</a></li>
+          <li><a href="/combo/pierdon/wumpo">Pierdon + Wumpo</a></li>
+          <li><a href="/combo/polapup/surfent-terra">Polapup + Surfent Terra</a></li>
+          <li><a href="/combo/relaxaurus/sparkit">Relaxaurus + Sparkit</a></li>
+          <li><a href="/combo/slowatt/solmora">Slowatt + Solmora</a></li>
+        </ul>
+        <p><a href="/combo-pages">Browse all featured combo pages (full list)</a></p>
+      </section>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+  <div class="site-footer-inner">
+    <div class="site-footer-col">
+      <p class="site-footer-title">Palworld Breeding Calculator</p>
+      <p class="site-footer-muted">Species predictions, reverse lookup, and owned-roster route planning.</p>
+    </div>
+    <nav class="site-footer-col" aria-label="Tools">
+      <p class="site-footer-heading">Tools</p>
+      <ul>
+        <li><a href="/">Breeding Calculator</a></li>
+        <li><a href="/palworld-breeding-combinations">Breeding Combinations</a></li>
+        <li><a href="/palworld-chain-breeding">Chain Breeding</a></li>
+        <li><a href="/palworld-capture-rate-calculator">Capture Rate</a></li>
+        <li><a href="/pals">Pals Database</a></li>
+        <li><a href="/map">Map Locations</a></li>
+      </ul>
+    </nav>
+    <nav class="site-footer-col" aria-label="Guides">
+      <p class="site-footer-heading">Guides</p>
+      <ul>
+        <li><a href="/how-to-breed/anubis">How to Breed Anubis</a></li>
+        <li><a href="/fastest-anubis-breed">Fastest Anubis Breed</a></li>
+        <li><a href="/legendary-breeding">Legendary Breeding</a></li>
+        <li><a href="/guides/best-breeding-combos">Best Breeding Combos</a></li>
+        <li><a href="/guides/breeding-not-working">Breeding Not Working</a></li>
+        <li><a href="/egg-incubation-guide">Egg Incubation</a></li>
+        <li><a href="/guides/breeding-statistics">Breeding Statistics</a></li>
+        <li><a href="/guides/breeding-farm-setup">Breeding Farm Guide</a></li>
+      </ul>
+    </nav>
+    <nav class="site-footer-col" aria-label="Popular Pals">
+      <p class="site-footer-heading">Popular Pals</p>
+      <ul>
+        <li><a href="/pal/anubis">Anubis</a></li>
+        <li><a href="/pal/jetragon">Jetragon</a></li>
+        <li><a href="/pal/frostallion">Frostallion</a></li>
+        <li><a href="/pal/lyleen">Lyleen</a></li>
+        <li><a href="/pal-pages">All Pal Pages</a></li>
+        <li><a href="/combo-pages">Combo Pages</a></li>
+      </ul>
+    </nav>
+    <nav class="site-footer-col" aria-label="Site">
+      <p class="site-footer-heading">Site</p>
+      <ul>
+        <li><a href="/about">About &amp; Data Sources</a></li>
+        <li><a href="/about#contact">Contact</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
+      </ul>
+    </nav>
+  </div>
+  <p class="site-footer-copy">Palworld Breeding Calculator — unofficial fan tool. Not affiliated with Pocketpair. Data derived from <a href="https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb">PalCalc</a>, MIT license; imported 25 October 2026 and cross-checked against Palworld 1.0.5 (<a href="https://palsphere.app">PalSphere</a> extract).</p>
+</footer>
+
+    <script type="module" src="/app.js?v=20261031"></script>
+  </body>
+</html>
+
