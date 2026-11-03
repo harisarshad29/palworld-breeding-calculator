@@ -49,6 +49,11 @@ pub async fn run(router: Router, pal_names: Vec<String>, base_url: &str, out: &s
     for name in &pal_names {
         queue.push_back(format!("/api/combinations/{}", encode_segment(name)));
         queue.push_back(format!("/api/capture/{}", encode_segment(name)));
+        // Most of these 301 to /pal/<slug> and are no longer linked, so request them
+        // directly: Google already knows the old URLs and needs the redirect rules.
+        let slug = crate::pal_slug(name);
+        queue.push_back(format!("/how-to-breed/{slug}"));
+        queue.push_back(format!("/combos/{slug}"));
     }
 
     let mut seen: BTreeSet<String> = queue.iter().cloned().collect();
@@ -283,12 +288,17 @@ export default async (request, context) => {{
   const b = parts[2].toLowerCase();
   if (!PAL_SLUGS.has(a) || !PAL_SLUGS.has(b)) return context.next();
   const [first, second] = a <= b ? [a, b] : [b, a];
+  const canonical = new URL(`/combo/${{first}}/${{second}}`, url);
+  const calculator = new URL(`/?parentA=${{first}}&parentB=${{second}}`, url);
   if (parts[1] !== first || parts[2] !== second) {{
-    return Response.redirect(new URL(`/combo/${{first}}/${{second}}`, url), 301);
+    // One hop only: point at the canonical page if it was pre-rendered, else straight
+    // at the calculator, never at a canonical URL that redirects again.
+    const page = await fetch(canonical, {{ method: "HEAD", redirect: "manual" }});
+    return Response.redirect(page.status === 200 ? canonical : calculator, page.status === 200 ? 301 : 302);
   }}
   const response = await context.next();
   if (response.status !== 404) return response;
-  return Response.redirect(new URL(`/?parentA=${{first}}&parentB=${{second}}`, url), 302);
+  return Response.redirect(calculator, 302);
 }};
 
 export const config = {{ path: "/combo/*" }};
@@ -425,6 +435,13 @@ mod tests {
         let js = netlify_combo_edge_function(&slugs());
         assert!(js.contains(r#"new Set(["anubis","relaxaurus-lux"])"#));
         assert!(js.contains(r#"path: "/combo/*""#));
+    }
+
+    #[test]
+    fn netlify_reversed_pairs_redirect_once() {
+        let js = netlify_combo_edge_function(&slugs());
+        assert!(js.contains(r#"fetch(canonical, { method: "HEAD", redirect: "manual" })"#));
+        assert!(js.contains("page.status === 200 ? canonical : calculator"));
     }
 
     #[test]
