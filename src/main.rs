@@ -353,7 +353,7 @@ const GUIDE_PAGES: [GuidePage; 15] = [
         title: "Anubis vs Lyleen in Palworld - Breeding & Role Comparison",
         description: seo_copy::GUIDE_ANUBIS_VS_LYLEEN,
         heading: "Anubis vs Lyleen",
-        body_html: "<p>Choose your target according to your base needs and the species already available in your save. Compare <a href=\"/combos/anubis\">Anubis pairs</a> with <a href=\"/combos/lyleen\">Lyleen pairs</a>.</p><h2>Check restrictions first</h2><p>The pinned snapshot has several Anubis routes, while Lyleen requires Lyleen + Lyleen. These are species outcomes; the tool does not compare passive traits, combat performance, or individual stats.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
+        body_html: "<p>Choose your target according to your base needs and the species already available in your save. Compare <a href=\"/combos/anubis\">Anubis pairs</a> with <a href=\"/pal/lyleen\">Lyleen pairs</a>.</p><h2>Check restrictions first</h2><p>The pinned snapshot has several Anubis routes, while Lyleen requires Lyleen + Lyleen. These are species outcomes; the tool does not compare passive traits, combat performance, or individual stats.</p><p class=\"muted\">Source: <a href=\"https://github.com/tylercamp/palcalc/tree/66f18a000e2107640b219562437357ced5aff7eb\">PalCalc snapshot</a>, imported 25 October 2026. Cross-checked against Palworld 1.0.5 data.</p>",
     },
     GuidePage {
         path: "/guides/breeding-not-working",
@@ -801,6 +801,26 @@ fn collect_combo_page_pairs(state: &AppState, max: Option<usize>) -> Vec<(String
 
 fn pal_is_indexable(route_count: usize) -> bool {
     route_count > THIN_PAL_MAX_ROUTES
+}
+
+/// Only priority targets that are not thin keep their own /how-to-breed and /combos pages.
+/// Every other Pal's versions repeated its /pal page, so they 301 there instead.
+fn has_hub_pages(pal_name: &str, route_count: usize) -> bool {
+    PRIORITY_BREED_TARGETS.contains(&pal_name) && pal_is_indexable(route_count)
+}
+
+/// "How to breed" and "all combos" links for a Pal: its hub pages when it has them,
+/// otherwise nothing, so pages never link to a redirect.
+fn hub_links_html(pal_name: &str, route_count: usize, combos_label: &str) -> String {
+    if !has_hub_pages(pal_name, route_count) {
+        return String::new();
+    }
+    let slug = pal_slug(pal_name);
+    format!(
+        "<a href=\"/how-to-breed/{slug}\">How to breed {name}</a> • <a href=\"/combos/{slug}\">{label}</a> • ",
+        name = html_escape(pal_name),
+        label = html_escape(combos_label),
+    )
 }
 
 fn pal_robots(route_count: usize) -> &'static str {
@@ -1307,31 +1327,41 @@ fn build_combo_pages_directory_html(state: &AppState) -> String {
 async fn how_to_breed_page(
     State(state): State<AppState>,
     Path(name): Path<String>,
-) -> Result<Html<String>, (StatusCode, String)> {
+) -> Result<axum::response::Response, (StatusCode, String)> {
     let target = find_pal_by_slug(&state.pals, &name)
         .cloned()
         .ok_or_else(|| (StatusCode::NOT_FOUND, "Pal not found".to_string()))?;
     let combos = combos_producing_target(&state, &target.name);
+    if !has_hub_pages(&target.name, combos.len()) {
+        let slug = pal_slug(&target.name);
+        return Ok(axum::response::Redirect::permanent(&format!("/pal/{slug}")).into_response());
+    }
     Ok(Html(build_how_to_breed_html(
         &state.base_url,
         &target,
         &combos,
-    )))
+    ))
+    .into_response())
 }
 
 async fn combos_hub_page(
     State(state): State<AppState>,
     Path(name): Path<String>,
-) -> Result<Html<String>, (StatusCode, String)> {
+) -> Result<axum::response::Response, (StatusCode, String)> {
     let target = find_pal_by_slug(&state.pals, &name)
         .cloned()
         .ok_or_else(|| (StatusCode::NOT_FOUND, "Pal not found".to_string()))?;
     let combos = combos_producing_target(&state, &target.name);
+    if !has_hub_pages(&target.name, combos.len()) {
+        let slug = pal_slug(&target.name);
+        return Ok(axum::response::Redirect::permanent(&format!("/pal/{slug}")).into_response());
+    }
     Ok(Html(build_combos_hub_html(
         &state.base_url,
         &target,
         &combos,
-    )))
+    ))
+    .into_response())
 }
 
 async fn pal_detail_page(
@@ -2204,9 +2234,14 @@ fn build_pal_page_html(
         query_escape(&target.name)
     );
     let pal_query = query_escape(&target.name);
+    let hub_links = hub_links_html(&target.name, combo_count, &format!("All {} combos ({combo_count})", target.name));
+    let how_to_link = if has_hub_pages(&target.name, combo_count) {
+        format!("<a href=\"/how-to-breed/{slug}\">How to breed {}</a> • ", target.name)
+    } else {
+        String::new()
+    };
     let guide_links = format!(
-        "<a href=\"/how-to-breed/{slug}\">How to breed {}</a> • <a href=\"/guides/best-breeding-combos\">Best Breeding Combos</a> • <a href=\"/guides/capture-rate-explained\">Capture Rate</a> • <a href=\"/guides/breeding-not-working\">Breeding fixes</a>",
-        target.name
+        "{how_to_link}<a href=\"/guides/best-breeding-combos\">Best Breeding Combos</a> • <a href=\"/guides/capture-rate-explained\">Capture Rate</a> • <a href=\"/guides/breeding-not-working\">Breeding fixes</a>"
     );
     format!(
         r#"<!doctype html>
@@ -2269,7 +2304,7 @@ fn build_pal_page_html(
         <p><strong>Breeding Power:</strong> {power}</p>
         <p><strong>Map Area:</strong> {area} | <strong>Coordinates:</strong> {coords}</p>
         <p>{dynamic_summary}</p>
-        <p><a href="/how-to-breed/{slug}">How to breed {pal_name}</a> • <a href="/combos/{slug}">All {pal_name} combos ({combo_count})</a> • <a href="{calc_link}">Reverse calculator</a> • <a href="/palworld-chain-breeding?owned=Lamball&goal={pal_query}">Chain from Lamball</a> • <a href="/">Breeding tool</a></p>
+        <p>{hub_links}<a href="{calc_link}">Reverse calculator</a> • <a href="/palworld-chain-breeding?owned=Lamball&goal={pal_query}">Chain from Lamball</a> • <a href="/">Breeding tool</a></p>
       </div>
       <div class="card">
         <h2>{pal_name} Parent Combinations</h2>
@@ -2305,7 +2340,7 @@ fn build_pal_page_html(
         combo_links = combo_links,
         guide_links = guide_links,
         dynamic_summary = dynamic_summary,
-        combo_count = combo_count,
+        hub_links = hub_links,
         showing = showing,
         robots = robots,
         calc_link = calc_link,
@@ -2553,7 +2588,7 @@ fn build_combo_page_html(
         <p>{related_combo_links}</p>
         <h3>Related Guides</h3>
         <p>{related_guides}</p>
-        <p><a href="/how-to-breed/{child_slug}">How to breed {child_name}</a> • <a href="/combos/{child_slug}">All {child_name} combos</a> • <a href="/pal/{parent_a_slug}">Open {parent_a_name} page</a> • <a href="/pal/{parent_b_slug}">Open {parent_b_name} page</a> • <a href="/pal/{child_slug}">Open {child_name} page</a> • <a href="{calc_path}">Breeding calculator</a></p>
+        <p>{child_hub_links}<a href="/pal/{parent_a_slug}">Open {parent_a_name} page</a> • <a href="/pal/{parent_b_slug}">Open {parent_b_name} page</a> • <a href="/pal/{child_slug}">Open {child_name} page</a> • <a href="{calc_path}">Breeding calculator</a></p>
       </div>
     </main>
     {site_footer}
@@ -2563,6 +2598,7 @@ fn build_combo_page_html(
         description = description,
         page_url = page_url,
         child_slug = pal_slug(&result.child.name),
+        child_hub_links = hub_links_html(&result.child.name, alternatives.len(), &format!("All {} combos", result.child.name)),
         parent_a_slug = parent_a_slug,
         parent_b_slug = parent_b_slug,
         parent_a_name = parent_a.name,
@@ -3060,5 +3096,58 @@ mod thin_page_floor_tests {
         assert!(html.contains(&format!("<h2>Special combinations ({special})</h2>")));
         assert!(html.contains(&format!("<h2>Other featured pairs ({})</h2>", total - special)));
         assert_eq!(html.matches("<li><a href=\"/combo/").count(), total);
+    }
+}
+
+#[cfg(test)]
+mod hub_consolidation_tests {
+    use super::*;
+    use axum::body::Body;
+    use axum::http::Request;
+    use tower::ServiceExt;
+
+    fn state() -> AppState {
+        build_app_state(include_str!("../index.html").into(), "https://example.com".into())
+    }
+
+    async fn get(state: &AppState, path: &str) -> axum::response::Response {
+        build_router(state.clone()).oneshot(Request::get(path).body(Body::empty()).unwrap()).await.unwrap()
+    }
+
+    #[tokio::test]
+    async fn non_hub_pals_redirect_their_duplicate_pages_to_the_pal_page() {
+        let state = state();
+        let (hubs, others): (Vec<&Pal>, Vec<&Pal>) = state
+            .pals
+            .iter()
+            .partition(|pal| has_hub_pages(&pal.name, combos_producing_target(&state, &pal.name).len()));
+        assert!(!hubs.is_empty() && others.len() > hubs.len());
+        for pal in others.iter().take(25) {
+            let slug = pal_slug(&pal.name);
+            for prefix in ["how-to-breed", "combos"] {
+                let response = get(&state, &format!("/{prefix}/{slug}")).await;
+                assert_eq!(response.status(), StatusCode::PERMANENT_REDIRECT, "/{prefix}/{slug}");
+                assert_eq!(response.headers()[header::LOCATION], format!("/pal/{slug}").as_str());
+            }
+        }
+        for pal in hubs {
+            let slug = pal_slug(&pal.name);
+            for prefix in ["how-to-breed", "combos"] {
+                assert_eq!(get(&state, &format!("/{prefix}/{slug}")).await.status(), StatusCode::OK, "/{prefix}/{slug}");
+            }
+        }
+    }
+
+    #[test]
+    fn pal_and_combo_pages_link_to_hub_pages_only_when_they_exist() {
+        let state = state();
+        for pal in &state.pals {
+            let combos = combos_producing_target(&state, &pal.name);
+            let slug = pal_slug(&pal.name);
+            let html = build_pal_page_html(&state.base_url, pal, None, &combos, &[]);
+            let linked = html.contains(&format!("href=\"/how-to-breed/{slug}\""))
+                || html.contains(&format!("href=\"/combos/{slug}\""));
+            assert_eq!(linked, has_hub_pages(&pal.name, combos.len()), "{}", pal.name);
+        }
     }
 }

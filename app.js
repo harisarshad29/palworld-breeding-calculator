@@ -951,7 +951,7 @@ async function renderChainBreeding() {
           </p>
           <p class="muted">You still need <strong>${escapeHtml(p.missing_partner)}</strong> before this egg works.</p>
           <p><a href="/?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a>
-            · <a href="/combos/${goalSlug}">All ${escapeHtml(goal)} combos</a></p>`;
+            · <a href="/pal/${goalSlug}">All ${escapeHtml(goal)} combos</a></p>`;
       } else {
         extra = `<p><a href="/?target=${encodeURIComponent(goal)}">Reverse lookup for ${escapeHtml(goal)}</a></p>`;
       }
